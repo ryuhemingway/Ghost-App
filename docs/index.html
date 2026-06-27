@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ghost - Local AI for your Mac</title>
+    <meta
+      name="description"
+      content="Ghost is a macOS menu-bar AI workspace with local models, agent routing, RAG, file tools, calendar and reminder automation, and a verified capability harness."
+    >
+    <meta property="og:title" content="Ghost - Local AI for your Mac">
+    <meta
+      property="og:description"
+      content="A glass-native macOS AI assistant that connects models, agents, documents, and local actions through a verified harness."
+    >
+    <meta property="og:image" content="assets/ghost-hero.png">
+    <link rel="preload" href="assets/ghost-hero.png" as="image">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header" aria-label="Main navigation">
+      <a class="brand" href="#top" aria-label="Ghost home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Ghost</span>
+      </a>
+      <nav>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#harness">Harness</a>
+        <a href="#rag">RAG</a>
+        <a href="#setup">Setup</a>
+      </nav>
+      <a class="header-action" href="https://github.com/ryuhemingway/Ghost-App">GitHub</a>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <img class="hero-image" src="assets/ghost-hero.png" alt="Ghost app glass interface with agent, RAG, files, calendar, and harness panels">
+        <div class="hero-scrim" aria-hidden="true"></div>
+        <div class="hero-content">
+          <p class="eyebrow">macOS menu-bar AI workspace</p>
+          <h1 id="hero-title">Ghost</h1>
+          <p class="hero-copy">
+            A beautiful local-first assistant for your Mac, built to route models, agents, files,
+            documents, calendar actions, and shell context through one verified command surface.
+          </p>
+          <div class="hero-actions" aria-label="Primary actions">
+            <a class="button primary" href="#setup">Start setup</a>
+            <a class="button secondary" href="#capabilities">Explore features</a>
+          </div>
+        </div>
+        <div class="hero-strip" aria-label="Ghost platform highlights">
+          <span>LM Studio</span>
+          <span>Ollama</span>
+          <span>Claude</span>
+          <span>Gemini</span>
+          <span>DeepSeek</span>
+        </div>
+      </section>
+
+      <section class="intro section-pad">
+        <div>
+          <p class="eyebrow">What Ghost provides</p>
+          <h2>Your Mac, your models, your context.</h2>
+        </div>
+        <p>
+          Ghost lives in the menu bar and opens with a fast glass panel or a terminal-grade coding
+          view. It can answer directly through provider APIs, hand off deeper work to a local agent,
+          ground responses in your documents, and verify local actions before the model gets credit
+          for doing anything.
+        </p>
+      </section>
+
+      <section id="capabilities" class="feature-grid section-pad" aria-label="Ghost capabilities">
+        <article class="feature-card large">
+          <span class="card-kicker">Agent router</span>
+          <h3>Choose Direct API speed or full agent depth.</h3>
+          <p>
+            Ghost can call provider APIs directly for fast answers, or launch a connected Ghost/Hermes
+            agent for multi-turn local work, approvals, toolsets, and coding tasks.
+          </p>
+        </article>
+        <article class="feature-card">
+          <span class="card-kicker">Local models</span>
+          <h3>LM Studio and Ollama stay local.</h3>
+          <p>
+            Local providers route through Ghost's managed OpenAI-compatible tool loop, with provider
+            isolation that prevents accidental cloud-agent launches.
+          </p>
+        </article>
+        <article class="feature-card">
+          <span class="card-kicker">Cloud models</span>
+          <h3>Bring Claude, Gemini, or DeepSeek.</h3>
+          <p>
+            Save provider keys once, pick the model and effort level, then let Ghost handle the
+            prompt, streaming, and routing details.
+          </p>
+        </article>
+        <article class="feature-card">
+          <span class="card-kicker">Workspace tools</span>
+          <h3>Read, create, convert, open, and organize files.</h3>
+          <p>
+            Ghost exposes verified file tools for documents, markdown, HTML, CSV, JSON, PDF, DOCX,
+            PPTX, XLSX, folders, Finder reveal, and safe metadata inspection.
+          </p>
+        </article>
+        <article class="feature-card">
+          <span class="card-kicker">Native actions</span>
+          <h3>Calendar, reminders, voice, and web search.</h3>
+          <p>
+            Ask for reminders, calendar events, calendar lookups, dictated prompts, web context, and
+            read-only shell checks without leaving the panel.
+          </p>
+        </article>
+      </section>
+
+      <section id="harness" class="split section-pad">
+        <div class="split-copy">
+          <p class="eyebrow">Capability harness</p>
+          <h2>The model requests. Ghost verifies.</h2>
+          <p>
+            The harness is Ghost's safety and truth layer. Models ask for capabilities by name, but
+            Ghost normalizes paths, blocks sensitive files, checks allowed roots, performs the action,
+            and returns a machine-readable result. User-visible confirmation is based on verified
+            results, not model claims.
+          </p>
+        </div>
+        <div class="harness-panel" aria-label="Harness verification flow">
+          <div class="flow-row">
+            <span>01</span>
+            <strong>Normalize</strong>
+            <p>Resolve workspace, Desktop, Documents, Downloads, and Ghost Outputs safely.</p>
+          </div>
+          <div class="flow-row">
+            <span>02</span>
+            <strong>Gate</strong>
+            <p>Apply risk levels, sensitive-path blocking, and read/write boundaries.</p>
+          </div>
+          <div class="flow-row">
+            <span>03</span>
+            <strong>Execute</strong>
+            <p>Create, convert, query, open, reveal, sync, or inspect through native macOS APIs.</p>
+          </div>
+          <div class="flow-row">
+            <span>04</span>
+            <strong>Verify</strong>
+            <p>Return structured evidence so the transcript reflects what happened.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="rag" class="rag section-pad">
+        <div class="section-heading">
+          <p class="eyebrow">Ghost RAG</p>
+          <h2>Turn your files into cited working memory.</h2>
+          <p>
+            Ghost indexes allowed local documents into a SQLite-backed retrieval store, extracts text,
+            chunks it, and answers with source-backed context.
+          </p>
+        </div>
+        <div class="rag-grid">
+          <article>
+            <h3>Ingest</h3>
+            <p>Index a file, folder, or synced folder from your workspace or common user folders.</p>
+          </article>
+          <article>
+            <h3>Retrieve</h3>
+            <p>Query cited chunks, search excerpts, inspect RAG status, or open a source document.</p>
+          </article>
+          <article>
+            <h3>Maintain</h3>
+            <p>Reindex, remove documents, or clear the index without deleting the original files.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="mode-band section-pad" aria-label="Ghost interface modes">
+        <div>
+          <p class="eyebrow">Two working surfaces</p>
+          <h2>Glass when you want calm. Code when you need control.</h2>
+        </div>
+        <div class="mode-tabs" role="tablist" aria-label="Interface modes">
+          <button class="mode-tab active" type="button" data-mode="glass" role="tab" aria-selected="true">Ghost Glass</button>
+          <button class="mode-tab" type="button" data-mode="terminal" role="tab" aria-selected="false">Ghost Code</button>
+        </div>
+        <div class="mode-preview" data-panel="glass">
+          <h3>Ghost Glass</h3>
+          <p>Fast prompts, voice input, model switching, API keys, RAG controls, and an elegant activity trail.</p>
+        </div>
+        <div class="mode-preview hidden" data-panel="terminal">
+          <h3>Ghost Code</h3>
+          <p>A wider terminal-style panel for file context, command output, coding workflows, and agent traces.</p>
+        </div>
+      </section>
+
+      <section id="setup" class="setup section-pad">
+        <div class="section-heading">
+          <p class="eyebrow">Setup path</p>
+          <h2>From clone to connected assistant.</h2>
+        </div>
+        <ol class="setup-list">
+          <li>
+            <span>Clone</span>
+            <code>gh repo clone ryuhemingway/Ghost-App</code>
+          </li>
+          <li>
+            <span>Build</span>
+            <code>cd Ghost-App && swift build</code>
+          </li>
+          <li>
+            <span>Run</span>
+            <code>./script/build_and_run.sh</code>
+          </li>
+          <li>
+            <span>Connect</span>
+            <code>Choose provider, model, engine, keys, and agent binary in Settings.</code>
+          </li>
+        </ol>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Ghost is a local-first macOS assistant for people who want their AI close to the work.</p>
+      <a href="https://github.com/ryuhemingway/Ghost-App">View the repository</a>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
