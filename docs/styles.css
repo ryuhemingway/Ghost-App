@@ -88,9 +88,15 @@ button {
 }
 
 .hud {
-  top: clamp(24px, 6vh, 72px);
-  left: clamp(18px, 6vw, 72px);
-  width: min(520px, calc(100vw - 36px));
+  top: clamp(18px, 4.6vh, 42px);
+  left: clamp(16px, 3.6vw, 44px);
+  width: min(360px, calc(100vw - 32px));
+  border: 1px solid rgba(247, 240, 255, 0.13);
+  border-radius: 22px;
+  padding: 16px;
+  background: rgba(8, 4, 15, 0.34);
+  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(16px);
   pointer-events: none;
 }
 
@@ -98,7 +104,7 @@ button {
   display: inline-flex;
   gap: 10px;
   align-items: center;
-  margin-bottom: 28px;
+  margin-bottom: 14px;
   color: rgba(247, 240, 255, 0.92);
   font-size: 0.92rem;
   font-weight: 800;
@@ -117,7 +123,7 @@ button {
 }
 
 .eyebrow {
-  margin: 0 0 13px;
+  margin: 0 0 10px;
   color: var(--champagne);
   font-size: 0.72rem;
   font-weight: 900;
@@ -139,11 +145,11 @@ h2 {
 }
 
 h1 {
-  max-width: 620px;
-  margin-bottom: 18px;
-  font-size: clamp(3.8rem, 9vw, 8.8rem);
-  line-height: 0.86;
-  text-shadow: 0 0 42px rgba(139, 92, 255, 0.35);
+  max-width: 340px;
+  margin-bottom: 12px;
+  font-size: clamp(2.05rem, 3.4vw, 3.75rem);
+  line-height: 0.92;
+  text-shadow: 0 0 30px rgba(139, 92, 255, 0.34);
 }
 
 h2 {
@@ -159,15 +165,27 @@ p {
 }
 
 .hud p:not(.eyebrow) {
-  max-width: 460px;
+  max-width: 320px;
+  margin-bottom: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
 }
 
-.hud-actions {
+.hud-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 26px;
-  pointer-events: auto;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.hud-controls span {
+  border: 1px solid rgba(247, 240, 255, 0.14);
+  border-radius: 999px;
+  padding: 6px 9px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.06);
+  font-family: var(--mono);
+  font-size: 0.72rem;
 }
 
 .button,
@@ -201,7 +219,7 @@ p {
   bottom: clamp(76px, 8vh, 104px);
   display: grid;
   gap: 9px;
-  width: min(300px, calc(100vw - 32px));
+  width: min(274px, calc(100vw - 32px));
   border: 1px solid var(--line);
   border-radius: 18px;
   padding: 14px;
@@ -283,7 +301,7 @@ kbd {
 
 .detail-shell {
   position: relative;
-  width: min(620px, 100%);
+  width: min(660px, 100%);
   border: 1px solid rgba(247, 240, 255, 0.18);
   border-radius: 28px;
   padding: clamp(24px, 5vw, 52px);
@@ -294,6 +312,18 @@ kbd {
   backdrop-filter: blur(26px);
   transform: translateY(24px) scale(0.96);
   opacity: 0;
+}
+
+.detail-preview {
+  width: 100%;
+  height: clamp(120px, 18vw, 180px);
+  margin-bottom: 26px;
+  border: 1px solid rgba(247, 240, 255, 0.14);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 30% 18%, rgba(244, 206, 122, 0.28), transparent 38%),
+    linear-gradient(135deg, rgba(139, 92, 255, 0.78), rgba(18, 8, 30, 0.92) 48%, rgba(118, 228, 211, 0.48));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 28px 90px rgba(0, 0, 0, 0.22);
 }
 
 .detail-close {
@@ -337,21 +367,25 @@ dd {
   }
 
   .hud {
-    top: 18px;
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    padding: 13px;
   }
 
   .brand {
-    margin-bottom: 16px;
+    margin-bottom: 10px;
   }
 
   h1 {
-    max-width: 360px;
-    font-size: clamp(3rem, 15vw, 4.6rem);
+    max-width: 310px;
+    font-size: clamp(1.85rem, 9.6vw, 3rem);
   }
 
   .hud p:not(.eyebrow) {
-    max-width: 330px;
-    font-size: 0.92rem;
+    max-width: 340px;
+    font-size: 0.84rem;
   }
 
   .control-panel {

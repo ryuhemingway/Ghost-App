@@ -1,6 +1,6 @@
 # Ghost Sphere Gallery
 
-An immersive 3D gallery experience for Ghost, built with **Three.js** and **GSAP**. The viewer sits inside a dark spherical gallery dimension while image cards orbit on the inner surface of the space. Drag to rotate, hover to focus, click to open a polished detail page, and return cleanly to the gallery.
+An immersive 3D gallery experience for Ghost, built with **Three.js** and **GSAP**. The viewer stands inside a dense, front-biased spherical gallery where Ghost capability cards sit close, readable, and layered across curved latitude bands. Drag to rotate, hover to focus, click to open a polished detail page, and return cleanly to the gallery.
 
 The interaction is inspired by the premium spatial feel of [Phantom](https://www.phantom.land/) without copying its exact design.
 
@@ -9,21 +9,21 @@ The interaction is inspired by the premium spatial feel of [Phantom](https://www
 Ghost Sphere Gallery turns the existing Ghost landing page into a cinematic, full-screen portfolio surface:
 
 - The camera feels placed inside a spherical card environment.
-- Cards are distributed around the viewer in a dome/sphere formation.
-- Pointer and touch dragging use smooth inertial easing.
-- Hovered cards scale and brighten for a premium focus state.
+- 24 cards are distributed across a close inner-dome formation.
+- Pointer and touch dragging use smooth inertial easing with clamped rotation.
+- Hovered or centered cards scale and brighten while surrounding cards subtly dim.
 - Clicking a card opens a GSAP-animated detail template.
 - Returning from detail restores the 3D scene without a reload.
 
 ## Features
 
 - Full-screen Three.js scene
-- Spherical/dome-like card placement
+- Dense front-biased spherical/dome-like card placement
 - Smooth drag rotation with inertial decay
 - Responsive desktop and mobile layout
 - Raycast hover and click interactions
 - GSAP detail-page transitions
-- Generated placeholder card imagery using canvas textures
+- Generated glass-style card imagery using canvas textures
 - Debug hooks for testing and screenshot capture
 - Clean static hosting through `docs/` for GitHub Pages
 
@@ -143,9 +143,9 @@ const cards = [
 
 Useful tuning points:
 
-- Change `radius` inside `createGallery()` to tighten or widen the sphere.
-- Adjust card dimensions in `mesh.scale.set(2.65, 3.52, 1)`.
-- Tune drag feel with `velocityX`, `velocityY`, and decay values in `tick()`.
+- Change `radius` inside `createGallery()` to tighten or widen the inner dome.
+- Adjust `baseWidth` and `baseHeight` inside `createGallery()` to resize cards.
+- Tune drag feel with the pointer multipliers, `velocityX`, `velocityY`, and decay values in `tick()`.
 - Modify the dark/glass visual system in `docs/styles.css`.
 - Replace generated canvas textures with real image assets if desired.
 
