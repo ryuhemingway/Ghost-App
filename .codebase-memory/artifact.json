@@ -1,11 +1,11 @@
 {
     "schema_version": 1,
-    "commit": "9ee4278f01d67269e28043379e8bd69d24f46456",
-    "indexed_at": "2026-06-27T02:43:08Z",
+    "commit": "2f0a0cfe0092eefcdcca38e3694f5c135bbf5bd7",
+    "indexed_at": "2026-06-27T03:07:22Z",
     "project": "Users-mac-Desktop-Ghost-App",
-    "nodes": 11,
-    "edges": 10,
-    "original_size": 1769472,
-    "compressed_size": 6131,
+    "nodes": 0,
+    "edges": 0,
+    "original_size": 102400,
+    "compressed_size": 1396,
     "compression_level": 3
 }
