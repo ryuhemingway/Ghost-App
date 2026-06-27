@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="820" viewBox="0 0 1280 820" role="img" aria-label="Ghost provider routing visual preview">
+  <rect width="1280" height="820" fill="#05030a"/>
+  <circle cx="1040" cy="160" r="260" fill="#8b5cff" opacity=".2"/>
+  <circle cx="180" cy="660" r="240" fill="#f4ce7a" opacity=".12"/>
+  <rect x="170" y="90" width="940" height="640" rx="36" fill="#ffffff" opacity=".065" stroke="#f7f0ff" stroke-opacity=".18"/>
+  <text x="224" y="162" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="34" font-weight="850">Provider Routing</text>
+  <text x="842" y="162" fill="#f4ce7a" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="850">VISUAL PREVIEW</text>
+  <g font-family="Inter, system-ui, sans-serif" font-size="23" font-weight="780">
+    <rect x="224" y="220" width="250" height="82" rx="22" fill="#8b5cff" opacity=".36"/><text x="258" y="272" fill="#f7f0ff">User prompt</text>
+    <rect x="515" y="220" width="250" height="82" rx="22" fill="#76e4d3" opacity=".22"/><text x="552" y="272" fill="#f7f0ff">Ghost router</text>
+    <rect x="806" y="180" width="250" height="70" rx="22" fill="#ffffff" opacity=".075"/><text x="838" y="225" fill="#f7f0ff">Direct API</text>
+    <rect x="806" y="284" width="250" height="70" rx="22" fill="#ffffff" opacity=".075"/><text x="838" y="329" fill="#f7f0ff">Agent mode</text>
+  </g>
+  <path d="M474 261H515M765 261H806M765 261C790 261 785 216 806 216M765 261C790 261 785 319 806 319" stroke="#f7f0ff" stroke-opacity=".36" stroke-width="3" fill="none"/>
+  <rect x="224" y="430" width="832" height="178" rx="26" fill="#020106" opacity=".68"/>
+  <text x="264" y="484" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="24" font-weight="800">Scoped model context</text>
+  <text x="264" y="532" fill="#f7f0ff" opacity=".68" font-family="Inter, system-ui, sans-serif" font-size="22">LM Studio, Ollama, Claude, Gemini, and DeepSeek routes stay explicit.</text>
+  <text x="264" y="574" fill="#76e4d3" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="800">Fast answers go direct. Tool-heavy work can move to the local agent.</text>
+</svg>

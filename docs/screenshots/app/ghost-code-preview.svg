@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="820" viewBox="0 0 1280 820" role="img" aria-label="Ghost Code visual preview">
+  <rect width="1280" height="820" fill="#05030a"/>
+  <circle cx="1010" cy="170" r="250" fill="#76e4d3" opacity=".15"/>
+  <circle cx="200" cy="680" r="240" fill="#8b5cff" opacity=".18"/>
+  <rect x="120" y="70" width="1040" height="680" rx="34" fill="#ffffff" opacity=".06" stroke="#f7f0ff" stroke-opacity=".18"/>
+  <text x="182" y="144" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="34" font-weight="850">Ghost Code</text>
+  <text x="912" y="144" fill="#f4ce7a" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="850">VISUAL PREVIEW</text>
+  <rect x="182" y="196" width="916" height="470" rx="24" fill="#020106" opacity=".82"/>
+  <text x="226" y="260" fill="#76e4d3" font-family="SFMono-Regular, Consolas, monospace" font-size="23">$ swift test</text>
+  <text x="226" y="314" fill="#f7f0ff" opacity=".72" font-family="SFMono-Regular, Consolas, monospace" font-size="22">✓ Ghost capability harness passed</text>
+  <text x="226" y="362" fill="#f7f0ff" opacity=".72" font-family="SFMono-Regular, Consolas, monospace" font-size="22">✓ Ghost RAG store passed</text>
+  <text x="226" y="410" fill="#f7f0ff" opacity=".72" font-family="SFMono-Regular, Consolas, monospace" font-size="22">✓ Intent routing passed</text>
+  <text x="226" y="484" fill="#f4ce7a" font-family="SFMono-Regular, Consolas, monospace" font-size="22">Command output, file context, and agent traces get room.</text>
+  <rect x="226" y="558" width="190" height="42" rx="21" fill="#76e4d3" opacity=".18"/><text x="252" y="585" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="800">Code view</text>
+  <rect x="440" y="558" width="210" height="42" rx="21" fill="#8b5cff" opacity=".26"/><text x="466" y="585" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="800">Agent traces</text>
+</svg>

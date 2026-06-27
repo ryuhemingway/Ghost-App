@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="820" viewBox="0 0 1280 820" role="img" aria-label="Ghost verified actions visual preview">
+  <rect width="1280" height="820" fill="#040207"/>
+  <circle cx="220" cy="180" r="240" fill="#f4ce7a" opacity=".16"/>
+  <circle cx="1040" cy="640" r="240" fill="#8b5cff" opacity=".18"/>
+  <rect x="170" y="90" width="940" height="640" rx="36" fill="#ffffff" opacity=".065" stroke="#f7f0ff" stroke-opacity=".18"/>
+  <text x="230" y="164" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="34" font-weight="850">Capability Harness</text>
+  <text x="836" y="164" fill="#f4ce7a" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="850">VISUAL PREVIEW</text>
+  <rect x="230" y="230" width="820" height="340" rx="28" fill="#020106" opacity=".76"/>
+  <g font-family="Inter, system-ui, sans-serif" font-size="24" font-weight="820">
+    <rect x="280" y="286" width="720" height="54" rx="16" fill="#ffffff" opacity=".07"/><text x="312" y="321" fill="#f7f0ff">1. Normalize requested path</text>
+    <rect x="280" y="366" width="720" height="54" rx="16" fill="#ffffff" opacity=".07"/><text x="312" y="401" fill="#f7f0ff">2. Execute app-owned file action</text>
+    <rect x="280" y="446" width="720" height="54" rx="16" fill="#76e4d3" opacity=".18"/><text x="312" y="481" fill="#f7f0ff">3. Return verified path and receipt</text>
+  </g>
+  <path d="M924 606l28 30 58-72" stroke="#76e4d3" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="230" y="650" fill="#76e4d3" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="850">Proof over model claims · Guarded roots · Real artifacts</text>
+</svg>

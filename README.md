@@ -187,17 +187,21 @@ Ask Ghost to create files, convert documents, search indexed files, open sources
 
 ## Screenshots
 
-Actual Ghost macOS app screenshots are not currently committed. When captured, place them under `docs/screenshots/app/` with these filenames:
+Native Ghost screenshots require an interactive macOS session with the app permissions granted. Until those are captured, the repo includes polished Ghost app visual previews based on the current product surface and supported capabilities.
 
-```text
-docs/screenshots/app/main-panel.png
-docs/screenshots/app/model-routing.png
-docs/screenshots/app/rag-query.png
-docs/screenshots/app/agent-mode.png
-docs/screenshots/app/settings.png
-```
+![Ghost main panel visual preview](docs/screenshots/app/main-panel-preview.svg)
 
-The repository also includes screenshots for the secondary Three.js gallery demo under `docs/screenshots/`.
+![Provider routing visual preview](docs/screenshots/app/provider-routing-preview.svg)
+
+![RAG memory visual preview](docs/screenshots/app/rag-memory-preview.svg)
+
+![Agent mode visual preview](docs/screenshots/app/agent-mode-preview.svg)
+
+![Verified actions visual preview](docs/screenshots/app/verified-actions-preview.svg)
+
+![Ghost Code visual preview](docs/screenshots/app/ghost-code-preview.svg)
+
+When real app screenshots are captured, place them under `docs/screenshots/app/` and replace the preview links above.
 
 ## Project Structure
 
@@ -271,9 +275,9 @@ Ingest or sync the folder again, check RAG status, and make sure the file type i
 
 Open System Settings and grant Ghost the permission requested by macOS. Some integrations require Apple Events, Calendar, Reminders, microphone, or speech recognition access.
 
-## Marketing Website / Sphere Gallery Demo
+## Website / Gallery
 
-The immersive Three.js and GSAP sphere gallery lives in `docs/`. It is a secondary marketing/demo surface for Ghost, not the main macOS app.
+This repo also includes a static interactive website in `docs/` for showcasing Ghost app capabilities. It is a secondary gallery surface, not the main macOS app.
 
 Run it locally:
 

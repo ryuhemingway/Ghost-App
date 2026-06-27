@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="820" viewBox="0 0 1280 820" role="img" aria-label="Ghost main panel visual preview">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#160d23"/><stop offset=".48" stop-color="#05030a"/><stop offset="1" stop-color="#0d1820"/></linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff" stop-opacity=".16"/><stop offset=".55" stop-color="#ffffff" stop-opacity=".06"/><stop offset="1" stop-color="#76e4d3" stop-opacity=".1"/></linearGradient>
+  </defs>
+  <rect width="1280" height="820" fill="url(#bg)"/>
+  <circle cx="230" cy="120" r="220" fill="#8b5cff" opacity=".22"/>
+  <circle cx="1050" cy="610" r="250" fill="#76e4d3" opacity=".14"/>
+  <rect x="252" y="86" width="776" height="648" rx="34" fill="url(#panel)" stroke="#f7f0ff" stroke-opacity=".18"/>
+  <rect x="286" y="122" width="708" height="576" rx="26" fill="#05030a" opacity=".84"/>
+  <circle cx="330" cy="160" r="10" fill="#f7f0ff" opacity=".34"/><circle cx="362" cy="160" r="10" fill="#f7f0ff" opacity=".22"/><circle cx="394" cy="160" r="10" fill="#f7f0ff" opacity=".18"/>
+  <text x="432" y="170" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="800">Ghost</text>
+  <text x="830" y="170" fill="#f4ce7a" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="800">VISUAL PREVIEW</text>
+  <rect x="330" y="222" width="620" height="70" rx="20" fill="#ffffff" opacity=".075"/>
+  <text x="360" y="266" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="25" font-weight="750">Ask Ghost to summarize the current project</text>
+  <rect x="330" y="326" width="286" height="54" rx="18" fill="#8b5cff" opacity=".34"/>
+  <text x="358" y="360" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="20" font-weight="750">Direct API</text>
+  <rect x="640" y="326" width="310" height="54" rx="18" fill="#76e4d3" opacity=".2"/>
+  <text x="668" y="360" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="20" font-weight="750">LM Studio local</text>
+  <rect x="330" y="426" width="620" height="154" rx="24" fill="#ffffff" opacity=".06"/>
+  <text x="360" y="474" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="24" font-weight="800">Verified answer</text>
+  <text x="360" y="520" fill="#f7f0ff" opacity=".68" font-family="Inter, system-ui, sans-serif" font-size="21">Ghost routes the request, retrieves local context,</text>
+  <text x="360" y="552" fill="#f7f0ff" opacity=".68" font-family="Inter, system-ui, sans-serif" font-size="21">and returns the result inside the menu-bar panel.</text>
+  <rect x="330" y="620" width="186" height="38" rx="19" fill="#f4ce7a" opacity=".22"/><text x="356" y="645" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="17" font-weight="800">Menu bar</text>
+  <rect x="536" y="620" width="210" height="38" rx="19" fill="#76e4d3" opacity=".18"/><text x="562" y="645" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="17" font-weight="800">Option-Space</text>
+</svg>

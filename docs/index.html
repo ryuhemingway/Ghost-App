@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ghost Sphere Gallery</title>
+    <title>Ghost App Capability Gallery</title>
     <meta
       name="description"
-      content="An immersive Three.js and GSAP spherical gallery experience for Ghost, with inertial drag, premium hover states, and animated detail pages."
+      content="An immersive dark gallery of Ghost macOS app capabilities, local model routing, RAG memory, verified actions, and native Mac tools."
     >
-    <meta property="og:title" content="Ghost Sphere Gallery">
+    <meta property="og:title" content="Ghost App Capability Gallery">
     <meta
       property="og:description"
-      content="Step inside a dark cinematic sphere of interactive Ghost gallery cards."
+      content="Step inside a dark curved wall of Ghost macOS app capabilities."
     >
     <meta property="og:image" content="assets/ghost-hero.png">
     <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="18" fill="%23040307"/><path d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z" fill="%23f7f0ff"/><circle cx="26" cy="29" r="3" fill="%23040307"/><circle cx="38" cy="29" r="3" fill="%23040307"/></svg>'>
@@ -26,18 +26,18 @@
     </script>
   </head>
   <body>
-    <main class="experience" aria-label="Ghost immersive spherical gallery">
-      <canvas id="gallery-canvas" aria-label="Interactive 3D spherical gallery"></canvas>
+    <main class="experience" aria-label="Ghost immersive app capability gallery">
+      <canvas id="gallery-canvas" aria-label="Interactive curved Ghost app capability wall"></canvas>
 
       <section class="hud" aria-labelledby="hero-title">
         <div class="brand">
           <span class="brand-mark" aria-hidden="true"></span>
-          <span>Ghost Sphere</span>
+          <span>Ghost</span>
         </div>
-        <p class="eyebrow">spatial AI gallery</p>
-        <h1 id="hero-title">Explore Ghost in 360°.</h1>
+        <p class="eyebrow">macOS AI workspace</p>
+        <h1 id="hero-title">Explore Ghost capabilities.</h1>
         <p>
-          A close, spherical wall of Ghost capabilities. Drag to rotate, hover to focus, click to enter.
+          Drag the curved wall, focus a feature, and open practical details for the Mac app.
         </p>
         <div class="hud-controls" aria-label="Gallery controls">
           <span>Drag</span>
@@ -47,19 +47,19 @@
       </section>
 
       <aside class="control-panel" aria-label="Interaction controls">
-        <span><kbd>Drag</kbd> rotate sphere</span>
+        <span><kbd>Drag</kbd> rotate wall</span>
         <span><kbd>Hover</kbd> focus card</span>
         <span><kbd>Click</kbd> open detail</span>
       </aside>
 
       <div class="scene-status" aria-live="polite">
         <span class="status-dot" aria-hidden="true"></span>
-        <span id="status-text">Spherical gallery ready</span>
+        <span id="status-text">Ghost feature wall ready</span>
       </div>
 
       <section class="detail" id="detail" aria-hidden="true" aria-labelledby="detail-title">
-        <button class="detail-close" type="button" aria-label="Return to spherical gallery">
-          Return to sphere
+        <button class="detail-close" type="button" aria-label="Return to Ghost feature wall">
+          Return to wall
         </button>
         <div class="detail-shell">
           <div class="detail-preview" id="detail-preview" aria-hidden="true"></div>
@@ -71,16 +71,20 @@
           </p>
           <dl class="detail-meta">
             <div>
-              <dt>Layer</dt>
+              <dt>Module</dt>
               <dd id="detail-layer">Local-first</dd>
             </div>
             <div>
-              <dt>Motion</dt>
-              <dd>GSAP transition</dd>
+              <dt>How it helps</dt>
+              <dd id="detail-help">Keeps models, files, and actions in one workspace.</dd>
             </div>
             <div>
-              <dt>Scene</dt>
-              <dd>Three.js sphere</dd>
+              <dt>How it works</dt>
+              <dd id="detail-work">Ghost routes the request, retrieves context, and verifies results.</dd>
+            </div>
+            <div>
+              <dt>Status</dt>
+              <dd id="detail-status">Ghost app capability</dd>
             </div>
           </dl>
         </div>

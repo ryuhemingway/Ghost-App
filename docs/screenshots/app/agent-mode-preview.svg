@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="820" viewBox="0 0 1280 820" role="img" aria-label="Ghost agent mode visual preview">
+  <rect width="1280" height="820" fill="#05030a"/>
+  <circle cx="990" cy="210" r="260" fill="#8b5cff" opacity=".2"/>
+  <rect x="150" y="86" width="980" height="648" rx="34" fill="#ffffff" opacity=".06" stroke="#f7f0ff" stroke-opacity=".18"/>
+  <text x="210" y="158" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="34" font-weight="850">Agent Configuration</text>
+  <text x="858" y="158" fill="#f4ce7a" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="850">VISUAL PREVIEW</text>
+  <rect x="210" y="220" width="860" height="410" rx="24" fill="#020106" opacity=".76"/>
+  <text x="254" y="286" fill="#76e4d3" font-family="SFMono-Regular, Consolas, monospace" font-size="24">$ ghost chat -q "update the docs" --provider lmstudio</text>
+  <text x="254" y="342" fill="#f7f0ff" opacity=".72" font-family="SFMono-Regular, Consolas, monospace" font-size="23">✓ loaded workspace instructions</text>
+  <text x="254" y="392" fill="#f7f0ff" opacity=".72" font-family="SFMono-Regular, Consolas, monospace" font-size="23">✓ selected model context</text>
+  <text x="254" y="442" fill="#f7f0ff" opacity=".72" font-family="SFMono-Regular, Consolas, monospace" font-size="23">✓ approval mode: safe</text>
+  <text x="254" y="492" fill="#f4ce7a" font-family="SFMono-Regular, Consolas, monospace" font-size="23">→ toolsets and turn limits passed from Ghost</text>
+  <text x="254" y="560" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="800">Local binary · Provider scoped · Multi-turn work</text>
+</svg>

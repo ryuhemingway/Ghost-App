@@ -1,32 +1,35 @@
-# Ghost Sphere Gallery Demo
+# Ghost App Capability Gallery
 
-An immersive 3D gallery experience for Ghost, built with **Three.js** and **GSAP**. The viewer stands inside a dense, front-biased spherical gallery where Ghost capability cards sit close, readable, and layered across curved latitude bands.
+An immersive product gallery for the Ghost macOS app. The viewer stands inside a dense, curved wall of Ghost capability tiles, with visual previews for model routing, local providers, RAG memory, verified file actions, native Mac integrations, and agent workflows.
 
 The interaction is inspired by the premium spatial feel of [Phantom](https://www.phantom.land/) without copying its exact design.
 
 ## Overview
 
-The gallery is a static marketing/demo surface for the Ghost macOS app:
+The gallery is a static showcase surface for the Ghost macOS app:
 
-- The camera feels placed inside a spherical card environment.
-- Cards are distributed across a close inner-dome formation.
+- The camera feels placed inside a curved feature wall.
+- Cards are arranged in visible rows and columns with minimal gaps.
+- Thin grid lines separate the tiled cells.
+- Every card describes a Ghost app capability rather than website implementation details.
+- Every card includes an app-style visual preview.
 - Pointer and touch dragging use smooth inertial easing.
 - Hovered or centered cards scale and brighten while surrounding cards subtly dim.
-- Clicking a card opens a GSAP-animated detail template.
+- Clicking a card opens a practical detail view for that Ghost feature.
 - Returning from detail restores the 3D scene without a reload.
 
 ## Features
 
-- Full-screen Three.js scene
-- Dense spherical/dome-like card placement
+- Full-screen immersive scene
+- Dense curved tiled card wall
 - Smooth drag rotation with inertial decay
 - Responsive desktop and mobile layout
 - Raycast hover and click interactions
-- GSAP detail-page transitions
-- Generated glass-style card imagery using canvas textures
+- Animated detail-page transitions
+- Generated Ghost app visual previews using canvas textures
 - Static hosting through `docs/` for GitHub Pages
 
-## Tech Stack
+## Implementation
 
 - **Three.js** for the 3D scene, camera, cards, raycasting, and rendering
 - **GSAP** for card focus and detail-page animation
@@ -41,7 +44,7 @@ Dependencies are loaded in `docs/index.html` through an import map:
 
 ## Screenshots
 
-![Main spherical gallery](screenshots/main-spherical-gallery.png)
+![Main curved Ghost feature wall](screenshots/main-spherical-gallery.png)
 
 ![Focused card state](screenshots/focused-card-state.png)
 
@@ -49,7 +52,7 @@ Dependencies are loaded in `docs/index.html` through an import map:
 
 ![Detail page template](screenshots/detail-page-template.png)
 
-![Mobile responsive gallery](screenshots/mobile-responsive-gallery.png)
+![Mobile responsive Ghost feature wall](screenshots/mobile-responsive-gallery.png)
 
 Screenshots are stored in:
 
@@ -84,11 +87,11 @@ http://127.0.0.1:4173
 
 Controls:
 
-- **Drag with mouse or touch:** rotate the gallery around the viewer.
+- **Drag with mouse or touch:** rotate the curved feature wall.
 - **Release after dragging:** inertia continues the motion with eased decay.
 - **Hover a card:** the card scales and brightens.
-- **Click a card:** animate into the detail template.
-- **Return to sphere:** click **Return to sphere**.
+- **Click a card:** open the feature detail page.
+- **Return to wall:** click **Return to wall**.
 - **Keyboard:** press `Esc` to close the detail page.
 
 ## Project Structure
@@ -116,21 +119,21 @@ Edit gallery content in `docs/script.js`:
 const cards = [
   {
     kicker: "Agent Router",
-    title: "Direct API or agent depth",
-    layer: "Routing",
-    copy: "Ghost decides whether the prompt needs a fast model answer...",
-    palette: ["#8b5cff", "#73e0d3", "#f4ce7a"]
+    title: "Route each request to the right engine.",
+    module: "Routing",
+    copy: "Ghost decides when a prompt needs a fast direct model call...",
+    chips: ["Auto route", "Direct or agent", "Approvals"]
   }
 ];
 ```
 
 Useful tuning points:
 
-- Change `radius` inside `createGallery()` to tighten or widen the inner dome.
-- Adjust `baseWidth` and `baseHeight` inside `createGallery()` to resize cards.
+- Change `rows`, `cols`, and yaw/pitch ranges inside `createGallery()` to reshape the tiled wall.
+- Adjust `baseWidth` and `baseHeight` inside `createGallery()` to resize cards and gaps.
 - Tune drag feel with the pointer multipliers, velocity values, and decay values in `tick()`.
 - Modify the dark/glass visual system in `docs/styles.css`.
-- Replace generated canvas textures with real image assets if desired.
+- Replace generated visual previews with real Ghost app screenshots when available.
 
 ## Troubleshooting
 

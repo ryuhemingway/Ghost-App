@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="820" viewBox="0 0 1280 820" role="img" aria-label="Ghost RAG memory visual preview">
+  <rect width="1280" height="820" fill="#040207"/>
+  <circle cx="240" cy="160" r="220" fill="#f4ce7a" opacity=".16"/>
+  <circle cx="1060" cy="650" r="260" fill="#76e4d3" opacity=".14"/>
+  <rect x="142" y="82" width="996" height="656" rx="36" fill="#ffffff" opacity=".06" stroke="#f7f0ff" stroke-opacity=".17"/>
+  <text x="200" y="156" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="34" font-weight="850">RAG Memory</text>
+  <text x="868" y="156" fill="#f4ce7a" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="850">VISUAL PREVIEW</text>
+  <rect x="200" y="218" width="282" height="420" rx="26" fill="#ffffff" opacity=".06"/>
+  <g font-family="Inter, system-ui, sans-serif" font-size="21" font-weight="760">
+    <rect x="232" y="260" width="218" height="46" rx="14" fill="#f4ce7a" opacity=".25"/><text x="258" y="290" fill="#f7f0ff">Desktop</text>
+    <rect x="232" y="332" width="218" height="46" rx="14" fill="#ffffff" opacity=".075"/><text x="258" y="362" fill="#f7f0ff">Documents</text>
+    <rect x="232" y="404" width="218" height="46" rx="14" fill="#ffffff" opacity=".075"/><text x="258" y="434" fill="#f7f0ff">Project files</text>
+    <rect x="232" y="476" width="218" height="46" rx="14" fill="#ffffff" opacity=".075"/><text x="258" y="506" fill="#f7f0ff">PDF notes</text>
+  </g>
+  <rect x="530" y="218" width="550" height="420" rx="26" fill="#020106" opacity=".72"/>
+  <text x="572" y="282" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="25" font-weight="850">Grounded answer</text>
+  <text x="572" y="340" fill="#f7f0ff" opacity=".7" font-family="Inter, system-ui, sans-serif" font-size="22">Ghost retrieves cited chunks from the local SQLite index.</text>
+  <rect x="572" y="394" width="420" height="46" rx="14" fill="#76e4d3" opacity=".18"/><text x="598" y="424" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="20" font-weight="780">Source: Desktop/Ghost Notes.md</text>
+  <rect x="572" y="462" width="360" height="46" rx="14" fill="#f4ce7a" opacity=".18"/><text x="598" y="492" fill="#f7f0ff" font-family="Inter, system-ui, sans-serif" font-size="20" font-weight="780">Source: Project README.md</text>
+  <text x="572" y="568" fill="#76e4d3" font-family="Inter, system-ui, sans-serif" font-size="21" font-weight="850">Local index · Cited sources · Reindexable</text>
+</svg>
