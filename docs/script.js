@@ -16,3 +16,23 @@ tabs.forEach((tab) => {
     });
   });
 });
+
+const copyButtons = document.querySelectorAll(".copy-button");
+
+copyButtons.forEach((button) => {
+  button.addEventListener("click", async () => {
+    const value = button.dataset.copy || "";
+    const original = button.textContent;
+
+    try {
+      await navigator.clipboard.writeText(value);
+      button.textContent = "Copied";
+    } catch {
+      button.textContent = "Select";
+    }
+
+    window.setTimeout(() => {
+      button.textContent = original;
+    }, 1400);
+  });
+});
