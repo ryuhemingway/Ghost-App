@@ -54,6 +54,47 @@ enum GhostProvider: String, CaseIterable, Identifiable, Sendable {
         }
     }
 
+    /// Provider prefix used by Hermes/OpenCode-style agents when they route
+    /// models through a single `-m provider/model` argument.
+    var agentModelPrefix: String {
+        switch self {
+        case .lmStudio:
+            "lmstudio"
+        case .ollama:
+            "ollama"
+        case .claude:
+            "anthropic"
+        case .gemini:
+            "gemini"
+        case .deepSeek:
+            "deepseek"
+        }
+    }
+
+    var isLocal: Bool {
+        switch self {
+        case .lmStudio, .ollama:
+            true
+        case .claude, .gemini, .deepSeek:
+            false
+        }
+    }
+
+    var acceptedAgentModelPrefixes: [String] {
+        switch self {
+        case .lmStudio:
+            ["lmstudio"]
+        case .ollama:
+            ["ollama"]
+        case .claude:
+            ["anthropic", "claude"]
+        case .gemini:
+            ["gemini", "google"]
+        case .deepSeek:
+            ["deepseek"]
+        }
+    }
+
     var helpText: String {
         switch self {
         case .lmStudio:

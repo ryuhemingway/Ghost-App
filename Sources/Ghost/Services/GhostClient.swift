@@ -151,6 +151,12 @@ struct GhostClient: Sendable {
         settings: GhostRunSettings,
         onActivity: (@Sendable (GhostActivityEntry) -> Void)? = nil
     ) async throws -> GhostRunResult {
+        guard !settings.provider.isLocal else {
+            throw GhostClientError.commandFailed(
+                "Provider isolation blocked Agent launch: \(settings.provider.title) is selected, so Ghost must use the local Direct API tool loop instead of Hermes/Ghost Agent. This prevents accidental DeepSeek calls."
+            )
+        }
+
         let process = Process()
         let stdoutPipe = Pipe()
         let stderrPipe = Pipe()
@@ -202,8 +208,9 @@ struct GhostClient: Sendable {
                 "-Q"
             ])
 
-            if !settings.model.isEmpty {
-                arguments.append(contentsOf: ["-m", settings.model])
+            let modelArgument = hermesModelArgument(for: settings)
+            if !modelArgument.isEmpty {
+                arguments.append(contentsOf: ["-m", modelArgument])
             }
 
             if !settings.toolsets.isEmpty {
@@ -211,11 +218,14 @@ struct GhostClient: Sendable {
             }
         }
         let launchedArgs = arguments
+        let environment = ghostEnvironment(settings: settings)
+        try validateProviderIsolation(settings: settings, arguments: arguments, environment: environment)
+
         process.arguments = arguments
         process.currentDirectoryURL = settings.workingDirectory
         process.standardOutput = stdoutPipe
         process.standardError = stderrPipe
-        process.environment = ghostEnvironment(settings: settings)
+        process.environment = environment
         onActivity?(
             GhostActivityEntry(
                 kind: .command,
@@ -366,8 +376,144 @@ struct GhostClient: Sendable {
         }
     }
 
+    /// Hermes/OpenCode-style agents often infer the provider from the model
+    /// string. The selected Ghost provider is the source of truth, so we always
+    /// scope the model to that provider before launching Hermes. This is
+    /// especially important for local model ids such as `google/gemma-4-e4b` or
+    /// `qwen/qwen3.6-35b-a3b`: those slashes are part of the local model name,
+    /// not a request to use Google/Qwen as a remote provider.
+    private func hermesModelArgument(for settings: GhostRunSettings) -> String {
+        let model = settings.model.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !model.isEmpty else { return "" }
+
+        switch settings.provider {
+        case .lmStudio:
+            return forceProviderScopedModel(model, prefix: "lmstudio")
+
+        case .ollama:
+            return forceProviderScopedModel(model, prefix: "ollama")
+
+        case .claude:
+            return providerScopedModel(
+                model,
+                preferredPrefix: "anthropic",
+                acceptedPrefixes: settings.provider.acceptedAgentModelPrefixes
+            )
+
+        case .gemini:
+            return providerScopedModel(
+                model,
+                preferredPrefix: "gemini",
+                acceptedPrefixes: settings.provider.acceptedAgentModelPrefixes
+            )
+
+        case .deepSeek:
+            // DeepSeek's API expects bare model names such as deepseek-v4-pro.
+            // Keep them unprefixed so DeepSeek runs continue to work.
+            return model.removingProviderPrefix("deepseek")
+        }
+    }
+
+    private func forceProviderScopedModel(_ model: String, prefix: String) -> String {
+        let trimmed = model.trimmingCharacters(in: .whitespacesAndNewlines)
+        let wantedPrefix = prefix.lowercased() + "/"
+        if trimmed.lowercased().hasPrefix(wantedPrefix) {
+            return trimmed
+        }
+
+        return "\(prefix)/\(trimmed)"
+    }
+
+    private func providerScopedModel(
+        _ model: String,
+        preferredPrefix: String,
+        acceptedPrefixes: [String]
+    ) -> String {
+        let trimmed = model.trimmingCharacters(in: .whitespacesAndNewlines)
+        let lower = trimmed.lowercased()
+        if acceptedPrefixes.contains(where: { lower.hasPrefix($0.lowercased() + "/") }) {
+            return trimmed
+        }
+
+        return "\(preferredPrefix)/\(trimmed)"
+    }
+
+    private func validateProviderIsolation(
+        settings: GhostRunSettings,
+        arguments: [String],
+        environment: [String: String]
+    ) throws {
+        if settings.provider != .deepSeek {
+            let leakedDeepSeekValues = [
+                "DEEPSEEK_API_KEY",
+                "DEEPSEEK_BASE_URL",
+                "DEEPSEEK_API_BASE",
+                "DEEPSEEK_API_URL",
+                "DEEPSEEK_ENDPOINT",
+                "DEEPSEEK_MODEL"
+            ].filter { key in
+                environment[key]?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+            }
+
+            if !leakedDeepSeekValues.isEmpty {
+                throw GhostClientError.commandFailed(
+                    "Provider isolation blocked a run before launch: \(settings.provider.title) was selected, but DeepSeek environment keys were still present (\(leakedDeepSeekValues.joined(separator: ", ")))."
+                )
+            }
+        }
+
+        switch settings.agentKind {
+        case .ghost:
+            if let providerArgument = value(after: "--provider", in: arguments),
+               providerArgument.lowercased() != settings.provider.ghostProvider.lowercased() {
+                throw GhostClientError.commandFailed(
+                    "Provider isolation blocked a run before launch: Ghost Agent provider was `\(providerArgument)`, but the selected provider is `\(settings.provider.ghostProvider)`."
+                )
+            }
+
+        case .hermes:
+            guard let modelArgument = value(after: "-m", in: arguments) else {
+                return
+            }
+
+            let lowerModel = modelArgument.lowercased()
+            let acceptedPrefixes = settings.provider.acceptedAgentModelPrefixes
+            let hasAcceptedPrefix = acceptedPrefixes.contains { prefix in
+                lowerModel.hasPrefix(prefix.lowercased() + "/")
+            }
+
+            switch settings.provider {
+            case .deepSeek:
+                // DeepSeek Hermes runs may use a bare DeepSeek model or a deepseek/ prefix.
+                return
+
+            case .lmStudio, .ollama, .claude, .gemini:
+                if !hasAcceptedPrefix {
+                    throw GhostClientError.commandFailed(
+                        "Provider isolation blocked a run before launch: \(settings.provider.title) was selected, but Hermes would have launched model `\(modelArgument)`. Expected prefix: \(acceptedPrefixes.map { $0 + "/" }.joined(separator: " or "))."
+                    )
+                }
+
+                if lowerModel.hasPrefix("deepseek/") || lowerModel == "deepseek-v4-pro" || lowerModel == "deepseek-v4-flash" {
+                    throw GhostClientError.commandFailed(
+                        "Provider isolation blocked a run before launch: \(settings.provider.title) was selected, but Hermes would have launched DeepSeek model `\(modelArgument)`."
+                    )
+                }
+            }
+        }
+    }
+
+    private func value(after flag: String, in arguments: [String]) -> String? {
+        guard let index = arguments.firstIndex(of: flag) else { return nil }
+        let next = arguments.index(after: index)
+        guard next < arguments.endIndex else { return nil }
+        return arguments[next]
+    }
+
     private func ghostEnvironment(settings: GhostRunSettings) -> [String: String] {
         var environment = ProcessInfo.processInfo.environment
+        scrubInferenceEnvironment(&environment, selectedProvider: settings.provider)
+
         environment["HOME"] = NSHomeDirectory()
         environment["PATH"] = [
             "\(NSHomeDirectory())/.local/bin",
@@ -382,26 +528,151 @@ struct GhostClient: Sendable {
         environment["GHOST_CWD"] = settings.workingDirectory.path
         environment["TERMINAL_CWD"] = settings.workingDirectory.path
         environment["GHOST_INFERENCE_PROVIDER"] = settings.provider.ghostProvider
+        environment["GHOST_SELECTED_PROVIDER"] = settings.provider.ghostProvider
+        environment["GHOST_EXPECTED_PROVIDER"] = settings.provider.ghostProvider
         environment["GHOST_INFERENCE_MODEL"] = settings.model
         environment["GHOST_MODEL"] = settings.model
         environment["GHOST_MAX_ITERATIONS"] = String(settings.effortMode.maxTurns)
         environment["GHOST_MAX_TOKENS"] = String(settings.effortMode.maxTokens)
         environment["GHOST_MENU_EFFORT"] = settings.effortMode.rawValue
-        if settings.provider == .lmStudio || settings.provider == .ollama {
-            environment["GHOST_MENU_LOCAL_CONTEXT_WINDOW"] = String(settings.localContextWindow)
+
+        for (key, value) in scopedAPIKeys(settings.apiKeys, selectedProvider: settings.provider) {
+            environment[key] = value
         }
 
-        if settings.provider == .ollama {
+        switch settings.provider {
+        case .lmStudio:
+            let lmStudioHost = "http://localhost:1234"
+            environment["GHOST_MENU_LOCAL_CONTEXT_WINDOW"] = String(settings.localContextWindow)
+            environment["GHOST_LOCAL_MODEL_PROVIDER"] = settings.provider.ghostProvider
+            environment["GHOST_LOCAL_MODEL"] = settings.model
+            environment["LMSTUDIO_HOST"] = lmStudioHost
+            environment["LMSTUDIO_BASE_URL"] = lmStudioHost
+            environment["OPENAI_BASE_URL"] = "\(lmStudioHost)/v1"
+            environment["OPENAI_API_KEY"] = "lm-studio"
+
+        case .ollama:
+            let ollamaHost = settings.ollamaBaseURL.absoluteString
+                .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            environment["GHOST_MENU_LOCAL_CONTEXT_WINDOW"] = String(settings.localContextWindow)
+            environment["GHOST_LOCAL_MODEL_PROVIDER"] = settings.provider.ghostProvider
+            environment["GHOST_LOCAL_MODEL"] = settings.model
+            environment["OLLAMA_HOST"] = ollamaHost
+            environment["OLLAMA_BASE_URL"] = ollamaHost
+            environment["OPENAI_BASE_URL"] = "\(ollamaHost)/v1"
+            environment["OPENAI_API_KEY"] = "ollama"
+
+        case .claude, .gemini, .deepSeek:
+            break
+        }
+
+        scrubInferenceEnvironment(&environment, selectedProvider: settings.provider)
+        restoreSelectedLocalEndpointIfNeeded(&environment, settings: settings)
+        return environment
+    }
+
+    private func scrubInferenceEnvironment(_ environment: inout [String: String], selectedProvider: GhostProvider) {
+        let allowedKeys = allowedInferenceKeys(for: selectedProvider)
+        for key in allInferenceEnvironmentKeys where !allowedKeys.contains(key) {
+            environment.removeValue(forKey: key)
+        }
+
+        if selectedProvider != .lmStudio {
+            environment.removeValue(forKey: "LMSTUDIO_HOST")
+            environment.removeValue(forKey: "LMSTUDIO_BASE_URL")
+        }
+
+        if selectedProvider != .ollama {
+            environment.removeValue(forKey: "OLLAMA_HOST")
+            environment.removeValue(forKey: "OLLAMA_BASE_URL")
+        }
+    }
+
+    private func restoreSelectedLocalEndpointIfNeeded(
+        _ environment: inout [String: String],
+        settings: GhostRunSettings
+    ) {
+        switch settings.provider {
+        case .lmStudio:
+            let lmStudioHost = "http://localhost:1234"
+            environment["LMSTUDIO_HOST"] = lmStudioHost
+            environment["LMSTUDIO_BASE_URL"] = lmStudioHost
+            environment["OPENAI_BASE_URL"] = "\(lmStudioHost)/v1"
+            environment["OPENAI_API_KEY"] = "lm-studio"
+
+        case .ollama:
             let ollamaHost = settings.ollamaBaseURL.absoluteString
                 .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
             environment["OLLAMA_HOST"] = ollamaHost
             environment["OLLAMA_BASE_URL"] = ollamaHost
             environment["OPENAI_BASE_URL"] = "\(ollamaHost)/v1"
+            environment["OPENAI_API_KEY"] = "ollama"
+
+        case .claude, .gemini, .deepSeek:
+            break
         }
-        for (key, value) in settings.apiKeys where !value.isEmpty {
-            environment[key] = value
+    }
+
+    private func scopedAPIKeys(
+        _ apiKeys: [String: String],
+        selectedProvider: GhostProvider
+    ) -> [String: String] {
+        let allowedKeys = allowedInferenceKeys(for: selectedProvider)
+        var scoped: [String: String] = [:]
+        for (key, value) in apiKeys {
+            let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard allowedKeys.contains(key), !trimmed.isEmpty else { continue }
+            scoped[key] = trimmed
         }
-        return environment
+        return scoped
+    }
+
+    private func allowedInferenceKeys(for provider: GhostProvider) -> Set<String> {
+        switch provider {
+        case .lmStudio:
+            // LM Studio is local. Use its OpenAI-compatible localhost endpoint,
+            // never a user's cloud OpenAI or DeepSeek key.
+            return ["OPENAI_API_KEY", "OPENAI_BASE_URL"]
+
+        case .ollama:
+            // Ollama is local. Keep only the local OpenAI-compatible shim and
+            // optional Ollama Cloud key if the user's Ollama setup needs it.
+            return ["OPENAI_API_KEY", "OPENAI_BASE_URL", "OLLAMA_API_KEY"]
+
+        case .claude:
+            return ["ANTHROPIC_API_KEY"]
+
+        case .gemini:
+            return ["GEMINI_API_KEY", "GOOGLE_API_KEY"]
+
+        case .deepSeek:
+            return ["DEEPSEEK_API_KEY"]
+        }
+    }
+
+    private var allInferenceEnvironmentKeys: Set<String> {
+        [
+            "ANTHROPIC_API_KEY",
+            "GEMINI_API_KEY",
+            "GOOGLE_API_KEY",
+            "DEEPSEEK_API_KEY",
+            "DEEPSEEK_BASE_URL",
+            "DEEPSEEK_API_BASE",
+            "DEEPSEEK_API_URL",
+            "DEEPSEEK_ENDPOINT",
+            "DEEPSEEK_MODEL",
+            "OPENAI_API_KEY",
+            "OPENAI_BASE_URL",
+            "OPENROUTER_API_KEY",
+            "GROQ_API_KEY",
+            "XAI_API_KEY",
+            "MISTRAL_API_KEY",
+            "TOGETHER_API_KEY",
+            "FIREWORKS_API_KEY",
+            "NVIDIA_API_KEY",
+            "MOONSHOT_API_KEY",
+            "OLLAMA_API_KEY"
+        ]
     }
 
     private func configureGhostIfNeeded(settings: GhostRunSettings) throws {
@@ -479,6 +750,16 @@ enum GhostClientError: LocalizedError {
         case .emptyResponse:
             "Ghost finished but returned no text. Try Low or Medium effort, or check Ghost logs for the completed session."
         }
+    }
+}
+
+private extension String {
+    func removingProviderPrefix(_ prefix: String) -> String {
+        let wanted = prefix.lowercased() + "/"
+        if lowercased().hasPrefix(wanted) {
+            return String(dropFirst(wanted.count))
+        }
+        return self
     }
 }
 

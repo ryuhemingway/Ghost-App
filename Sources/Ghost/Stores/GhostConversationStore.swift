@@ -15,6 +15,7 @@ final class GhostConversationStore {
         case connect
         case personalize
         case learn
+        case rag
 
         var id: String { rawValue }
 
@@ -28,6 +29,8 @@ final class GhostConversationStore {
                 "Personalize"
             case .learn:
                 "Use Ghost"
+            case .rag:
+                "RAG Index"
             }
         }
 
@@ -41,6 +44,8 @@ final class GhostConversationStore {
                 "slider.horizontal.3"
             case .learn:
                 "keyboard"
+            case .rag:
+                "doc.text.magnifyingglass"
             }
         }
     }
@@ -292,11 +297,49 @@ final class GhostConversationStore {
 
     private let ghostClient: GhostClient
     private let directAPIClient = DirectAPIClient()
+    private let reminderParser = DeterministicReminderParser()
+    private let calendarEventParser = DeterministicCalendarEventParser()
+    private let calendarQueryParser = DeterministicCalendarQueryParser()
+    private let nativeReminderService = NativeReminderService()
+    private let nativeCalendarService = NativeCalendarService()
     private let shellCommandService = ShellCommandService()
     private let projectContextService = ProjectContextService()
     private let openCodeCompatService = OpenCodeCompatService()
     private let ghostCodeChangeSetService = GhostCodeChangeSetService()
     private let intentRouter = GhostIntentRouter()
+    private let ragStore = GhostRAGStore()
+    private let desktopRAGWatcher = GhostDesktopRAGWatcher()
+
+    var isRAGWatcherPaused: Bool {
+        get { UserDefaults.standard.bool(forKey: Self.ragPausedDefaultsKey) }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Self.ragPausedDefaultsKey)
+            if newValue { desktopRAGWatcher.stop() }
+            else { startDesktopRAGWatcher() }
+        }
+    }
+
+    private static let ragPausedDefaultsKey = "Ghost.ragPaused"
+
+    var ragDocumentCount: Int {
+        let result = ragStore.status()
+        guard result["ok"] as? Bool == true,
+              let payload = result["payload"] as? [String: Any],
+              let count = payload["document_count"] as? Int
+        else { return 0 }
+        return count
+    }
+
+    var ragChunkCount: Int {
+        let result = ragStore.status()
+        guard result["ok"] as? Bool == true,
+              let payload = result["payload"] as? [String: Any],
+              let count = payload["chunk_count"] as? Int
+        else { return 0 }
+        return count
+    }
+
+    var isRAGIndexing: Bool { activeRunStartedAt != nil && activeProcessIdentifier == nil }
     private let localModelsService: LocalModelsService
     private let secretsService: GhostSecretsService
     private static let providerDefaultsKey = "selectedGhostProvider"
@@ -385,6 +428,81 @@ final class GhostConversationStore {
         }
         detectHermesAgent()
         applyAppearance()
+        if !isRAGWatcherPaused { startDesktopRAGWatcher() }
+        ingestIBooks()
+    }
+
+    private func startDesktopRAGWatcher() {
+        desktopRAGWatcher.start(workspace: workspaceRootURL, onActivity: activityRecorder())
+    }
+
+    private func ingestIBooks() {
+        let ibooksPath = NSHomeDirectory() + "/Library/Mobile Documents/iCloud~com~apple~iBooks/Documents"
+        var isDir: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: ibooksPath, isDirectory: &isDir), isDir.boolValue else { return }
+
+        let onActivity = activityRecorder()
+        Task.detached(priority: .utility) { [ragStore, workspaceRootURL] in
+            onActivity(GhostActivityEntry(kind: .info, title: "iBooks RAG", detail: "Indexing iBooks library..."))
+
+            let result = ragStore.ingestFolder(path: ibooksPath, recursive: true, maxFiles: 1_000, workspace: workspaceRootURL)
+
+            if result["ok"] as? Bool == true {
+                let payload = result["payload"] as? [String: Any] ?? [:]
+                let indexed = payload["indexed_files"] as? Int ?? 0
+                onActivity(GhostActivityEntry(kind: .success, title: "iBooks RAG", detail: "Indexed \(indexed) book(s) from iBooks."))
+            } else {
+                onActivity(GhostActivityEntry(kind: .error, title: "iBooks RAG", detail: result["error"] as? String ?? "iBooks indexing failed."))
+            }
+        }
+    }
+
+    func clearRAGIndex() {
+        let result = ragStore.clearIndex()
+        let ok = result["ok"] as? Bool == true
+        recordActivity(
+            GhostActivityEntry(
+                kind: ok ? .success : .error,
+                title: ok ? "RAG index cleared" : "RAG clear failed",
+                detail: result["summary"] as? String ?? result["error"] as? String ?? ""
+            )
+        )
+    }
+
+    func reindexRAG() {
+        let result = ragStore.reindex(workspace: workspaceRootURL)
+        let ok = result["ok"] as? Bool == true
+        recordActivity(
+            GhostActivityEntry(
+                kind: ok ? .success : .error,
+                title: ok ? "RAG reindex" : "RAG reindex failed",
+                detail: result["summary"] as? String ?? result["error"] as? String ?? ""
+            )
+        )
+    }
+
+    func ingestRAGFile(path: String) {
+        let result = ragStore.ingestFile(path: path, workspace: workspaceRootURL)
+        let ok = result["ok"] as? Bool == true
+        recordActivity(
+            GhostActivityEntry(
+                kind: ok ? .success : .error,
+                title: ok ? "RAG file ingested" : "RAG ingest failed",
+                detail: result["summary"] as? String ?? result["error"] as? String ?? ""
+            )
+        )
+    }
+
+    func ingestRAGFolder(path: String) {
+        let result = ragStore.ingestFolder(path: path, recursive: true, maxFiles: 50_000, workspace: workspaceRootURL)
+        let ok = result["ok"] as? Bool == true
+        recordActivity(
+            GhostActivityEntry(
+                kind: ok ? .success : .error,
+                title: ok ? "RAG folder ingested" : "RAG folder ingest failed",
+                detail: result["summary"] as? String ?? result["error"] as? String ?? ""
+            )
+        )
     }
 
     var preferredPanelSize: CGSize {
@@ -439,6 +557,18 @@ final class GhostConversationStore {
             return
         }
 
+        if handleDeterministicReminderIfPossible(text) {
+            return
+        }
+
+        if handleDeterministicCalendarEventIfPossible(text) {
+            return
+        }
+
+        if handleDeterministicCalendarQueryIfPossible(text) {
+            return
+        }
+
         prompt = ""
         isSending = true
         activeRunStartedAt = Date()
@@ -490,14 +620,44 @@ final class GhostConversationStore {
         let fileContexts = shouldResolveFileContexts(for: text, intent: detectedIntent)
             ? projectContextService.resolvedFileContexts(in: text, root: workspaceRootURL)
             : []
-        let finalPrompt = promptWithEffort(
-            runPrompt,
-            clipboard: clipboard,
-            conversationContext: context,
-            fileContexts: fileContexts,
-            detectedIntent: detectedIntent,
-            runEngine: runEngine
-        )
+        let ragContext: String?
+        if detectedIntent.kind == .fileSummary {
+            let ragResult = ragStore.query(runPrompt, maxResults: selectedProvider.isLocal ? 4 : 8, workspace: workspaceRootURL)
+            if ragResult["ok"] as? Bool == true,
+               let payload = ragResult["payload"] as? [String: Any],
+               let chunks = payload["chunks"] as? [[String: Any]],
+               !chunks.isEmpty {
+                ragContext = chunks.enumerated().map { index, chunk in
+                    let doc = chunk["document"] as? String ?? ""
+                    let page = (chunk["page"] as? Int).map { " (page \($0))" } ?? ""
+                    let text = chunk["text"] as? String ?? ""
+                    return "[\(index + 1)] from \(doc)\(page):\n\(text)"
+                }.joined(separator: "\n\n")
+            } else {
+                ragContext = nil
+            }
+        } else {
+            ragContext = nil
+        }
+        let finalPrompt: String
+        if selectedProvider.isLocal {
+            let clip = clipboard?.trimmingCharacters(in: .whitespacesAndNewlines)
+            let clipped = clip.map { "\n\nClipboard context:\n\($0)" } ?? ""
+            let ragBlock = ragContext.map { "\n\nRAG document context:\n\($0)" } ?? ""
+            let fileCtx = terminalFileContextBlock(fileContexts)
+            let conv = context.map { "\n\nRecent conversation:\n\($0)" } ?? ""
+            finalPrompt = "\(runPrompt)\(clipped)\(ragBlock)\(conv)\(fileCtx)"
+        } else {
+            finalPrompt = promptWithEffort(
+                runPrompt,
+                clipboard: clipboard,
+                conversationContext: context,
+                fileContexts: fileContexts,
+                ragContext: ragContext,
+                detectedIntent: detectedIntent,
+                runEngine: runEngine
+            )
+        }
         let snapshotSettings = runSettings()
         let snapshotRunEngine = runEngine
         let snapshotRunModeLabel = runModeLabel(for: snapshotRunEngine)
@@ -615,6 +775,396 @@ final class GhostConversationStore {
                 send()
             }
         }
+    }
+
+    private func handleDeterministicReminderIfPossible(_ text: String) -> Bool {
+        guard let parsed = reminderParser.parse(text) else {
+            return false
+        }
+
+        let reminderIntent = GhostDetectedIntent(
+            kind: .automation,
+            confidence: parsed.confidence,
+            steps: ["parse schedule", "create reminder", "confirm setup"],
+            reason: "Ghost parsed a simple one-shot reminder locally without asking the model.",
+            inferredFileExtension: nil,
+            requestedFilename: nil,
+            usesClipboard: false,
+            usesWorkspace: false,
+            usesWeb: false
+        )
+
+        prompt = ""
+        saveRecentPrompt(text)
+        messages.append(GhostMessage(role: .user, text: text))
+
+        isSending = true
+        activeRunStartedAt = Date()
+        lastRunStartedAt = Date()
+        lastPromptCharacterCount = text.count
+        lastRunStatus = .running
+        activeProcessIdentifier = nil
+        currentIntent = reminderIntent
+        executionEngine = .directAPI
+        activeContextChips = [
+            GhostContextChip("Route", "Native · reminder", systemImage: "bell.badge"),
+            GhostContextChip("Reminders", "macOS", systemImage: "checklist"),
+            GhostContextChip("Time", parsed.formattedDueDate(), systemImage: "clock")
+        ]
+        progressMarkerBuffer = ""
+
+        taskTimeline = GhostTaskTimeline(
+            title: "Creating reminder",
+            subtitle: text,
+            route: "Native · deterministic schedule parser",
+            steps: [
+                GhostTaskStep(title: "Parse reminder date", detail: parsed.formattedDueDate(), state: .completed),
+                GhostTaskStep(title: "Create macOS reminder", detail: parsed.title, state: .running),
+                GhostTaskStep(title: "Confirm setup", state: .pending)
+            ],
+            summary: nil,
+            error: nil,
+            startedAt: Date(),
+            finishedAt: nil,
+            lastUpdatedAt: Date(),
+            isVisible: true,
+            isWaitingForGhostPlan: false,
+            isUsingGhostPlan: false,
+            pendingGhostPlanItems: []
+        )
+
+        recordActivity(
+            GhostActivityEntry(
+                kind: .info,
+                title: "Parsed reminder locally",
+                detail: "\(parsed.title) · \(parsed.formattedDueDate())"
+            )
+        )
+
+        let startedAt = Date()
+        activeRunTask = Task {
+            do {
+                recordActivity(GhostActivityEntry(kind: .command, title: "Creating reminder", detail: parsed.title))
+                let result = try await nativeReminderService.createReminder(parsed)
+                let finishedAt = Date()
+
+                lastRunFinishedAt = finishedAt
+                lastRunDuration = finishedAt.timeIntervalSince(startedAt)
+                lastExitStatus = 0
+                lastRunStatus = .completed
+                lastResponseCharacterCount = result.confirmationText().count
+
+                if taskTimeline.steps.indices.contains(1) {
+                    taskTimeline.steps[1].state = .completed
+                    taskTimeline.steps[1].detail = result.backend
+                }
+                if taskTimeline.steps.indices.contains(2) {
+                    taskTimeline.steps[2].state = .completed
+                    taskTimeline.steps[2].detail = result.confirmationText()
+                }
+                finishTaskTimeline(success: true, summary: "Reminder created")
+
+                recordActivity(GhostActivityEntry(kind: .success, title: "Reminder created", detail: result.confirmationText()))
+                messages.append(GhostMessage(role: .ghost, text: result.confirmationText()))
+            } catch {
+                let finishedAt = Date()
+                lastRunFinishedAt = finishedAt
+                lastRunDuration = finishedAt.timeIntervalSince(startedAt)
+                lastExitStatus = 1
+                lastRunStatus = .failed
+                finishTaskTimeline(success: false, summary: error.localizedDescription)
+                recordActivity(GhostActivityEntry(kind: .error, title: "Reminder failed", detail: error.localizedDescription))
+                messages.append(GhostMessage(role: .system, text: error.localizedDescription))
+            }
+
+            isSending = false
+            activeRunStartedAt = nil
+            activeRunTask = nil
+            activeStreamingMessageID = nil
+        }
+
+        return true
+    }
+
+    private func handleDeterministicCalendarEventIfPossible(_ text: String) -> Bool {
+        guard let parsed = calendarEventParser.parse(text) else {
+            return false
+        }
+
+        let calendarIntent = GhostDetectedIntent(
+            kind: .automation,
+            confidence: parsed.confidence,
+            steps: ["parse event", "create calendar event", "confirm setup"],
+            reason: "Ghost parsed a simple calendar event locally without asking the model.",
+            inferredFileExtension: nil,
+            requestedFilename: nil,
+            usesClipboard: false,
+            usesWorkspace: false,
+            usesWeb: false
+        )
+
+        prompt = ""
+        saveRecentPrompt(text)
+        messages.append(GhostMessage(role: .user, text: text))
+
+        isSending = true
+        activeRunStartedAt = Date()
+        lastRunStartedAt = Date()
+        lastPromptCharacterCount = text.count
+        lastRunStatus = .running
+        activeProcessIdentifier = nil
+        currentIntent = calendarIntent
+        executionEngine = .directAPI
+        activeContextChips = [
+            GhostContextChip("Route", "Native · calendar", systemImage: "calendar.badge.plus"),
+            GhostContextChip("Calendar", "macOS", systemImage: "calendar"),
+            GhostContextChip("Time", parsed.formattedTime(), systemImage: "clock")
+        ]
+        progressMarkerBuffer = ""
+
+        taskTimeline = GhostTaskTimeline(
+            title: "Creating calendar event",
+            subtitle: text,
+            route: "Native · deterministic calendar parser",
+            steps: [
+                GhostTaskStep(title: "Parse event time", detail: parsed.formattedTime(), state: .completed),
+                GhostTaskStep(title: "Create macOS Calendar event", detail: parsed.title, state: .running),
+                GhostTaskStep(title: "Confirm setup", state: .pending)
+            ],
+            summary: nil,
+            error: nil,
+            startedAt: Date(),
+            finishedAt: nil,
+            lastUpdatedAt: Date(),
+            isVisible: true,
+            isWaitingForGhostPlan: false,
+            isUsingGhostPlan: false,
+            pendingGhostPlanItems: []
+        )
+
+        recordActivity(
+            GhostActivityEntry(
+                kind: .info,
+                title: "Parsed calendar event locally",
+                detail: "\(parsed.title) · \(parsed.formattedTime())"
+            )
+        )
+
+        let startedAt = Date()
+        activeRunTask = Task {
+            do {
+                recordActivity(GhostActivityEntry(kind: .command, title: "Creating calendar event", detail: parsed.title))
+                let result = try await nativeCalendarService.createEvent(
+                    title: parsed.title,
+                    startDate: parsed.startDate,
+                    endDate: parsed.endDate,
+                    notes: parsed.notes,
+                    location: parsed.location
+                )
+                let finishedAt = Date()
+                let confirmation = result.confirmationText()
+
+                lastRunFinishedAt = finishedAt
+                lastRunDuration = finishedAt.timeIntervalSince(startedAt)
+                lastExitStatus = 0
+                lastRunStatus = .completed
+                lastResponseCharacterCount = confirmation.count
+
+                if taskTimeline.steps.indices.contains(1) {
+                    taskTimeline.steps[1].state = .completed
+                    taskTimeline.steps[1].detail = result.calendarTitle
+                }
+                if taskTimeline.steps.indices.contains(2) {
+                    taskTimeline.steps[2].state = .completed
+                    taskTimeline.steps[2].detail = confirmation
+                }
+                finishTaskTimeline(success: true, summary: "Calendar event created")
+
+                recordActivity(GhostActivityEntry(kind: .success, title: "Calendar event created", detail: confirmation))
+                messages.append(GhostMessage(role: .ghost, text: confirmation))
+            } catch {
+                let finishedAt = Date()
+                lastRunFinishedAt = finishedAt
+                lastRunDuration = finishedAt.timeIntervalSince(startedAt)
+                lastExitStatus = 1
+                lastRunStatus = .failed
+                finishTaskTimeline(success: false, summary: error.localizedDescription)
+                recordActivity(GhostActivityEntry(kind: .error, title: "Calendar event failed", detail: error.localizedDescription))
+                messages.append(GhostMessage(role: .system, text: error.localizedDescription))
+            }
+
+            isSending = false
+            activeRunStartedAt = nil
+            activeRunTask = nil
+            activeStreamingMessageID = nil
+        }
+
+        return true
+    }
+
+    private func handleDeterministicCalendarQueryIfPossible(_ text: String) -> Bool {
+        guard let parsed = calendarQueryParser.parse(text) else {
+            return false
+        }
+
+        let calendarIntent = GhostDetectedIntent(
+            kind: .answer,
+            confidence: parsed.confidence,
+            steps: ["parse date range", "read calendar", "summarize events"],
+            reason: "Ghost parsed a simple read-only calendar question locally without asking the model.",
+            inferredFileExtension: nil,
+            requestedFilename: nil,
+            usesClipboard: false,
+            usesWorkspace: false,
+            usesWeb: false
+        )
+
+        prompt = ""
+        saveRecentPrompt(text)
+        messages.append(GhostMessage(role: .user, text: text))
+
+        isSending = true
+        activeRunStartedAt = Date()
+        lastRunStartedAt = Date()
+        lastPromptCharacterCount = text.count
+        lastRunStatus = .running
+        activeProcessIdentifier = nil
+        currentIntent = calendarIntent
+        executionEngine = .directAPI
+        activeContextChips = [
+            GhostContextChip("Route", "Native · calendar", systemImage: "calendar"),
+            GhostContextChip("Calendar", "macOS", systemImage: "calendar.badge.clock"),
+            GhostContextChip("Range", parsed.label, systemImage: "clock")
+        ]
+        progressMarkerBuffer = ""
+
+        taskTimeline = GhostTaskTimeline(
+            title: "Reading calendar",
+            subtitle: text,
+            route: "Native · deterministic calendar parser",
+            steps: [
+                GhostTaskStep(title: "Parse calendar range", detail: parsed.formattedRange(), state: .completed),
+                GhostTaskStep(title: "Read macOS Calendar", detail: parsed.label, state: .running),
+                GhostTaskStep(title: "Summarize events", state: .pending)
+            ],
+            summary: nil,
+            error: nil,
+            startedAt: Date(),
+            finishedAt: nil,
+            lastUpdatedAt: Date(),
+            isVisible: true,
+            isWaitingForGhostPlan: false,
+            isUsingGhostPlan: false,
+            pendingGhostPlanItems: []
+        )
+
+        recordActivity(
+            GhostActivityEntry(
+                kind: .info,
+                title: "Parsed calendar query locally",
+                detail: "\(parsed.label) · \(parsed.formattedRange())"
+            )
+        )
+
+        let startedAt = Date()
+        activeRunTask = Task {
+            do {
+                recordActivity(GhostActivityEntry(kind: .command, title: "Reading calendar", detail: parsed.formattedRange()))
+                let events = try await nativeCalendarService.queryEvents(
+                    startDate: parsed.startDate,
+                    endDate: parsed.endDate,
+                    limit: 80
+                )
+                let finishedAt = Date()
+
+                lastRunFinishedAt = finishedAt
+                lastRunDuration = finishedAt.timeIntervalSince(startedAt)
+                lastExitStatus = 0
+                lastRunStatus = .completed
+
+                if taskTimeline.steps.indices.contains(1) {
+                    taskTimeline.steps[1].state = .completed
+                    taskTimeline.steps[1].detail = "\(events.count) event\(events.count == 1 ? "" : "s")"
+                }
+                if taskTimeline.steps.indices.contains(2) {
+                    taskTimeline.steps[2].state = .completed
+                    taskTimeline.steps[2].detail = "Calendar summary prepared"
+                }
+
+                let answer = formatCalendarQueryResult(events, query: parsed)
+                lastResponseCharacterCount = answer.count
+                finishTaskTimeline(success: true, summary: events.isEmpty ? "No calendar events found" : "Calendar read")
+
+                recordActivity(GhostActivityEntry(kind: .success, title: "Calendar read", detail: "\(events.count) event\(events.count == 1 ? "" : "s")"))
+                messages.append(GhostMessage(role: .ghost, text: answer))
+            } catch {
+                let finishedAt = Date()
+                lastRunFinishedAt = finishedAt
+                lastRunDuration = finishedAt.timeIntervalSince(startedAt)
+                lastExitStatus = 1
+                lastRunStatus = .failed
+                finishTaskTimeline(success: false, summary: error.localizedDescription)
+                recordActivity(GhostActivityEntry(kind: .error, title: "Calendar failed", detail: error.localizedDescription))
+                messages.append(GhostMessage(role: .system, text: error.localizedDescription))
+            }
+
+            isSending = false
+            activeRunStartedAt = nil
+            activeRunTask = nil
+            activeStreamingMessageID = nil
+        }
+
+        return true
+    }
+
+    private func formatCalendarQueryResult(
+        _ events: [NativeCalendarEventSummary],
+        query: DeterministicCalendarQuery
+    ) -> String {
+        let rangeText = query.formattedRange()
+        guard !events.isEmpty else {
+            return "I don’t see anything on your calendar for \(query.label) (\(rangeText))."
+        }
+
+        let dayFormatter = DateFormatter()
+        dayFormatter.locale = Locale.current
+        dayFormatter.timeZone = Calendar.current.timeZone
+        dayFormatter.dateStyle = .full
+        dayFormatter.timeStyle = .none
+
+        let timeFormatter = DateFormatter()
+        timeFormatter.locale = Locale.current
+        timeFormatter.timeZone = Calendar.current.timeZone
+        timeFormatter.dateStyle = .none
+        timeFormatter.timeStyle = .short
+
+        var lines: [String] = []
+        lines.append("Here’s what’s on your calendar for \(query.label) (\(rangeText)):")
+
+        var lastDay: String?
+        for event in events {
+            let day = dayFormatter.string(from: event.startDate)
+            if day != lastDay {
+                lines.append("")
+                lines.append("**\(day)**")
+                lastDay = day
+            }
+
+            let timeText: String
+            if event.isAllDay {
+                timeText = "All day"
+            } else {
+                timeText = "\(timeFormatter.string(from: event.startDate))–\(timeFormatter.string(from: event.endDate))"
+            }
+
+            var line = "- \(timeText): \(event.title)"
+            if let location = event.location, !location.isEmpty {
+                line += " — \(location)"
+            }
+            lines.append(line)
+        }
+
+        return lines.joined(separator: "\n")
     }
 
     private func queueQuickAskFollowUp(_ text: String) {
@@ -1356,10 +1906,10 @@ final class GhostConversationStore {
 
         switch selectedProvider {
         case .lmStudio:
-            return "Direct API uses the local LM Studio server at localhost:1234. Make sure it's running."
+            return "Direct API uses LM Studio at localhost:1234. Local models get Ghost-managed tools for web, workspace files, text-file creation, read-only commands, reminders, and calendar read/create actions."
 
         case .ollama:
-            return "Direct API uses Ollama at \(ollamaBaseURLString). Start Ollama and pull at least one model first."
+            return "Direct API uses Ollama at \(ollamaBaseURLString). Local models get Ghost-managed tools for web, workspace files, text-file creation, read-only commands, reminders, and calendar read/create actions."
 
         case .claude, .gemini, .deepSeek:
             if directAPIKey(for: selectedProvider) == nil {
@@ -1367,10 +1917,10 @@ final class GhostConversationStore {
             }
 
             if !isHermesConnected {
-                return "Direct API can answer simple questions, but local files, shell, coding, tool calling, and Mac actions require Hermes Agent."
+                return "Direct API can answer simple questions and local models can use Ghost-managed tools for web, workspace files, text-file creation, read-only commands, reminders, and calendar read/create actions. Broad Mac actions, screenshots/OCR, binary documents, and coding edits still need Hermes Agent."
             }
 
-            return "Direct API is available for simple answers. Hermes Agent is connected for local tools."
+            return "Direct API is available for simple answers and Ghost-managed local-model tools. Hermes Agent is connected for broader Mac tools."
         }
     }
 
@@ -1395,7 +1945,29 @@ final class GhostConversationStore {
         onActivity: @escaping @Sendable (GhostActivityEntry) -> Void,
         onToken: (@Sendable (String) async -> Void)? = nil
     ) async throws -> GhostRunResult {
-        switch engine {
+        let effectiveEngine: ExecutionEngine
+
+        if settings.provider.isLocal, engine == .ghostAgent {
+            // Absolute provider-isolation rule:
+            // when LM Studio/Ollama is selected, this app must never launch
+            // Hermes/Ghost Agent unless that local-agent backend has been
+            // explicitly verified. Existing Hermes installations can read
+            // persisted DeepSeek config outside this Process environment, so
+            // environment scrubbing alone is not enough. Force local providers
+            // through Ghost's managed Direct API tool loop instead.
+            effectiveEngine = .directAPI
+            onActivity(
+                GhostActivityEntry(
+                    kind: .info,
+                    title: "Local provider guard",
+                    detail: "Blocked Agent route and used \(settings.provider.title) Direct API instead. DeepSeek was not launched."
+                )
+            )
+        } else {
+            effectiveEngine = engine
+        }
+
+        switch effectiveEngine {
         case .ghostAgent:
             return try await ghostClient.send(prompt, settings: settings, onActivity: onActivity)
 
@@ -1412,6 +1984,19 @@ final class GhostConversationStore {
     }
 
     private func resolvedEngine(for prompt: String, intent: GhostDetectedIntent) -> ExecutionEngine {
+        // Hard privacy/provider-isolation rule:
+        // LM Studio and Ollama are local providers. Selecting one of them means
+        // Ghost should talk to that local OpenAI-compatible endpoint only. Do
+        // not route to Hermes/Ghost Agent, because those CLIs may still have
+        // persisted DeepSeek defaults and can call DeepSeek even when the UI
+        // shows LM Studio/Ollama. Direct API has Ghost-managed local tools for
+        // web, files, text artifacts, clipboard, read-only shell, reminders,
+        // and calendar read/create actions. Unsupported tasks should fail or
+        // ask for a verified local agent, never silently fall back to DeepSeek.
+        if usesLocalProvider(selectedProvider) {
+            return .directAPI
+        }
+
         switch enginePreference {
         case .forceGhost:
             return .ghostAgent
@@ -1431,6 +2016,50 @@ final class GhostConversationStore {
                 ? .ghostAgent
                 : .directAPI
         }
+    }
+
+    private func usesLocalProvider(_ provider: GhostProvider) -> Bool {
+        provider.isLocal
+    }
+
+    private func localDirectAPIHandles(prompt: String, intent: GhostDetectedIntent) -> Bool {
+        switch intent.kind {
+        case .answer, .research, .clipboardAction, .automation, .localFiles, .fileSummary, .coding, .debugging, .codeReview:
+            return true
+
+        case .createArtifact:
+            let ext = intent.inferredFileExtension?.lowercased()
+            let binaryExtensions: Set<String> = ["pdf", "docx", "pptx", "xlsx", "pages", "key", "numbers", "zip", "png", "jpg", "jpeg", "gif", "webp"]
+            return ext.map { !binaryExtensions.contains($0) } ?? true
+
+        case .shell:
+            return isReadOnlyShellPrompt(prompt)
+
+        case .screenshotOCR, .organizeFiles:
+            return false
+        }
+    }
+
+    private func isReadOnlyShellPrompt(_ prompt: String) -> Bool {
+        let lower = prompt.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        var stripped = lower
+        for prefix in ["terminal ", "shell ", "run "] where stripped.hasPrefix(prefix) {
+            stripped = String(stripped.dropFirst(prefix.count)).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+
+        let allowedPrefixes = [
+            "pwd", "ls", "find", "grep", "sed", "cat", "wc", "head", "tail",
+            "git status", "git diff", "git log", "git show", "git branch"
+        ]
+        let blocked = [
+            " rm ", " mv ", " cp ", " mkdir ", " rmdir ", " touch ", " chmod ", " chown ",
+            " sudo ", " curl ", " wget ", " npm ", " pnpm ", " yarn ", " pip ", " python ",
+            " python3 ", " swift ", " xcodebuild ", " open ", " osascript ", " kill ", " pkill ",
+            ";", "&&", "||", "|", ">", "<", "`", "$"
+        ]
+        let padded = " " + stripped + " "
+        guard !blocked.contains(where: { padded.contains($0) }) else { return false }
+        return allowedPrefixes.contains { stripped == $0 || stripped.hasPrefix($0 + " ") }
     }
 
     private func applyAdaptiveRoute(for intent: GhostDetectedIntent, engine: ExecutionEngine) {
@@ -1482,6 +2111,9 @@ final class GhostConversationStore {
     ) -> String {
         switch enginePreference {
         case .forceGhost:
+            if runEngine == .directAPI, usesLocalProvider(selectedProvider) {
+                return "local provider override"
+            }
             return "forced"
 
         case .forceDirect:
@@ -1496,6 +2128,10 @@ final class GhostConversationStore {
             }
 
             if runEngine == .directAPI {
+                if usesLocalProvider(selectedProvider), localDirectAPIHandles(prompt: prompt, intent: intent) {
+                    return intent.kind.requiresAgentTools ? "local tools" : (intent.usesWeb ? "web/text" : "answer-only")
+                }
+
                 return intent.usesWeb ? "web/text" : "answer-only"
             }
 
@@ -3013,7 +3649,7 @@ final class GhostConversationStore {
             model: model(for: provider),
             localContextWindow: localContextWindow,
             workingDirectory: workspaceRootURL,
-            apiKeys: keyedEnvironment(),
+            apiKeys: keyedEnvironment(for: provider),
             approvalMode: approvalMode,
             toolsets: toolsets.trimmingCharacters(in: .whitespacesAndNewlines),
             effortMode: effortMode,
@@ -3028,6 +3664,7 @@ final class GhostConversationStore {
         clipboard: String?,
         conversationContext: String? = nil,
         fileContexts: [ResolvedFileContext] = [],
+        ragContext: String? = nil,
         detectedIntent: GhostDetectedIntent? = nil,
         runEngine: ExecutionEngine
     ) -> String {
@@ -3037,6 +3674,7 @@ final class GhostConversationStore {
                 clipboard: clipboard,
                 conversationContext: conversationContext,
                 fileContexts: fileContexts,
+                ragContext: ragContext,
                 detectedIntent: detectedIntent
             )
         }
@@ -3105,12 +3743,15 @@ final class GhostConversationStore {
         """
 
         let localToolInstruction = """
-        Local tool rule:
-        If the user asks to create, save, move, edit, delete, organize, or place a file on the Mac, you must actually use filesystem tools or shell commands.
-        Do not say a file was saved unless it was actually written.
-        For Desktop requests, save to ~/Desktop unless the user specifies another folder.
-        When saving a file, report the real absolute path.
-        If the file cannot be written, say exactly why.
+        Local tool and computer-use rules:
+        - If the user asks to create, save, move, edit, delete, organize, or place a file on the Mac, you must actually use filesystem tools or shell commands.
+        - Do not say a file was saved unless it was actually written and you verified the path.
+        - For Desktop requests, save to ~/Desktop unless the user specifies another folder.
+        - When saving a file, report the real absolute path.
+        - For PDF/DOCX/PPTX/XLSX artifacts, create a valid file package, not a fake text file with that extension.
+        - For reminders, calendar events, notifications, email, screenshots/OCR, and app control, use the available macOS tools when routed through Ghost Agent. Never claim setup succeeded without a tool result.
+        - Simple one-shot reminders may be handled by Ghost's native deterministic reminder parser before the model runs; if this prompt reaches you, the timing likely needs clarification or agent tool access.
+        - If the file, reminder, event, command, or app action cannot be completed, say exactly why and what permission/setup is missing.
         """
 
         return """
@@ -3147,6 +3788,7 @@ final class GhostConversationStore {
         clipboard: String?,
         conversationContext: String?,
         fileContexts: [ResolvedFileContext],
+        ragContext: String? = nil,
         detectedIntent: GhostDetectedIntent?
     ) -> String {
         let intentKind = detectedIntent?.kind ?? .answer
@@ -3154,6 +3796,7 @@ final class GhostConversationStore {
         let clipped = clip.map { "\n\nClipboard context:\n\($0)" } ?? ""
         let conversation = conversationContext.map { "\n\nRecent conversation:\n\($0)" } ?? ""
         let fileContextBlock = terminalFileContextBlock(fileContexts)
+        let ragBlock = ragContext.map { "\n\nRAG document context (answer from these cited chunks):\n\($0)\n\nIf these chunks answer the question, cite them inline like [1], [2]. If they do not answer the question, say so and suggest what file might help." } ?? ""
 
         let taskInstruction: String
         switch intentKind {
@@ -3162,7 +3805,11 @@ final class GhostConversationStore {
         case .clipboardAction:
             taskInstruction = "Use the clipboard context only for the requested transformation or answer."
         case .fileSummary, .localFiles:
-            taskInstruction = "Use provided file context only. If no relevant file context is supplied, say what file is needed."
+            taskInstruction = "Use provided file context and RAG document context to answer. Cite sources."
+        case .createArtifact:
+            taskInstruction = "Create the requested text-based artifact. For local models, Ghost's Direct API layer exposes a real file creation tool; use it. If the model cannot call tools, return the full file content in one fenced code block so Ghost can save it deterministically."
+        case .automation:
+            taskInstruction = "Use Ghost's native deterministic parser or Direct API tools for reminders/calendar when the date range is explicit. Ask one clear question if the schedule is ambiguous."
         default:
             taskInstruction = "Answer directly. Keep it concise, useful, and natural."
         }
@@ -3171,6 +3818,7 @@ final class GhostConversationStore {
         You are Ghost, a fast native macOS assistant.
         \(directAPIEffortInstruction)
         \(taskInstruction)
+        \(ragBlock)
 
         Formatting:
         - Return clean Markdown.
@@ -3753,14 +4401,36 @@ final class GhostConversationStore {
         UserDefaults.standard.set(recentPrompts, forKey: Self.recentPromptsDefaultsKey)
     }
 
-    private func keyedEnvironment() -> [String: String] {
+    private func keyedEnvironment(for provider: GhostProvider) -> [String: String] {
         var values: [String: String] = [:]
-        for provider in ProviderAPIKey.allCases {
-            values[provider.environmentKey] = secretsService.read(for: provider)
-                ?? ProcessInfo.processInfo.environment[provider.environmentKey]
+        for keyType in apiKeyTypes(for: provider) {
+            values[keyType.environmentKey] = secretsService.read(for: keyType)
+                ?? ProcessInfo.processInfo.environment[keyType.environmentKey]
                 ?? ""
         }
         return values
+    }
+
+    private func apiKeyTypes(for provider: GhostProvider) -> [ProviderAPIKey] {
+        switch provider {
+        case .lmStudio:
+            // LM Studio is local; do not pass any cloud provider key into Agent/Hermes.
+            return []
+
+        case .ollama:
+            // Local Ollama normally needs no key. Keep the optional Ollama Cloud key
+            // out of LM Studio/DeepSeek/Claude/Gemini runs.
+            return [.ollamaCloud]
+
+        case .claude:
+            return [.anthropic]
+
+        case .gemini:
+            return [.gemini]
+
+        case .deepSeek:
+            return [.deepSeek]
+        }
     }
 
     private func loadSavedAPIKeyState(clearDrafts: Bool = false) {

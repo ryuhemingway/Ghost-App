@@ -519,16 +519,15 @@ struct GhostPanelView: View {
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 .onChange(of: store.messages.count) { _, _ in
-                    scrollToBottom(proxy, animated: false)
+                    scrollToBottom(proxy, animated: true)
                 }
-                .onChange(of: store.taskTimeline) { _, _ in
-                    scrollToBottom(proxy, animated: false)
-                }
-                .onChange(of: store.isSending) { _, _ in
-                    scrollToBottom(proxy, animated: false)
+                // Do not auto-scroll on every taskTimeline mutation. Timeline updates
+                // stream frequently and yanking the viewport makes manual scrolling feel broken.
+                .onChange(of: store.isSending) { _, isSending in
+                    if isSending { scrollToBottom(proxy, animated: true) }
                 }
                 .onChange(of: store.isActivityVisible) { _, _ in
-                    scrollToBottom(proxy, animated: false)
+                    scrollToBottom(proxy, animated: true)
                 }
                 .onAppear {
                     scrollToBottom(proxy, animated: false)
@@ -764,11 +763,10 @@ private struct TerminalModeView: View {
             .onChange(of: store.messages.count) { _, _ in
                 scrollToBottom(proxy)
             }
-            .onChange(of: store.taskTimeline) { _, _ in
-                scrollToBottom(proxy)
-            }
-            .onChange(of: store.isSending) { _, _ in
-                scrollToBottom(proxy)
+            // Do not auto-scroll on every taskTimeline mutation. It updates too
+            // often and should not fight the user's manual scroll position.
+            .onChange(of: store.isSending) { _, isSending in
+                if isSending { scrollToBottom(proxy) }
             }
             .onAppear {
                 scrollToBottom(proxy, animated: false)
@@ -1886,6 +1884,7 @@ private struct CompactTelemetryStrip: View {
                     compactChip(chip.title, chip.detail, isActive: chip.isActive)
                 }
                 compactChip("Events", "\(snap.activityEventCount)")
+                compactChip("RAG", "\(store.ragDocumentCount) docs", isActive: store.ragDocumentCount > 0)
             }
             .padding(.horizontal, GhostSpacing.wide)
             .padding(.vertical, 6)
@@ -2312,9 +2311,10 @@ private struct CosmicBackground: View {
                         context.fill(
                             Path(ellipseIn: rect),
                             with: .color(color)
-                        )
-                    }
-                }
+            )
+        }
+    }
+
             }
         }
         .onAppear {
@@ -3771,6 +3771,8 @@ private struct GhostOnboardingPanelView: View {
             personalizeStep
         case .learn:
             learnStep
+        case .rag:
+            ragStep
         }
     }
 
@@ -4113,6 +4115,71 @@ private struct GhostOnboardingPanelView: View {
                 icon: "lightbulb",
                 title: "Simple rule",
                 text: "Use normal language. Ghost decides whether the task needs a direct answer, clipboard context, local files, coding tools, or terminal-style output."
+            )
+        }
+    }
+
+    private var ragStep: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            GhostOnboardingHero(
+                icon: "doc.text.magnifyingglass",
+                title: "Ghost indexes your files.",
+                subtitle: "Your Desktop is automatically scanned so you can ask questions about your documents, notes, PDFs, and code — no manual setup required."
+            )
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                GhostOnboardingFeatureCard(
+                    icon: "desktopcomputer",
+                    title: "Desktop auto-index",
+                    text: "Ghost watches your Desktop and indexes new or changed files automatically."
+                )
+
+                GhostOnboardingFeatureCard(
+                    icon: "doc.richtext",
+                    title: "30+ file types",
+                    text: "PDFs, Word docs, Markdown, code files, CSVs, plain text, and more."
+                )
+
+                GhostOnboardingFeatureCard(
+                    icon: "magnifyingglass",
+                    title: "Ask naturally",
+                    text: "Try \"what does my syllabus say about homework\" or \"find where I wrote about authentication.\""
+                )
+
+                GhostOnboardingFeatureCard(
+                    icon: "lock.shield",
+                    title: "Stays on device",
+                    text: "The RAG index lives in an SQLite database on your Mac. Nothing leaves your machine."
+                )
+            }
+
+            SettingsCard(title: "RAG index status", systemImage: "cylinder") {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Image(systemName: "doc.text")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(GhostColors.royalViolet)
+                        Text("\(store.ragDocumentCount) documents indexed")
+                            .font(.system(size: 12.5, weight: .semibold))
+                        Spacer()
+                    }
+
+                    HStack {
+                        Image(systemName: "rectangle.stack")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(GhostColors.royalViolet)
+                        Text("\(store.ragChunkCount) searchable chunks")
+                            .font(.system(size: 12.5, weight: .semibold))
+                        Spacer()
+                    }
+                }
+                .padding(10)
+            }
+
+            GhostOnboardingTip(
+                icon: "lightbulb",
+                title: "Pro tip",
+                text: "Type RAG: before any question to force Ghost to search your indexed files instead of using the web or clipboard."
             )
         }
     }
@@ -4848,6 +4915,49 @@ private struct SettingsPanelView: View {
 
                         TextField("Toolsets, comma separated", text: $store.toolsets)
                             .textFieldStyle(.roundedBorder)
+                    }
+                }
+
+                SettingsCard(title: "RAG Index", systemImage: "doc.text.magnifyingglass") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Toggle("Watch Desktop for changes", isOn: Binding(
+                            get: { !store.isRAGWatcherPaused },
+                            set: { store.isRAGWatcherPaused = !$0 }
+                        ))
+                        .toggleStyle(.switch)
+                        .font(.system(size: 12, weight: .medium))
+
+                        HStack {
+                            Text("\(store.ragDocumentCount) documents, \(store.ragChunkCount) chunks indexed")
+                                .font(.system(size: 11.5, weight: .medium, design: .default))
+                                .foregroundStyle(GhostColors.platinum)
+                            Spacer()
+                        }
+
+                        Text("Your Desktop is automatically watched and indexed every 15 min. Supported types: PDF, EPUB, DOCX, Markdown, code, CSV, plain text, and more.")
+                            .font(.system(size: 10.5, design: .default))
+                            .foregroundStyle(GhostColors.mutedPlatinum)
+
+                        HStack(spacing: 10) {
+                            Button {
+                                store.clearRAGIndex()
+                            } label: {
+                                Label("Clear Index", systemImage: "trash")
+                                    .font(.system(size: 11, weight: .medium))
+                            }
+                            .buttonStyle(.bordered)
+                            .tint(.red.opacity(0.6))
+                            .controlSize(.small)
+
+                            Button {
+                                store.reindexRAG()
+                            } label: {
+                                Label("Reindex", systemImage: "arrow.triangle.2.circlepath")
+                                    .font(.system(size: 11, weight: .medium))
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                        }
                     }
                 }
 

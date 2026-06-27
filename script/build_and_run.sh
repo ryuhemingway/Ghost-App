@@ -59,6 +59,16 @@ cat >"$INFO_PLIST" <<PLIST
   <string>Ghost uses the microphone for dictation.</string>
   <key>NSSpeechRecognitionUsageDescription</key>
   <string>Ghost uses speech recognition to turn your voice into prompts.</string>
+  <key>NSCalendarsUsageDescription</key>
+  <string>Ghost uses Calendar access to read and create events you request.</string>
+  <key>NSCalendarsFullAccessUsageDescription</key>
+  <string>Ghost uses Calendar access to read and create events you request.</string>
+  <key>NSRemindersUsageDescription</key>
+  <string>Ghost uses Reminders access to create reminders you request.</string>
+  <key>NSRemindersFullAccessUsageDescription</key>
+  <string>Ghost uses Reminders access to create reminders you request.</string>
+  <key>NSAppleEventsUsageDescription</key>
+  <string>Ghost uses Apple Events only for requested local app automation such as Reminders fallback actions.</string>
 </dict>
 </plist>
 PLIST
