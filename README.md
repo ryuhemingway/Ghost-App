@@ -1,77 +1,93 @@
-# Ghost Sphere Gallery
-
-An immersive 3D gallery experience for Ghost, built with **Three.js** and **GSAP**. The viewer stands inside a dense, front-biased spherical gallery where Ghost capability cards sit close, readable, and layered across curved latitude bands. Drag to rotate, hover to focus, click to open a polished detail page, and return cleanly to the gallery.
-
-The interaction is inspired by the premium spatial feel of [Phantom](https://www.phantom.land/) without copying its exact design.
+# Ghost
+A premium local-first macOS AI workspace for your Mac.
 
 ## Overview
 
-Ghost Sphere Gallery turns the existing Ghost landing page into a cinematic, full-screen portfolio surface:
+Ghost is a macOS menu-bar AI workspace that connects local models, hosted model APIs, agent CLIs, document retrieval, and verified Mac actions through one native interface. It is designed for private, fast, hands-on work: ask questions, route prompts to the right model, search your local knowledge base, create files, convert documents, and hand deeper tasks to an agent when the job needs tools.
 
-- The camera feels placed inside a spherical card environment.
-- 24 cards are distributed across a close inner-dome formation.
-- Pointer and touch dragging use smooth inertial easing with clamped rotation.
-- Hovered or centered cards scale and brighten while surrounding cards subtly dim.
-- Clicking a card opens a GSAP-animated detail template.
-- Returning from detail restores the 3D scene without a reload.
+Ghost is local-first by default. LM Studio and Ollama can run entirely from your machine, while Claude, Gemini, and DeepSeek are available when you add API keys.
 
-## Features
+## Core Features
 
-- Full-screen Three.js scene
-- Dense front-biased spherical/dome-like card placement
-- Smooth drag rotation with inertial decay
-- Responsive desktop and mobile layout
-- Raycast hover and click interactions
-- GSAP detail-page transitions
-- Generated glass-style card imagery using canvas textures
-- Debug hooks for testing and screenshot capture
-- Clean static hosting through `docs/` for GitHub Pages
+### Model Routing
 
-## Tech Stack
+Ghost supports multiple model providers from the same app surface:
 
-- **Three.js** for the 3D scene, camera, cards, raycasting, and rendering
-- **GSAP** for card focus and detail-page animation
-- **Vanilla HTML/CSS/JS** for the shell, HUD, controls, and overlay
-- **Static GitHub Pages-ready docs folder**
+- **LM Studio** through `http://localhost:1234/v1`
+- **Ollama** through `http://localhost:11434`
+- **Claude** with `ANTHROPIC_API_KEY`
+- **Gemini** with `GEMINI_API_KEY` or `GOOGLE_API_KEY`
+- **DeepSeek v4** with `DEEPSEEK_API_KEY`
 
-Dependencies are loaded in `docs/index.html` through an import map:
+The app includes two execution engines:
 
-```html
-"three": "https://unpkg.com/three@0.165.0/build/three.module.js"
-"gsap": "https://esm.sh/gsap@3.12.5"
-```
+- **Direct API** for fast provider calls and lightweight tool use.
+- **Ghost Agent** for deeper multi-turn work through a local agent CLI.
 
-## Screenshots
+In automatic mode, Ghost routes simple questions to Direct API and sends tool-heavy, coding, file, or personal-action tasks to the agent path when appropriate.
 
-### Main Spherical Gallery
+### Agent Connection
 
-![Main spherical gallery](docs/screenshots/main-spherical-gallery.png)
+Ghost can connect to local command-line agents and launch them with the selected provider/model context. The supported local agent kinds in the app are:
 
-### Hover / Focused Card State
+- **Ghost Agent**, expected at `~/.local/bin/ghost`
+- **Hermes Agent**, expected at `~/.local/bin/hermes`
 
-![Focused card state](docs/screenshots/focused-card-state.png)
+Agent mode is intended for tasks that need multi-step reasoning, files, command execution, or a broader workspace loop. Ghost passes provider selection, model selection, turn limits, approval mode, and optional toolsets into the agent process.
 
-### Click / Page Transition State
+### RAG System
 
-![Click transition state](docs/screenshots/click-transition-state.png)
+Ghost includes a local retrieval system backed by SQLite. It can ingest files and folders, store searchable document chunks, query the index, open source files, reindex content, remove documents, and report index status.
 
-### Detail Page Template
-
-![Detail page template](docs/screenshots/detail-page-template.png)
-
-### Mobile Responsive Layout
-
-![Mobile responsive gallery](docs/screenshots/mobile-responsive-gallery.png)
-
-Screenshots are stored in:
+Supported document and source-code formats include:
 
 ```text
-docs/screenshots/
+txt, md, markdown, html, htm, pdf, docx, epub, csv, json, rtf,
+swift, py, js, ts, tsx, jsx, java, cpp, c, h, hpp, m, mm,
+sql, xml, yaml, yml, toml, log
 ```
 
-## Installation
+By default, Ghost stores the RAG database under:
 
-No package installation is required for the gallery. The app is a static site and loads Three.js and GSAP from CDN.
+```text
+~/Library/Application Support/Ghost/rag/ghost_rag.sqlite
+```
+
+### Capability Harness
+
+Ghost uses a capability harness so model-requested actions are executed by app-owned code instead of being treated as model claims. The harness validates paths, checks permissions, runs the action, and returns the real result.
+
+Current harness capabilities include:
+
+- File discovery, reading, writing, moving, copying, trashing, and folder creation
+- Markdown, HTML, TXT, CSV, JSON, PDF, DOCX, PPTX, and XLSX creation
+- Text and Markdown conversion into PDF, DOCX, HTML, TXT, or Markdown
+- RAG ingestion, sync, query, chunk search, status, reindexing, and clearing
+- Finder open/reveal actions
+- Reserved higher-risk shell and patch operations that require approval paths
+
+## How Ghost Works
+
+1. You open Ghost from the macOS menu bar or with the global shortcut.
+2. Ghost receives the prompt, selected provider, selected model, and engine preference.
+3. The router chooses Direct API or Agent mode.
+4. If the prompt needs local knowledge, Ghost can query the RAG index.
+5. If the prompt needs an action, the capability harness performs and verifies the action.
+6. Ghost returns the response with the app's actual execution result.
+
+## Requirements
+
+- macOS 14 or newer
+- Swift 6.1-compatible toolchain
+- Xcode or Xcode Command Line Tools
+- Optional: Xcode beta at `/Applications/Xcode-beta.app/Contents/Developer`; the build script uses it automatically when available
+- Optional local model runtime: LM Studio or Ollama
+- Optional hosted provider keys for Claude, Gemini, or DeepSeek
+- Optional local agent CLI at `~/.local/bin/ghost` or `~/.local/bin/hermes`
+
+Some actions require macOS permissions such as Apple Events, microphone, speech recognition, Calendar, or Reminders access.
+
+## Installation
 
 Clone the repository:
 
@@ -80,103 +96,195 @@ git clone https://github.com/ryuhemingway/Ghost-App.git
 cd Ghost-App
 ```
 
-Optional: if you want to run your own local tooling, install any server you prefer. Python's built-in server is enough.
+Build the Swift package:
+
+```bash
+swift build
+```
+
+Build and launch the macOS app bundle:
+
+```bash
+./script/build_and_run.sh
+```
+
+The build helper creates:
+
+```text
+dist/Ghost.app
+```
+
+Useful script modes:
+
+```bash
+./script/build_and_run.sh --debug
+./script/build_and_run.sh --logs
+./script/build_and_run.sh --telemetry
+./script/build_and_run.sh --verify
+```
+
+## Configuration
+
+Ghost stores provider secrets in:
+
+```text
+~/.ghost/.env
+```
+
+Common provider variables:
+
+```text
+ANTHROPIC_API_KEY=
+GEMINI_API_KEY=
+GOOGLE_API_KEY=
+DEEPSEEK_API_KEY=
+OPENAI_API_KEY=
+OPENAI_BASE_URL=
+```
+
+For local models:
+
+- Start LM Studio's local server at `http://localhost:1234` before selecting LM Studio models.
+- Start Ollama at `http://localhost:11434` before selecting Ollama models.
+- Ghost discovers local model lists from the configured local endpoints.
+
+For agent mode:
+
+- Install or symlink the Ghost agent CLI to `~/.local/bin/ghost`, or Hermes to `~/.local/bin/hermes`.
+- Choose the agent engine in Ghost when a task needs files, tools, approvals, or multi-turn work.
 
 ## Usage
 
-Run the gallery locally:
+### Launch Ghost
+
+Run:
+
+```bash
+./script/build_and_run.sh
+```
+
+Ghost runs as a menu-bar app. The global panel shortcut is `Option+Space`.
+
+### Choose a Model
+
+Open Ghost and select a provider/model. Use LM Studio or Ollama for local inference, or choose Claude, Gemini, or DeepSeek after configuring the matching API key.
+
+### Ask Questions
+
+Use Direct API mode for fast questions, short writing tasks, summaries, and simple coding help.
+
+### Use Agent Mode
+
+Use Ghost Agent mode when a request needs workspace context, file edits, command-line tools, approval handling, or longer multi-step work.
+
+### Add Documents to RAG
+
+Use the RAG actions in Ghost to ingest a file or sync a folder. Once indexed, ask questions against your local documents and source files.
+
+### Use Local Actions
+
+Ask Ghost to create files, convert documents, search indexed files, open sources, reveal items in Finder, or create structured outputs. The capability harness performs the action and reports the verified result.
+
+## Screenshots
+
+Actual Ghost macOS app screenshots are not currently committed. When captured, place them under `docs/screenshots/app/` with these filenames:
+
+```text
+docs/screenshots/app/main-panel.png
+docs/screenshots/app/model-routing.png
+docs/screenshots/app/rag-query.png
+docs/screenshots/app/agent-mode.png
+docs/screenshots/app/settings.png
+```
+
+The repository also includes screenshots for the secondary Three.js gallery demo under `docs/screenshots/`.
+
+## Project Structure
+
+```text
+Sources/Ghost/
+  App/                  App entry points and menu-bar wiring
+  Helpers/              Shared helper utilities
+  Models/               Provider, engine, and app data models
+  Resources/            Bundled app resources
+  Services/             Provider APIs, secrets, RAG, harness, and integrations
+  Stores/               App state stores
+  Views/                SwiftUI interface
+Tests/GhostTests/       Swift tests
+script/build_and_run.sh macOS build, launch, logs, telemetry, and verify helper
+docs/                   Secondary static marketing/gallery demo
+```
+
+## Development
+
+Run tests:
+
+```bash
+swift test
+```
+
+If your active command-line tools cannot build the app, use Xcode beta explicitly:
+
+```bash
+DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer swift test
+```
+
+Verify the app bundle launches:
+
+```bash
+./script/build_and_run.sh --verify
+```
+
+## Troubleshooting
+
+### Local models do not appear
+
+Confirm the local server is running:
+
+```bash
+curl http://localhost:1234/v1/models
+curl http://localhost:11434/api/tags
+```
+
+Then reopen Ghost and refresh the provider/model picker.
+
+### Hosted provider requests fail
+
+Check `~/.ghost/.env` for the matching key. Claude uses `ANTHROPIC_API_KEY`, Gemini uses `GEMINI_API_KEY` or `GOOGLE_API_KEY`, and DeepSeek uses `DEEPSEEK_API_KEY`.
+
+### Agent mode does not start
+
+Confirm the agent binary exists and is executable:
+
+```bash
+ls -l ~/.local/bin/ghost
+ls -l ~/.local/bin/hermes
+```
+
+Use Direct API mode for local LM Studio or Ollama requests when provider isolation blocks agent launch.
+
+### RAG results are missing
+
+Ingest or sync the folder again, check RAG status, and make sure the file type is supported. Large folder syncs can take time, especially on the first pass.
+
+### macOS permissions block an action
+
+Open System Settings and grant Ghost the permission requested by macOS. Some integrations require Apple Events, Calendar, Reminders, microphone, or speech recognition access.
+
+## Marketing Website / Sphere Gallery Demo
+
+The immersive Three.js and GSAP sphere gallery lives in `docs/`. It is a secondary marketing/demo surface for Ghost, not the main macOS app.
+
+Run it locally:
 
 ```bash
 python3 -m http.server 4173 --directory docs
 ```
 
-Open it in the browser:
+Then open:
 
 ```text
 http://127.0.0.1:4173
 ```
 
-Interact with the spherical gallery:
-
-- **Drag with mouse or touch:** rotate the gallery around the viewer.
-- **Release after dragging:** inertia continues the motion with eased decay.
-- **Hover a card:** the card scales and brightens.
-- **Click a card:** animate into the detail template.
-- **Return to sphere:** click **Return to sphere**.
-- **Keyboard:** press `Esc` to close the detail page.
-
-## Project Structure
-
-```text
-docs/
-  index.html              Static app shell and import map
-  styles.css              Premium dark/glass responsive styling
-  script.js               Three.js scene, GSAP motion, interactions
-  assets/
-    ghost-hero.png        Existing Open Graph preview image
-  screenshots/
-    main-spherical-gallery.png
-    focused-card-state.png
-    click-transition-state.png
-    detail-page-template.png
-    mobile-responsive-gallery.png
-Sources/Ghost/            Original macOS Ghost app source
-Tests/GhostTests/         Original Swift tests
-script/build_and_run.sh   Original macOS app build helper
-```
-
-## Customization
-
-Edit gallery content in `docs/script.js`:
-
-```js
-const cards = [
-  {
-    kicker: "Agent Router",
-    title: "Direct API or agent depth",
-    layer: "Routing",
-    copy: "Ghost decides whether the prompt needs a fast model answer...",
-    palette: ["#8b5cff", "#73e0d3", "#f4ce7a"]
-  }
-];
-```
-
-Useful tuning points:
-
-- Change `radius` inside `createGallery()` to tighten or widen the inner dome.
-- Adjust `baseWidth` and `baseHeight` inside `createGallery()` to resize cards.
-- Tune drag feel with the pointer multipliers, `velocityX`, `velocityY`, and decay values in `tick()`.
-- Modify the dark/glass visual system in `docs/styles.css`.
-- Replace generated canvas textures with real image assets if desired.
-
-## Troubleshooting
-
-If the page is blank:
-
-- Make sure you are serving through HTTP, not opening `docs/index.html` directly from the filesystem.
-- Confirm the browser can reach the Three.js and GSAP CDN URLs.
-- Open Chrome DevTools and check the Console tab for network or module-loading errors.
-
-If dragging feels wrong:
-
-- Confirm pointer events are reaching the canvas.
-- Test in Chrome with hardware acceleration enabled.
-- Lower the renderer pixel ratio in `docs/script.js` if the machine is struggling.
-
-If screenshots need refreshing:
-
-1. Run the local server.
-2. Open the gallery in Chrome.
-3. Capture current states into `docs/screenshots/`.
-4. Update this README if filenames change.
-
-## Original macOS Ghost App
-
-This repository still contains the original Swift macOS Ghost app. To build that app:
-
-```bash
-swift build
-./script/build_and_run.sh
-```
-
-The interactive gallery lives separately in `docs/` and can be hosted independently through GitHub Pages.
+See `docs/README.md` for the gallery-specific usage notes and screenshots.
