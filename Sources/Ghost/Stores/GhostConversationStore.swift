@@ -189,6 +189,18 @@ final class GhostConversationStore {
     var messages: [GhostMessage] = []
     var activityEntries: [GhostActivityEntry] = []
     var isActivityVisible = false
+    var isPinnedToBottom = true
+    var isScrolledAwayFromBottom: Bool { !isPinnedToBottom && !messages.isEmpty }
+
+    // MARK: - Conversation history & prompt library
+    var conversations: [PersistedConversation] = []
+    var currentConversationID: UUID?
+    var isHistoryVisible = false
+    var isPromptLibraryVisible = false
+    var savedPrompts: [SavedPrompt] = []
+    private let historyStore = GhostHistoryStore()
+    private let promptLibrary = GhostPromptLibrary()
+    private var persistenceDebounceTask: Task<Void, Never>?
     var isTerminalToolDetailsVisible = true {
         didSet {
             UserDefaults.standard.set(isTerminalToolDetailsVisible, forKey: Self.terminalToolDetailsDefaultsKey)
@@ -412,6 +424,9 @@ final class GhostConversationStore {
         localContextWindow = savedContext == 0 ? 65_536 : savedContext
         workingDirectoryPath = UserDefaults.standard.string(forKey: Self.workingDirectoryDefaultsKey) ?? NSHomeDirectory()
         recentPrompts = UserDefaults.standard.stringArray(forKey: Self.recentPromptsDefaultsKey) ?? []
+        conversations = historyStore.listConversations()
+        savedPrompts = promptLibrary.load()
+        restoreMostRecentConversation()
         enforceInterfacePreference()
         activeContextChips = intentRouter.contextChips(
             for: currentIntent,
@@ -545,6 +560,7 @@ final class GhostConversationStore {
             prompt = ""
             saveRecentPrompt(text)
             messages.append(GhostMessage(role: .user, text: text))
+            schedulePersist()
             runShellCommand(String(text.dropFirst()).trimmingCharacters(in: .whitespacesAndNewlines))
             return
         }
@@ -664,6 +680,7 @@ final class GhostConversationStore {
         let snapshotStartedAt = Date()
         saveRecentPrompt(text)
         messages.append(GhostMessage(role: .user, text: text))
+        schedulePersist()
 
         if !fileContexts.isEmpty {
             recordActivity(
@@ -738,6 +755,7 @@ final class GhostConversationStore {
                 } else {
                     messages.append(GhostMessage(role: .ghost, text: responseText, runMetadata: metadata))
                 }
+                schedulePersist()
                 if let codeSnapshotBefore {
                     trackCodeChanges(after: codeSnapshotBefore, command: text)
                 }
@@ -1208,6 +1226,7 @@ final class GhostConversationStore {
 
         messages[index].text = text
         messages[index].runMetadata = metadata
+        schedulePersist()
     }
 
     func toggleDictation() {
@@ -1227,6 +1246,191 @@ final class GhostConversationStore {
         activeRunStartedAt = nil
         activeProcessIdentifier = nil
         clearTaskTimeline()
+    }
+
+    // MARK: - Conversation history persistence
+
+    private func restoreMostRecentConversation() {
+        guard let first = conversations.first else { return }
+        currentConversationID = first.id
+        messages = first.messages.map { $0.toGhostMessage() }
+    }
+
+    func toggleHistory() {
+        isHistoryVisible.toggle()
+    }
+
+    func startNewConversation() {
+        guard !isSending else { return }
+        persistCurrentConversation()
+        clearConversation()
+        currentConversationID = nil
+        isHistoryVisible = false
+    }
+
+    func loadConversation(id: UUID) {
+        guard !isSending else { return }
+        guard let conversation = conversations.first(where: { $0.id == id }) else { return }
+        persistCurrentConversation()
+        currentConversationID = conversation.id
+        messages = conversation.messages.map { $0.toGhostMessage() }
+        activityEntries = []
+        currentIntent = .idle
+        lastRunStatus = .idle
+        clearTaskTimeline()
+        isHistoryVisible = false
+    }
+
+    func deleteConversation(id: UUID) {
+        historyStore.delete(id: id)
+        conversations.removeAll { $0.id == id }
+        if currentConversationID == id {
+            currentConversationID = nil
+            clearConversation()
+        }
+    }
+
+    func persistCurrentConversation() {
+        guard !messages.isEmpty else {
+            if let id = currentConversationID {
+                historyStore.delete(id: id)
+                conversations.removeAll { $0.id == id }
+            }
+            return
+        }
+
+        let id = currentConversationID ?? UUID()
+        let title = conversationTitle()
+        let now = Date()
+        let persisted = PersistedConversation(
+            id: id,
+            title: title,
+            createdAt: conversations.first(where: { $0.id == id })?.createdAt ?? now,
+            updatedAt: now,
+            messages: messages.map { PersistedMessage(from: $0) }
+        )
+        historyStore.save(persisted)
+        currentConversationID = id
+        if let index = conversations.firstIndex(where: { $0.id == id }) {
+            conversations[index] = persisted
+        } else {
+            conversations.insert(persisted, at: 0)
+        }
+        conversations.sort { $0.updatedAt > $1.updatedAt }
+    }
+
+    private func conversationTitle() -> String {
+        let firstUser = messages.first(where: { $0.role == .user })?.text ?? "New conversation"
+        let trimmed = firstUser.replacingOccurrences(of: "\n", with: " ").trimmingCharacters(in: .whitespaces)
+        return String(trimmed.prefix(60))
+    }
+
+    func schedulePersist() {
+        persistenceDebounceTask?.cancel()
+        persistenceDebounceTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 600_000_000)
+            await MainActor.run { self?.persistCurrentConversation() }
+        }
+    }
+
+    // MARK: - Message actions
+
+    func copyMessage(id: GhostMessage.ID) {
+        guard let message = messages.first(where: { $0.id == id }) else { return }
+        ClipboardService().writeText(message.text)
+        recordActivity(GhostActivityEntry(kind: .info, title: "Copied", detail: "Message copied to clipboard."))
+    }
+
+    func deleteMessage(id: GhostMessage.ID) {
+        messages.removeAll { $0.id == id }
+        schedulePersist()
+    }
+
+    func regenerateLastResponse() {
+        guard !isSending else { return }
+        guard let lastIndex = messages.lastIndex(where: { $0.role == .ghost || $0.role == .system }),
+              let userIndex = messages.lastIndex(where: { $0.role == .user && $0.id != messages[lastIndex].id }) else {
+            return
+        }
+        let userText = messages[userIndex].text
+        messages.removeSubrange(userIndex + 1..<messages.count)
+        schedulePersist()
+        prompt = userText
+        send()
+    }
+
+    // MARK: - Export
+
+    func exportConversationMarkdown() -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+
+        var lines: [String] = []
+        lines.append("# Ghost conversation")
+        lines.append("")
+        lines.append("_Exported \(formatter.string(from: Date()))_")
+        lines.append("")
+        for message in messages {
+            let heading: String
+            switch message.role {
+            case .user: heading = "You"
+            case .ghost: heading = "Ghost"
+            case .system: heading = "Status"
+            }
+            lines.append("### \(heading)")
+            lines.append("")
+            lines.append(message.text)
+            lines.append("")
+            if let meta = message.runMetadata {
+                lines.append("> \(meta.summaryLine)")
+                lines.append("")
+            }
+        }
+        return lines.joined(separator: "\n")
+    }
+
+    func exportConversationToDesktop() {
+        let markdown = exportConversationMarkdown()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd-HHmm"
+        let fileName = "Ghost-\(formatter.string(from: Date())).md"
+        let desktop = URL(fileURLWithPath: NSHomeDirectory() + "/Desktop").appendingPathComponent(fileName)
+        do {
+            try markdown.write(to: desktop, atomically: true, encoding: .utf8)
+            recordActivity(GhostActivityEntry(kind: .success, title: "Exported", detail: "Conversation saved to Desktop as \(fileName)."))
+            messages.append(GhostMessage(role: .system, text: "Exported conversation to Desktop as \(fileName)."))
+            schedulePersist()
+        } catch {
+            recordActivity(GhostActivityEntry(kind: .error, title: "Export failed", detail: error.localizedDescription))
+        }
+    }
+
+    // MARK: - Prompt library
+
+    func togglePromptLibrary() {
+        isPromptLibraryVisible.toggle()
+    }
+
+    func useSavedPrompt(_ prompt: SavedPrompt) {
+        self.prompt = prompt.body
+        isPromptLibraryVisible = false
+    }
+
+    func saveCurrentPromptAsLibraryEntry() {
+        let text = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { return }
+        savedPrompts = promptLibrary.add(title: String(text.prefix(40)), body: text)
+    }
+
+    @discardableResult
+    func addPromptToLibrary(title: String, body: String) -> [SavedPrompt] {
+        savedPrompts = promptLibrary.add(title: title, body: body)
+        return savedPrompts
+    }
+
+    func deleteSavedPrompt(id: UUID) {
+        savedPrompts = promptLibrary.remove(id: id)
     }
 
     var terminalPromptPrefix: String {
@@ -1468,8 +1672,9 @@ final class GhostConversationStore {
                         summary: error.localizedDescription
                     )
 
-                    messages.append(GhostMessage(role: .system, text: error.localizedDescription))
-                }
+messages.append(GhostMessage(role: .system, text: error.localizedDescription))
+            }
+            schedulePersist()
             }
             activeRunStartedAt = nil
             isRunningQueue = false

@@ -1,98 +1,352 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ghost App Capability Gallery</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ghost — A premium local-first macOS AI workspace</title>
     <meta
       name="description"
-      content="An immersive dark gallery of Ghost macOS app capabilities, local model routing, RAG memory, verified actions, and native Mac tools."
-    >
-    <meta property="og:title" content="Ghost App Capability Gallery">
+      content="Ghost is a premium local-first macOS AI workspace. Route prompts to local and hosted models, search your private knowledge base, and run verified Mac actions from one menu-bar app."
+    />
+    <meta
+      property="og:title"
+      content="Ghost — A premium local-first macOS AI workspace"
+    />
     <meta
       property="og:description"
-      content="Step inside a dark curved wall of Ghost macOS app capabilities."
-    >
-    <meta property="og:image" content="assets/ghost-hero.png">
-    <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="18" fill="%23040307"/><path d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z" fill="%23f7f0ff"/><circle cx="26" cy="29" r="3" fill="%23040307"/><circle cx="38" cy="29" r="3" fill="%23040307"/></svg>'>
-    <link rel="stylesheet" href="styles.css">
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
-          "gsap": "https://esm.sh/gsap@3.12.5"
-        }
-      }
-    </script>
+      content="Route models, retrieve local documents, and run verified Mac actions from one private menu-bar workspace."
+    />
+    <meta property="og:image" content="assets/ghost-hero.png" />
+    <meta name="theme-color" content="#05030a" />
+    <link
+      rel="icon"
+      href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="18" fill="%23040307"/><path d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z" fill="%23f7f0ff"/><circle cx="26" cy="29" r="3" fill="%23040307"/><circle cx="38" cy="29" r="3" fill="%23040307"/></svg>'
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="experience" aria-label="Ghost immersive app capability gallery">
-      <canvas id="gallery-canvas" aria-label="Interactive curved Ghost app capability wall"></canvas>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="aurora" aria-hidden="true"></div>
 
-      <section class="hud" aria-labelledby="hero-title">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true"></span>
-          <span>Ghost</span>
-        </div>
-        <p class="eyebrow">macOS AI workspace</p>
-        <h1 id="hero-title">Explore Ghost capabilities.</h1>
-        <p>
-          Drag the curved wall, focus a feature, and open practical details for the Mac app.
+    <header class="nav" id="nav">
+      <a class="nav-brand" href="#top" aria-label="Ghost home">
+        <span class="ghost-mark" aria-hidden="true"></span>
+        <span>Ghost</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#capabilities">Capabilities</a>
+        <a href="#how">How it works</a>
+        <a href="#providers">Providers</a>
+        <a href="#privacy">Privacy</a>
+      </nav>
+      <a
+        class="nav-cta"
+        href="https://github.com/ryuhemingway/Ghost-App"
+        target="_blank"
+        rel="noopener"
+      >
+        View on GitHub
+      </a>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="eyebrow">macOS · Local-first · Menu bar</p>
+        <h1 id="hero-title">
+          A premium AI workspace that lives in your menu bar.
+        </h1>
+        <p class="lede">
+          Ghost routes prompts to local and hosted models, searches your private
+          knowledge base, and runs verified Mac actions — all from one quiet,
+          native interface.
         </p>
-        <div class="hud-controls" aria-label="Gallery controls">
-          <span>Drag</span>
-          <span>Hover</span>
-          <span>Click</span>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#capabilities"
+            >Explore capabilities</a
+          >
+          <a class="btn btn-ghost" href="#how">See how it works</a>
         </div>
+        <ul class="hero-stats" aria-label="At a glance">
+          <li>
+            <span class="stat-num">5</span
+            ><span class="stat-label">Model providers</span>
+          </li>
+          <li>
+            <span class="stat-num">2</span
+            ><span class="stat-label">Execution engines</span>
+          </li>
+          <li>
+            <span class="stat-num">25+</span
+            ><span class="stat-label">File formats</span>
+          </li>
+          <li>
+            <span class="stat-num">⌥Space</span
+            ><span class="stat-label">Global shortcut</span>
+          </li>
+        </ul>
       </section>
 
-      <aside class="control-panel" aria-label="Interaction controls">
-        <span><kbd>Drag</kbd> rotate wall</span>
-        <span><kbd>Hover</kbd> focus card</span>
-        <span><kbd>Click</kbd> open detail</span>
-      </aside>
-
-      <div class="scene-status" aria-live="polite">
-        <span class="status-dot" aria-hidden="true"></span>
-        <span id="status-text">Ghost feature wall ready</span>
-      </div>
-
-      <section class="detail" id="detail" aria-hidden="true" aria-labelledby="detail-title">
-        <button class="detail-close" type="button" aria-label="Return to Ghost feature wall">
-          Return to wall
-        </button>
-        <div class="detail-shell">
-          <div class="detail-preview" id="detail-preview" aria-hidden="true"></div>
-          <p class="eyebrow" id="detail-kicker">Ghost module</p>
-          <h2 id="detail-title">Private command center</h2>
-          <p id="detail-copy">
-            Ghost routes models, documents, agents, and verified actions through one spatial command
-            layer for your Mac.
+      <section
+        class="capabilities"
+        id="capabilities"
+        aria-labelledby="cap-title"
+      >
+        <div class="section-head">
+          <p class="eyebrow">Capabilities</p>
+          <h2 id="cap-title">
+            One surface for models, memory, and Mac actions.
+          </h2>
+          <p class="section-sub">
+            Every capability below is built into Ghost — not a roadmap. Filter
+            by what matters to you.
           </p>
-          <dl class="detail-meta">
-            <div>
-              <dt>Module</dt>
-              <dd id="detail-layer">Local-first</dd>
-            </div>
-            <div>
-              <dt>How it helps</dt>
-              <dd id="detail-help">Keeps models, files, and actions in one workspace.</dd>
-            </div>
-            <div>
-              <dt>How it works</dt>
-              <dd id="detail-work">Ghost routes the request, retrieves context, and verifies results.</dd>
-            </div>
-            <div>
-              <dt>Status</dt>
-              <dd id="detail-status">Ghost app capability</dd>
-            </div>
-          </dl>
+        </div>
+
+        <div class="filters" role="tablist" aria-label="Filter capabilities">
+          <button
+            class="filter is-active"
+            data-filter="all"
+            role="tab"
+            aria-selected="true"
+          >
+            All
+          </button>
+          <button
+            class="filter"
+            data-filter="Routing"
+            role="tab"
+            aria-selected="false"
+          >
+            Routing
+          </button>
+          <button
+            class="filter"
+            data-filter="Local"
+            role="tab"
+            aria-selected="false"
+          >
+            Local
+          </button>
+          <button
+            class="filter"
+            data-filter="Cloud"
+            role="tab"
+            aria-selected="false"
+          >
+            Cloud
+          </button>
+          <button
+            class="filter"
+            data-filter="Retrieval"
+            role="tab"
+            aria-selected="false"
+          >
+            Retrieval
+          </button>
+          <button
+            class="filter"
+            data-filter="Actions"
+            role="tab"
+            aria-selected="false"
+          >
+            Actions
+          </button>
+          <button
+            class="filter"
+            data-filter="Native"
+            role="tab"
+            aria-selected="false"
+          >
+            Native
+          </button>
+          <button
+            class="filter"
+            data-filter="Developer"
+            role="tab"
+            aria-selected="false"
+          >
+            Developer
+          </button>
+        </div>
+
+        <div class="grid" id="grid" aria-live="polite"></div>
+      </section>
+
+      <section class="how" id="how" aria-labelledby="how-title">
+        <div class="section-head">
+          <p class="eyebrow">How it works</p>
+          <h2 id="how-title">Ask once. Ghost handles the rest.</h2>
+        </div>
+        <ol class="steps">
+          <li>
+            <span class="step-num">01</span>
+            <h3>Open Ghost</h3>
+            <p>
+              Summon it from the menu bar or press Option-Space from anywhere on
+              your Mac.
+            </p>
+          </li>
+          <li>
+            <span class="step-num">02</span>
+            <h3>Ghost routes the prompt</h3>
+            <p>
+              Provider, model, and engine are chosen automatically — Direct API
+              for fast answers, the agent path for files, code, and multi-step
+              work.
+            </p>
+          </li>
+          <li>
+            <span class="step-num">03</span>
+            <h3>Context is retrieved</h3>
+            <p>
+              When a prompt needs local knowledge, Ghost queries your private
+              RAG index for cited, source-backed chunks.
+            </p>
+          </li>
+          <li>
+            <span class="step-num">04</span>
+            <h3>Actions are verified</h3>
+            <p>
+              The capability harness validates, runs, and returns the real
+              result — not a model claim — for files, conversions, and Mac
+              integrations.
+            </p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="providers" id="providers" aria-labelledby="prov-title">
+        <div class="section-head">
+          <p class="eyebrow">Providers</p>
+          <h2 id="prov-title">Local and hosted, side by side.</h2>
+          <p class="section-sub">
+            Keep sensitive work on your machine with LM Studio or Ollama. Bring
+            in Claude, Gemini, or DeepSeek when a hosted model fits the task.
+          </p>
+        </div>
+        <div class="provider-grid">
+          <article class="provider-card">
+            <span class="prov-tag local">Local</span>
+            <h3>LM Studio</h3>
+            <p>OpenAI-compatible server at localhost:1234.</p>
+          </article>
+          <article class="provider-card">
+            <span class="prov-tag local">Local</span>
+            <h3>Ollama</h3>
+            <p>Discover tags and route to localhost:11434.</p>
+          </article>
+          <article class="provider-card">
+            <span class="prov-tag cloud">Cloud</span>
+            <h3>Claude</h3>
+            <p>Anthropic models via ANTHROPIC_API_KEY.</p>
+          </article>
+          <article class="provider-card">
+            <span class="prov-tag cloud">Cloud</span>
+            <h3>Gemini</h3>
+            <p>Google models via GEMINI_API_KEY.</p>
+          </article>
+          <article class="provider-card">
+            <span class="prov-tag cloud">Cloud</span>
+            <h3>DeepSeek</h3>
+            <p>Hosted reasoning via DEEPSEEK_API_KEY.</p>
+          </article>
         </div>
       </section>
 
-      <div class="vignette" aria-hidden="true"></div>
+      <section class="privacy" id="privacy" aria-labelledby="priv-title">
+        <div class="privacy-shell">
+          <p class="eyebrow">Privacy</p>
+          <h2 id="priv-title">Local-first by default.</h2>
+          <p class="privacy-copy">
+            Ghost separates local providers, local indexes, and hosted key paths
+            — so privacy is a routing choice, not an afterthought. Your RAG
+            index lives in a local SQLite database, and provider secrets stay
+            scoped to the routes you choose.
+          </p>
+          <ul class="privacy-list">
+            <li>Local models and local retrieval keep traffic on your Mac.</li>
+            <li>
+              Secrets are loaded from Ghost's local env store and filtered by
+              provider.
+            </li>
+            <li>Higher-risk actions require explicit approval paths.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="cta-band" aria-labelledby="cta-title">
+        <h2 id="cta-title">
+          Bring your models, your files, and your Mac together.
+        </h2>
+        <p>Ghost is open source and runs as a native macOS menu-bar app.</p>
+        <div class="hero-actions">
+          <a
+            class="btn btn-primary"
+            href="https://github.com/ryuhemingway/Ghost-App"
+            target="_blank"
+            rel="noopener"
+            >View on GitHub</a
+          >
+          <a class="btn btn-ghost" href="#capabilities">Browse capabilities</a>
+        </div>
+      </section>
     </main>
 
-    <script type="module" src="script.js"></script>
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="ghost-mark sm" aria-hidden="true"></span>
+          <span>Ghost</span>
+        </div>
+        <p class="footer-note">A premium local-first macOS AI workspace.</p>
+        <p class="footer-copy">© <span id="year"></span> Ghost. Open source.</p>
+      </div>
+    </footer>
+
+    <div
+      class="modal"
+      id="modal"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-shell" role="document">
+        <button class="modal-close" type="button" aria-label="Close" data-close>
+          ✕
+        </button>
+        <p class="eyebrow" id="modal-kicker">Ghost module</p>
+        <h3 id="modal-title">Title</h3>
+        <p id="modal-copy">Copy</p>
+        <dl class="modal-meta">
+          <div>
+            <dt>Module</dt>
+            <dd id="modal-module">—</dd>
+          </div>
+          <div>
+            <dt>How it helps</dt>
+            <dd id="modal-help">—</dd>
+          </div>
+          <div>
+            <dt>How it works</dt>
+            <dd id="modal-works">—</dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd id="modal-status">—</dd>
+          </div>
+        </dl>
+        <ul class="modal-chips" id="modal-chips"></ul>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
   </body>
 </html>

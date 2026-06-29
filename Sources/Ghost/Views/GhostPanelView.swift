@@ -1,6 +1,13 @@
 import AppKit
 import SwiftUI
 
+private struct ScrollOffsetPreferenceKey: PreferenceKey {
+    nonisolated(unsafe) static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = min(value, nextValue())
+    }
+}
+
 struct GhostPanelView: View {
     @Bindable var store: GhostConversationStore
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -372,6 +379,18 @@ struct GhostPanelView: View {
 
             Spacer(minLength: usesCompactHeader ? 4 : 8)
 
+            GlassIconButton(
+                systemImage: "square.and.pencil",
+                help: "New chat",
+                isActive: false
+            ) { store.startNewConversation() }
+
+            GlassIconButton(
+                systemImage: "clock.arrow.circlepath",
+                help: "History",
+                isActive: store.isHistoryVisible
+            ) { store.toggleHistory() }
+
             PanelSizeSwitcher(store: store)
 
             GlassIconButton(
@@ -404,6 +423,19 @@ struct GhostPanelView: View {
                     ForEach(GhostCodeOutputMode.allCases) { mode in
                         Label(mode.title, systemImage: mode.systemImage).tag(mode)
                     }
+                }
+                Divider()
+                Button { store.startNewConversation() } label: {
+                    Label("New Chat", systemImage: "square.and.pencil")
+                }
+                Button { store.toggleHistory() } label: {
+                    Label("History", systemImage: "clock.arrow.circlepath")
+                }
+                Button { store.exportConversationToDesktop() } label: {
+                    Label("Export to Markdown", systemImage: "square.and.arrow.up")
+                }
+                Button { store.togglePromptLibrary() } label: {
+                    Label("Prompt Library", systemImage: "bookmark")
                 }
                 Divider()
                 Button { store.clearConversation() } label: {
@@ -474,6 +506,20 @@ struct GhostPanelView: View {
             composer
         }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: store.isActivityVisible)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: store.isHistoryVisible)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: store.isPromptLibraryVisible)
+        .overlay(alignment: .trailing) {
+            if store.isHistoryVisible {
+                HistoryDrawerView(store: store)
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if store.isPromptLibraryVisible {
+                PromptLibraryPopover(store: store)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
     }
 
     private var transcript: some View {
@@ -494,7 +540,7 @@ struct GhostPanelView: View {
                     } else {
                         LazyVStack(alignment: .leading, spacing: GhostSpacing.relaxed) {
                             ForEach(store.messages) { message in
-                                FloatingMessageCard(message: message)
+                                FloatingMessageCard(message: message, store: store)
                                     .id(message.id)
                             }
 
@@ -511,15 +557,52 @@ struct GhostPanelView: View {
                             Color.clear
                                 .frame(height: 1)
                                 .id("chat-bottom")
+                                .background(
+                                    GeometryReader { proxy in
+                                        Color.clear.preference(
+                                            key: ScrollOffsetPreferenceKey.self,
+                                            value: proxy.frame(in: .named("ghostScroll")).minY
+                                        )
+                                    }
+                                )
                         }
                         .padding(.horizontal, GhostSpacing.wide)
                         .padding(.vertical, GhostSpacing.relaxed)
                         .padding(.bottom, GhostSpacing.wide)
                     }
                 }
+                .scrollDismissesKeyboard(.interactively)
                 .frame(width: geometry.size.width, height: geometry.size.height)
+                .coordinateSpace(name: "ghostScroll")
+                .overlay(alignment: .bottom) {
+                    if !store.messages.isEmpty && store.isScrolledAwayFromBottom {
+                        Button {
+                            scrollToBottom(proxy, animated: true)
+                        } label: {
+                            Image(systemName: "arrow.down")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(GhostColors.platinum)
+                                .frame(width: 30, height: 30)
+                                .background(
+                                    Circle()
+                                        .fill(GhostColors.popoverFill)
+                                        .overlay(Circle().stroke(GhostColors.glassBorder, lineWidth: 1))
+                                )
+                                .shadow(color: .black.opacity(0.3), radius: 8, y: 3)
+                        }
+                        .buttonStyle(PressableButtonStyle(reduceMotion: reduceMotion))
+                        .padding(.bottom, 10)
+                        .transition(.scale.combined(with: .opacity))
+                    }
+                }
                 .onChange(of: store.messages.count) { _, _ in
                     scrollToBottom(proxy, animated: true)
+                }
+                .onChange(of: store.messages) { _, _ in
+                    store.schedulePersist()
+                    if store.isPinnedToBottom {
+                        scrollToBottom(proxy, animated: true)
+                    }
                 }
                 // Do not auto-scroll on every taskTimeline mutation. Timeline updates
                 // stream frequently and yanking the viewport makes manual scrolling feel broken.
@@ -531,6 +614,9 @@ struct GhostPanelView: View {
                 }
                 .onAppear {
                     scrollToBottom(proxy, animated: false)
+                }
+                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+                    store.isPinnedToBottom = value <= 48
                 }
             }
         }
@@ -586,6 +672,22 @@ struct GhostPanelView: View {
                 EmptyChip("Debug code") { store.prompt = "Debug this error in the current project" }
             }
             .frame(maxWidth: .infinity, alignment: .center)
+
+            if !store.savedPrompts.isEmpty {
+                VStack(spacing: 8) {
+                    Text("Saved prompts")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(GhostColors.faintPlatinum)
+                        .textCase(.uppercase)
+
+                    HStack(spacing: 8) {
+                        ForEach(store.savedPrompts.prefix(4)) { prompt in
+                            EmptyChip(prompt.title) { store.useSavedPrompt(prompt) }
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
+            }
         }
         .padding(.horizontal, 32)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
@@ -600,6 +702,14 @@ struct GhostPanelView: View {
             HStack(alignment: .bottom, spacing: GhostSpacing.standard) {
                 ComposerButton(systemImage: "doc.on.clipboard", help: "Use Clipboard") {
                     store.useClipboard()
+                }
+
+                ComposerButton(
+                    systemImage: "bookmark",
+                    help: "Prompt Library",
+                    isActive: store.isPromptLibraryVisible
+                ) {
+                    store.togglePromptLibrary()
                 }
 
                 ComposerButton(
@@ -2338,6 +2448,8 @@ private struct CosmicBackground: View {
 
 private struct FloatingMessageCard: View {
     let message: GhostMessage
+    @Bindable var store: GhostConversationStore
+    @State private var isHovering = false
 
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
@@ -2365,6 +2477,13 @@ private struct FloatingMessageCard: View {
                             .font(.system(size: 10, weight: .medium, design: .default))
                             .foregroundStyle(GhostColors.faintPlatinum)
                             .textCase(.uppercase)
+
+                        Spacer(minLength: 4)
+
+                        if isHovering {
+                            messageActions
+                                .transition(.opacity)
+                        }
                     }
                 }
 
@@ -2390,7 +2509,42 @@ private struct FloatingMessageCard: View {
                 }
             }
             .shadow(color: message.role == .ghost ? GhostShadow.card : .clear, radius: 16, y: 6)
+            .onHover { hovering in
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    isHovering = hovering
+                }
+            }
         }
+    }
+
+    private var messageActions: some View {
+        HStack(spacing: 2) {
+            actionButton(icon: "doc.on.doc", help: "Copy") {
+                store.copyMessage(id: message.id)
+            }
+            if message.role == .ghost {
+                actionButton(icon: "arrow.clockwise", help: "Regenerate") {
+                    store.regenerateLastResponse()
+                }
+            }
+            actionButton(icon: "trash", help: "Delete") {
+                store.deleteMessage(id: message.id)
+            }
+        }
+    }
+
+    private func actionButton(icon: String, help: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: icon)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(GhostColors.mutedPlatinum)
+                .frame(width: 22, height: 22)
+                .background(
+                    Circle().fill(GhostColors.glassFill)
+                )
+        }
+        .buttonStyle(.plain)
+        .help(help)
     }
 
     private var roleColor: Color {
@@ -5745,5 +5899,251 @@ extension NSFont {
             name = "HK Grotesk"
         }
         return NSFont(name: name, size: size) ?? NSFont.systemFont(ofSize: size, weight: weight)
+    }
+}
+
+// MARK: - History drawer
+
+private struct HistoryDrawerView: View {
+    @Bindable var store: GhostConversationStore
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Spacer()
+            VStack(spacing: 0) {
+                drawerHeader
+                Divider().background(GhostColors.glassBorder)
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 6) {
+                        if store.conversations.isEmpty {
+                            Text("No conversations yet.")
+                                .font(.system(size: 12))
+                                .foregroundStyle(GhostColors.mutedPlatinum)
+                                .padding(.vertical, 24)
+                                .frame(maxWidth: .infinity)
+                        } else {
+                            ForEach(store.conversations) { conversation in
+                                HistoryRow(
+                                    conversation: conversation,
+                                    isActive: conversation.id == store.currentConversationID,
+                                    onLoad: { store.loadConversation(id: conversation.id) },
+                                    onDelete: { store.deleteConversation(id: conversation.id) }
+                                )
+                            }
+                        }
+                    }
+                    .padding(10)
+                }
+            }
+            .frame(width: 280)
+            .background(GhostColors.drawerFill.opacity(0.92))
+            .background(.ultraThinMaterial)
+            .overlay(
+                RoundedRectangle(cornerRadius: GhostRadii.card, style: .continuous)
+                    .stroke(GhostColors.glassBorder, lineWidth: 1)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: GhostRadii.card, style: .continuous))
+            .shadow(color: .black.opacity(0.4), radius: 20, y: 8)
+            .padding(8)
+        }
+    }
+
+    private var drawerHeader: some View {
+        HStack {
+            Text("History")
+                .font(GhostTypography.displayBold(size: 18))
+                .tracking(-0.3)
+                .foregroundStyle(GhostColors.platinum)
+            Spacer()
+            Button {
+                store.startNewConversation()
+            } label: {
+                Image(systemName: "square.and.pencil")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(GhostColors.mutedPlatinum)
+            }
+            .buttonStyle(.plain)
+            .help("New chat")
+            Button {
+                store.toggleHistory()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(GhostColors.mutedPlatinum)
+            }
+            .buttonStyle(.plain)
+            .help("Close")
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+    }
+}
+
+private struct HistoryRow: View {
+    let conversation: PersistedConversation
+    let isActive: Bool
+    let onLoad: () -> Void
+    let onDelete: () -> Void
+
+    var body: some View {
+        Button(action: onLoad) {
+            HStack(alignment: .top, spacing: 8) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(conversation.displayTitle)
+                        .font(.system(size: 12.5, weight: .semibold))
+                        .foregroundStyle(GhostColors.platinum)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                    Text(conversation.subtitle)
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(GhostColors.mutedPlatinum)
+                }
+                Spacer(minLength: 4)
+                Button {
+                    onDelete()
+                } label: {
+                    Image(systemName: "trash")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(GhostColors.faintPlatinum)
+                }
+                .buttonStyle(.plain)
+                .help("Delete")
+            }
+            .padding(10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: GhostRadii.small, style: .continuous)
+                    .fill(isActive ? GhostColors.glassActiveFill : GhostColors.glassFill)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: GhostRadii.small, style: .continuous)
+                    .stroke(isActive ? GhostColors.glassActiveBorder : .clear, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Prompt library popover
+
+private struct PromptLibraryPopover: View {
+    @Bindable var store: GhostConversationStore
+    @State private var newTitle = ""
+    @State private var newBody = ""
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Prompt Library")
+                    .font(GhostTypography.displayBold(size: 16))
+                    .tracking(-0.2)
+                    .foregroundStyle(GhostColors.platinum)
+                Spacer()
+                Button {
+                    store.togglePromptLibrary()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(GhostColors.mutedPlatinum)
+                }
+                .buttonStyle(.plain)
+                .help("Close")
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                TextField("Title (optional)", text: $newTitle)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 12))
+                    .foregroundStyle(GhostColors.platinum)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .background(RoundedRectangle(cornerRadius: 8).fill(GhostColors.glassFill))
+                TextField("Prompt body", text: $newBody, axis: .vertical)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 12))
+                    .foregroundStyle(GhostColors.platinum)
+                    .lineLimit(1...4)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .background(RoundedRectangle(cornerRadius: 8).fill(GhostColors.glassFill))
+                Button {
+                    guard !newBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+                    store.addPromptToLibrary(title: newTitle, body: newBody)
+                    newTitle = ""
+                    newBody = ""
+                } label: {
+                    Label("Save prompt", systemImage: "plus")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(GhostColors.platinum)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 6)
+                        .background(RoundedRectangle(cornerRadius: 8).fill(GhostColors.glassActiveFill))
+                }
+                .buttonStyle(.plain)
+            }
+
+            Divider().background(GhostColors.glassBorder)
+
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 6) {
+                    ForEach(store.savedPrompts) { prompt in
+                        PromptRow(
+                            prompt: prompt,
+                            onUse: { store.useSavedPrompt(prompt) },
+                            onDelete: { store.deleteSavedPrompt(id: prompt.id) }
+                        )
+                    }
+                }
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: 420, maxHeight: 320)
+        .background(GhostColors.popoverFill.opacity(0.96))
+        .background(.ultraThinMaterial)
+        .overlay(
+            RoundedRectangle(cornerRadius: GhostRadii.card, style: .continuous)
+                .stroke(GhostColors.glassBorder, lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: GhostRadii.card, style: .continuous))
+        .shadow(color: .black.opacity(0.4), radius: 20, y: 8)
+        .padding(.horizontal, 12)
+        .padding(.bottom, 76)
+    }
+}
+
+private struct PromptRow: View {
+    let prompt: SavedPrompt
+    let onUse: () -> Void
+    let onDelete: () -> Void
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Button(action: onUse) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(prompt.title)
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(GhostColors.platinum)
+                        .lineLimit(1)
+                    Text(prompt.body)
+                        .font(.system(size: 11))
+                        .foregroundStyle(GhostColors.mutedPlatinum)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.plain)
+            Button {
+                onDelete()
+            } label: {
+                Image(systemName: "trash")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(GhostColors.faintPlatinum)
+            }
+            .buttonStyle(.plain)
+            .help("Delete")
+        }
+        .padding(8)
+        .background(RoundedRectangle(cornerRadius: 8).fill(GhostColors.glassFill))
     }
 }
