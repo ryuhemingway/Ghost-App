@@ -1,3 +1,11 @@
+/* ============================================
+   GHOST — Award-winning website interactions
+   GSAP · Three.js · Custom cursor · 3D tilt
+   ============================================ */
+
+gsap.registerPlugin(ScrollTrigger);
+
+/* ---------------- CAPABILITY DATA ---------------- */
 const cards = [
   {
     kicker: "Agent Router",
@@ -9,10 +17,11 @@ const cards = [
     works:
       "The router scores the prompt, selected provider, model, and task type before choosing an engine.",
     status: "Built into Ghost",
+    size: "large",
   },
   {
     kicker: "Direct API Mode",
-    title: "Get fast answers from the selected model.",
+    title: "Fast answers from the selected model.",
     module: "Routing",
     copy: "Use provider APIs for quick writing, answers, summaries, and lightweight tool-supported work.",
     chips: ["Fast path", "Provider APIs", "Low friction"],
@@ -27,10 +36,11 @@ const cards = [
     module: "Local",
     copy: "LM Studio and Ollama keep model traffic close to your machine for private everyday work.",
     chips: ["LM Studio", "Ollama", "Local-first"],
-    help: "You can keep sensitive prompts away from hosted providers when local models are enough.",
+    help: "Keep sensitive prompts away from hosted providers when local models are enough.",
     works:
       "Ghost discovers local models from the configured localhost runtimes and routes prompts directly.",
     status: "Local providers",
+    size: "wide",
   },
   {
     kicker: "LM Studio",
@@ -49,7 +59,7 @@ const cards = [
     module: "Local",
     copy: "Ghost can discover Ollama tags and route local prompts to the Ollama server.",
     chips: ["localhost:11434", "Tags", "Local"],
-    help: "You can switch between downloaded local models without leaving Ghost.",
+    help: "Switch between downloaded local models without leaving Ghost.",
     works:
       "Ghost checks Ollama's model list and sends compatible local requests through its endpoint.",
     status: "Supported",
@@ -71,7 +81,7 @@ const cards = [
     module: "Cloud",
     copy: "Ghost supports Gemini provider configuration from the same model picker.",
     chips: ["Google key", "Hosted", "Model picker"],
-    help: "You can choose the model family that fits the work without changing apps.",
+    help: "Choose the model family that fits the work without changing apps.",
     works:
       "Ghost uses the configured Gemini or Google API key for provider-specific requests.",
     status: "API key required",
@@ -82,7 +92,7 @@ const cards = [
     module: "Cloud",
     copy: "Ghost includes DeepSeek options for hosted model runs when that provider is selected.",
     chips: ["DeepSeek key", "Hosted", "Direct"],
-    help: "You can test DeepSeek beside your local and other hosted models.",
+    help: "Test DeepSeek beside your local and other hosted models.",
     works:
       "Ghost maps the selected DeepSeek model through the Direct API client and scoped key handling.",
     status: "API key required",
@@ -97,6 +107,7 @@ const cards = [
     works:
       "Ghost stores document chunks in a local SQLite index and returns source-backed matches.",
     status: "Local database",
+    size: "wide",
   },
   {
     kicker: "Document Indexing",
@@ -115,7 +126,7 @@ const cards = [
     module: "Retrieval",
     copy: "Grounded answers can include inspectable source references rather than vague confidence.",
     chips: ["Citations", "Open source", "Traceable"],
-    help: "You can check where an answer came from before trusting or using it.",
+    help: "Check where an answer came from before trusting or using it.",
     works:
       "RAG search returns chunk metadata and source paths that Ghost can open or reveal.",
     status: "Source-aware",
@@ -137,7 +148,7 @@ const cards = [
     module: "Actions",
     copy: "Ghost can create, read, move, copy, convert, open, and reveal approved files.",
     chips: ["Create", "Convert", "Reveal"],
-    help: "You can ask for real artifacts and see where they landed.",
+    help: "Ask for real artifacts and see where they landed.",
     works:
       "File actions run through allowed roots and return actual paths, errors, and summaries.",
     status: "Harness tool",
@@ -159,7 +170,7 @@ const cards = [
     module: "Native",
     copy: "Turn natural language requests into reminders from the Ghost command surface.",
     chips: ["Follow-up", "Due dates", "Native"],
-    help: "You can convert intent into a reminder without context switching.",
+    help: "Convert intent into a reminder without context switching.",
     works:
       "Ghost routes reminder prompts to its automation layer and uses macOS permissions.",
     status: "Permissioned",
@@ -176,28 +187,6 @@ const cards = [
     status: "Permissioned",
   },
   {
-    kicker: "Web Context",
-    title: "Add current web context to answers.",
-    module: "Actions",
-    copy: "Ghost can bring web context into answers while keeping source awareness visible.",
-    chips: ["Search", "Context", "Sources"],
-    help: "Questions that need outside context can still live inside Ghost.",
-    works:
-      "The direct client prepares prompts with optional web context before provider execution.",
-    status: "Available path",
-  },
-  {
-    kicker: "Shell Checks",
-    title: "Run bounded checks when useful.",
-    module: "Developer",
-    copy: "Ghost supports restricted command checks with output caps and safer boundaries.",
-    chips: ["Read-only", "Output caps", "Review"],
-    help: "You can verify local state without turning every prompt into broad shell access.",
-    works:
-      "Read-only checks route through bounded command services and higher-risk commands require approval.",
-    status: "Guarded",
-  },
-  {
     kicker: "Ghost Code",
     title: "Use a wider coding workspace.",
     module: "Developer",
@@ -207,6 +196,17 @@ const cards = [
     works:
       "Ghost switches interface modes and sizes so agent work can show richer context.",
     status: "Interface mode",
+  },
+  {
+    kicker: "Shell Checks",
+    title: "Run bounded checks when useful.",
+    module: "Developer",
+    copy: "Ghost supports restricted command checks with output caps and safer boundaries.",
+    chips: ["Read-only", "Output caps", "Review"],
+    help: "Verify local state without turning every prompt into broad shell access.",
+    works:
+      "Read-only checks route through bounded command services and higher-risk commands require approval.",
+    status: "Guarded",
   },
   {
     kicker: "Menu Bar Workspace",
@@ -220,34 +220,12 @@ const cards = [
     status: "Native app",
   },
   {
-    kicker: "Provider Settings",
-    title: "Keep model keys scoped.",
-    module: "Actions",
-    copy: "Ghost stores provider secrets and applies them only to the selected model route.",
-    chips: ["Keys", "Scoped", "Secrets"],
-    help: "You can configure providers without spraying every key into every execution path.",
-    works:
-      "Secrets are loaded from Ghost's local env store and filtered by provider.",
-    status: "Local config",
-  },
-  {
-    kicker: "Agent Configuration",
-    title: "Connect the local agent you trust.",
-    module: "Developer",
-    copy: "Ghost can launch Ghost Agent or Hermes Agent from expected local binary paths.",
-    chips: ["ghost", "hermes", "Toolsets"],
-    help: "Longer work can move into an agent while Ghost remains the control surface.",
-    works:
-      "Ghost starts the selected CLI with model, provider, approval mode, and turn-limit options.",
-    status: "Local binary",
-  },
-  {
     kicker: "Local-first Privacy",
     title: "Choose what stays on your Mac.",
     module: "Local",
     copy: "Use local models and local retrieval when the work should remain close to your machine.",
     chips: ["Local models", "Local RAG", "Control"],
-    help: "You can make privacy a routing choice instead of an afterthought.",
+    help: "Make privacy a routing choice instead of an afterthought.",
     works:
       "Ghost separates local providers, local indexes, and hosted provider key paths.",
     status: "Design principle",
@@ -263,26 +241,62 @@ const cards = [
       "Finder actions run through the capability layer and return the resolved file path.",
     status: "Harness tool",
   },
+  {
+    kicker: "Agent Configuration",
+    title: "Connect the local agent you trust.",
+    module: "Developer",
+    copy: "Ghost can launch Ghost Agent or Hermes Agent from expected local binary paths.",
+    chips: ["ghost", "hermes", "Toolsets"],
+    help: "Longer work can move into an agent while Ghost remains the control surface.",
+    works:
+      "Ghost starts the selected CLI with model, provider, approval mode, and turn-limit options.",
+    status: "Local binary",
+  },
 ];
 
-const grid = document.getElementById("grid");
-const modal = document.getElementById("modal");
-const modalTitle = document.getElementById("modal-title");
-const modalKicker = document.getElementById("modal-kicker");
-const modalCopy = document.getElementById("modal-copy");
-const modalModule = document.getElementById("modal-module");
-const modalHelp = document.getElementById("modal-help");
-const modalWorks = document.getElementById("modal-works");
-const modalStatus = document.getElementById("modal-status");
-const modalChips = document.getElementById("modal-chips");
+const faqs = [
+  {
+    q: "What is Ghost?",
+    a: "Ghost is a premium local-first macOS AI workspace that lives in your menu bar. It routes prompts to local and hosted models, searches your private knowledge base with RAG, and runs verified Mac actions — all from one native interface.",
+  },
+  {
+    q: "Which model providers does Ghost support?",
+    a: "Ghost supports LM Studio and Ollama for local inference, plus Claude (Anthropic), Gemini (Google), and DeepSeek for hosted models. You can switch providers from the model picker without changing apps.",
+  },
+  {
+    q: "How does Ghost protect my privacy?",
+    a: "Ghost separates local providers, local indexes, and hosted key paths. Your RAG index lives in a local SQLite database, and provider secrets stay scoped to the routes you choose. You can keep sensitive work entirely on your Mac with local models.",
+  },
+  {
+    q: "What is the capability harness?",
+    a: "The capability harness is Ghost's action layer. It validates paths, gates risky actions, executes app-owned tools, and returns real results — not model claims. This means file actions, conversions, and Mac integrations are verified and safe.",
+  },
+  {
+    q: "How do I open Ghost?",
+    a: "Ghost runs as a menu-bar app. Click the ghost icon in your menu bar, or press Option-Space from anywhere on your Mac. The panel opens instantly and closes when you click away.",
+  },
+  {
+    q: "Is Ghost open source?",
+    a: "Yes. Ghost is open source and available on GitHub. You can build it from source using Swift Package Manager with the Xcode toolchain.",
+  },
+];
+
+/* ---------------- RENDER BENTO ---------------- */
+const bento = document.getElementById("bento");
 
 function renderCards(filter = "all") {
-  grid.innerHTML = "";
-  cards.forEach((card, index) => {
+  bento.innerHTML = "";
+  cards.forEach((card, i) => {
     const matches = filter === "all" || card.module === filter;
+    if (!matches) return;
     const el = document.createElement("article");
-    el.className = "card reveal" + (matches ? "" : " is-hidden");
-    el.style.transitionDelay = `${(index % 12) * 30}ms`;
+    el.className =
+      "bento-card reveal" +
+      (card.size === "large"
+        ? " is-large"
+        : card.size === "wide"
+          ? " is-wide"
+          : "");
     el.dataset.module = card.module;
     el.innerHTML = `
       <span class="card-module">${card.module}</span>
@@ -294,36 +308,83 @@ function renderCards(filter = "all") {
     el.addEventListener("click", () => openModal(card));
     el.addEventListener("mousemove", (e) => {
       const rect = el.getBoundingClientRect();
-      el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
-      el.style.setProperty("--my", `${e.clientY - rect.top}px`);
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      el.style.setProperty("--mx", `${x}px`);
+      el.style.setProperty("--my", `${y}px`);
+      const rotX = (y / rect.height - 0.5) * -6;
+      const rotY = (x / rect.width - 0.5) * 6;
+      gsap.to(el, {
+        rotationX: rotX,
+        rotationY: rotY,
+        duration: 0.4,
+        ease: "power2.out",
+        transformPerspective: 800,
+      });
     });
-    grid.appendChild(el);
+    el.addEventListener("mouseleave", () => {
+      gsap.to(el, {
+        rotationX: 0,
+        rotationY: 0,
+        duration: 0.5,
+        ease: "power3.out",
+      });
+    });
+    bento.appendChild(el);
   });
-  requestAnimationFrame(reveal);
+  initReveals();
 }
 
+/* ---------------- RENDER FAQ ---------------- */
+const faqList = document.getElementById("faq-list");
+faqs.forEach((faq) => {
+  const item = document.createElement("div");
+  item.className = "faq-item reveal";
+  item.innerHTML = `
+    <button class="faq-question" data-cursor="pointer">
+      <span>${faq.q}</span>
+      <span class="faq-icon">+</span>
+    </button>
+    <div class="faq-answer"><div class="faq-answer-inner">${faq.a}</div></div>
+  `;
+  const question = item.querySelector(".faq-question");
+  const answer = item.querySelector(".faq-answer");
+  question.addEventListener("click", () => {
+    const isOpen = item.classList.contains("is-open");
+    document.querySelectorAll(".faq-item").forEach((f) => {
+      f.classList.remove("is-open");
+      f.querySelector(".faq-answer").style.maxHeight = "0";
+    });
+    if (!isOpen) {
+      item.classList.add("is-open");
+      answer.style.maxHeight = answer.scrollHeight + "px";
+    }
+  });
+  faqList.appendChild(item);
+});
+
+/* ---------------- MODAL ---------------- */
+const modal = document.getElementById("modal");
 function openModal(card) {
-  modalKicker.textContent = card.kicker;
-  modalTitle.textContent = card.title;
-  modalCopy.textContent = card.copy;
-  modalModule.textContent = card.module;
-  modalHelp.textContent = card.help;
-  modalWorks.textContent = card.works;
-  modalStatus.textContent = card.status;
-  modalChips.innerHTML = card.chips
+  document.getElementById("modal-kicker").textContent = card.kicker;
+  document.getElementById("modal-title").textContent = card.title;
+  document.getElementById("modal-copy").textContent = card.copy;
+  document.getElementById("modal-module").textContent = card.module;
+  document.getElementById("modal-help").textContent = card.help;
+  document.getElementById("modal-works").textContent = card.works;
+  document.getElementById("modal-status").textContent = card.status;
+  document.getElementById("modal-chips").innerHTML = card.chips
     .map((c) => `<li class="chip">${c}</li>`)
     .join("");
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
 }
-
 function closeModal() {
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
 }
-
 modal
   .querySelectorAll("[data-close]")
   .forEach((el) => el.addEventListener("click", closeModal));
@@ -331,7 +392,7 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") closeModal();
 });
 
-// Filters
+/* ---------------- FILTERS ---------------- */
 document.querySelectorAll(".filter").forEach((btn) => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".filter").forEach((b) => {
@@ -344,7 +405,20 @@ document.querySelectorAll(".filter").forEach((btn) => {
   });
 });
 
-// Nav scroll state
+/* ---------------- THEME TOGGLE ---------------- */
+const themeToggle = document.getElementById("theme-toggle");
+themeToggle.addEventListener("click", () => {
+  const current = document.documentElement.dataset.theme;
+  const next = current === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  gsap.fromTo(
+    "body",
+    { opacity: 0.8 },
+    { opacity: 1, duration: 0.3, ease: "power2.out" },
+  );
+});
+
+/* ---------------- NAV SCROLL ---------------- */
 const nav = document.getElementById("nav");
 window.addEventListener(
   "scroll",
@@ -354,28 +428,215 @@ window.addEventListener(
   { passive: true },
 );
 
-// Reveal on scroll
-const revealObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("in");
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
-);
+/* ---------------- CUSTOM CURSOR ---------------- */
+const cursor = document.getElementById("cursor");
+const cursorDot = document.getElementById("cursor-dot");
+let mouseX = 0,
+  mouseY = 0,
+  cursorX = 0,
+  cursorY = 0;
 
-function reveal() {
-  document
-    .querySelectorAll(".reveal:not(.in)")
-    .forEach((el) => revealObserver.observe(el));
+window.addEventListener("mousemove", (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  cursorDot.style.left = mouseX + "px";
+  cursorDot.style.top = mouseY + "px";
+});
+
+function animateCursor() {
+  cursorX += (mouseX - cursorX) * 0.15;
+  cursorY += (mouseY - cursorY) * 0.15;
+  cursor.style.left = cursorX + "px";
+  cursor.style.top = cursorY + "px";
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+document.addEventListener("mouseover", (e) => {
+  if (e.target.closest("[data-cursor='pointer']")) {
+    cursor.classList.add("is-hover");
+  }
+});
+document.addEventListener("mouseout", (e) => {
+  if (e.target.closest("[data-cursor='pointer']")) {
+    cursor.classList.remove("is-hover");
+  }
+});
+
+/* ---------------- MAGNETIC BUTTONS ---------------- */
+document.querySelectorAll(".magnetic").forEach((btn) => {
+  btn.addEventListener("mousemove", (e) => {
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    gsap.to(btn, { x: x * 0.3, y: y * 0.3, duration: 0.4, ease: "power3.out" });
+  });
+  btn.addEventListener("mouseleave", () => {
+    gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1, 0.4)" });
+  });
+});
+
+/* ---------------- GSAP REVEALS ---------------- */
+function initReveals() {
+  gsap.utils.toArray(".reveal").forEach((el) => {
+    if (el.dataset.revealed) return;
+    el.dataset.revealed = "1";
+    gsap.to(el, {
+      scrollTrigger: {
+        trigger: el,
+        start: "top 88%",
+        toggleActions: "play none none none",
+      },
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      ease: "power3.out",
+      delay: el.dataset.step ? 0.1 : 0,
+    });
+  });
 }
 
-// Year
-document.getElementById("year").textContent = new Date().getFullYear();
+/* ---------------- HERO ENTRANCE ---------------- */
+gsap.from(".hero-badge", {
+  opacity: 0,
+  y: 20,
+  duration: 0.6,
+  ease: "power3.out",
+  delay: 0.1,
+});
+gsap.from(".hero-title", {
+  opacity: 0,
+  y: 30,
+  duration: 0.8,
+  ease: "power3.out",
+  delay: 0.2,
+});
+gsap.from(".hero-lede", {
+  opacity: 0,
+  y: 20,
+  duration: 0.7,
+  ease: "power3.out",
+  delay: 0.4,
+});
+gsap.from(".hero-actions", {
+  opacity: 0,
+  y: 20,
+  duration: 0.6,
+  ease: "power3.out",
+  delay: 0.6,
+});
+gsap.from(".hero-stats .stat", {
+  opacity: 0,
+  y: 20,
+  duration: 0.5,
+  ease: "power3.out",
+  delay: 0.8,
+  stagger: 0.08,
+});
 
-// Init
+/* ---------------- COUNTER ANIMATION ---------------- */
+document.querySelectorAll("[data-count]").forEach((el) => {
+  const target = parseInt(el.dataset.count);
+  const suffix = el.dataset.suffix || "";
+  ScrollTrigger.create({
+    trigger: el,
+    start: "top 90%",
+    once: true,
+    onEnter: () => {
+      gsap.to(el, {
+        textContent: target,
+        duration: 1.5,
+        ease: "power2.out",
+        snap: { textContent: 1 },
+        onUpdate: function () {
+          el.textContent = Math.round(this.targets()[0].textContent) + suffix;
+        },
+      });
+    },
+  });
+});
+
+/* ---------------- THREE.JS HERO PARTICLES ---------------- */
+let scene, camera, renderer, particles, particleGeo;
+let heroCanvas = document.getElementById("hero-canvas");
+
+function initThree() {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000,
+  );
+  camera.position.z = 50;
+  renderer = new THREE.WebGLRenderer({
+    canvas: heroCanvas,
+    alpha: true,
+    antialias: true,
+  });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const count = 400;
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 120;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 80;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 60;
+    const c = Math.random() > 0.5 ? [0.55, 0.36, 1] : [0.46, 0.89, 0.83];
+    colors[i * 3] = c[0];
+    colors[i * 3 + 1] = c[1];
+    colors[i * 3 + 2] = c[2];
+  }
+  particleGeo = new THREE.BufferGeometry();
+  particleGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  particleGeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  const material = new THREE.PointsMaterial({
+    size: 0.6,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.7,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  particles = new THREE.Points(particleGeo, material);
+  scene.add(particles);
+  animateThree();
+}
+
+let scrollY = 0;
+window.addEventListener(
+  "scroll",
+  () => {
+    scrollY = window.scrollY;
+  },
+  { passive: true },
+);
+
+function animateThree() {
+  requestAnimationFrame(animateThree);
+  if (!particles) return;
+  particles.rotation.y += 0.0008;
+  particles.rotation.x += 0.0003;
+  particles.position.y = scrollY * 0.005;
+  const positions = particleGeo.attributes.position.array;
+  for (let i = 0; i < positions.length; i += 3) {
+    positions[i + 1] += Math.sin(Date.now() * 0.0005 + i) * 0.008;
+  }
+  particleGeo.attributes.position.needsUpdate = true;
+  renderer.render(scene, camera);
+}
+
+window.addEventListener("resize", () => {
+  if (!renderer) return;
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+/* ---------------- INIT ---------------- */
 renderCards();
-reveal();
+initReveals();
+initThree();
+document.getElementById("year").textContent = new Date().getFullYear();
