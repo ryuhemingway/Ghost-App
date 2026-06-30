@@ -21,6 +21,7 @@ struct DirectAPIClient: Sendable {
     ///   May be empty for LM Studio, which needs none.
     func send(
         _ prompt: String,
+        imageAttachment: GhostImageAttachment? = nil,
         settings: GhostRunSettings,
         apiKey: String,
         onActivity: (@Sendable (GhostActivityEntry) -> Void)? = nil,
@@ -45,6 +46,7 @@ struct DirectAPIClient: Sendable {
             let endpoint = try openAICompatibleEndpoint(for: settings)
             let text = try await sendOpenAICompatibleToolLoop(
                 prompt: prompt,
+                imageAttachment: imageAttachment,
                 settings: settings,
                 apiKey: apiKey,
                 endpoint: endpoint,
@@ -71,9 +73,14 @@ struct DirectAPIClient: Sendable {
         }
 
         let preparedPrompt = await promptWithOptionalWebSearch(prompt, onActivity: onActivity)
-        let shouldStream = onToken != nil && supportsStreaming(settings.provider)
+        if imageAttachment != nil, !settings.supportsVision {
+            throw GhostClientError.commandFailed("\(settings.provider.title) model \(settings.model) is not marked as vision-capable. Switch to Claude, Gemini, or a local vision model to interpret pasted screenshots.")
+        }
+
+        let shouldStream = onToken != nil && supportsStreaming(settings.provider) && imageAttachment == nil
         let request = try buildRequest(
             prompt: preparedPrompt,
+            imageAttachment: imageAttachment,
             settings: settings,
             apiKey: apiKey,
             stream: shouldStream
@@ -253,6 +260,7 @@ struct DirectAPIClient: Sendable {
 
     private func sendOpenAICompatibleToolLoop(
         prompt: String,
+        imageAttachment: GhostImageAttachment? = nil,
         settings: GhostRunSettings,
         apiKey: String,
         endpoint: URL,
@@ -271,9 +279,13 @@ struct DirectAPIClient: Sendable {
             )
         )
 
+        if imageAttachment != nil, !settings.supportsVision {
+            throw GhostClientError.commandFailed("\(settings.provider.title) model \(settings.model) is not marked as vision-capable. Switch to a local vision model for screenshot interpretation.")
+        }
+
         var messages: [[String: Any]] = [
-            ["role": "system", "content": localToolSystemPrompt],
-            ["role": "user", "content": prompt]
+            ["role": "system", "content": localToolSystemPrompt(outputDirectory: settings.documentOutputDirectory.path, ragEnabled: settings.ragEnabled)],
+            ["role": "user", "content": openAICompatibleUserContent(prompt: prompt, imageAttachment: imageAttachment)]
         ]
 
         var lastHTTPStatus = 0
@@ -502,7 +514,7 @@ struct DirectAPIClient: Sendable {
             "messages": messages,
             "max_tokens": settings.effortMode.maxTokens,
             "temperature": 0.2,
-            "tools": localOpenAITools,
+            "tools": localOpenAITools(ragEnabled: settings.ragEnabled),
             "tool_choice": "auto"
         ]
 
@@ -510,8 +522,8 @@ struct DirectAPIClient: Sendable {
         return request
     }
 
-    private var localOpenAITools: [[String: Any]] {
-        [
+    private func localOpenAITools(ragEnabled: Bool) -> [[String: Any]] {
+        let tools = [
             openAIFunctionTool(
                 name: "ghost_web_search",
                 description: "Search the public web when the user asks for current, recent, source-backed, or online information. Do not use this for stable facts that can be answered directly.",
@@ -549,9 +561,9 @@ struct DirectAPIClient: Sendable {
             ),
             openAIFunctionTool(
                 name: "ghost_create_file",
-                description: "Create or update a UTF-8 text artifact. Allowed destinations are the workspace, ~/Ghost Outputs, ~/Desktop, ~/Downloads, and ~/Documents. If the user asks for Desktop/Downloads/Documents, pass an explicit path in that folder, such as ~/Desktop/file.html. Use this for text files, Markdown, HTML, JSON, CSV, source code, SVG, and other text-based artifacts. For binary PDF/DOCX/PPTX generation, route through Ghost Agent mode unless Ghost provides a native binary document tool.",
+                description: "Create or update a UTF-8 text artifact. Allowed destinations are the workspace, the selected Ghost output folder, ~/Ghost Outputs, ~/Desktop, ~/Downloads, and ~/Documents. If the user asks for Desktop/Downloads/Documents, pass an explicit path in that folder, such as ~/Desktop/file.html. Use this for text files, Markdown, HTML, JSON, CSV, source code, SVG, and other text-based artifacts. For binary PDF/DOCX/PPTX generation, route through Ghost Agent mode unless Ghost provides a native binary document tool.",
                 properties: [
-                    "path": ["type": "string", "description": "Workspace-relative path, or absolute/tilde path inside ~/Desktop, ~/Downloads, ~/Documents, ~/Ghost Outputs, or the workspace."],
+                    "path": ["type": "string", "description": "Workspace-relative path, or absolute/tilde path inside the selected Ghost output folder, ~/Desktop, ~/Downloads, ~/Documents, ~/Ghost Outputs, or the workspace."],
                     "content": ["type": "string", "description": "Full UTF-8 file content."],
                     "overwrite": ["type": "boolean", "description": "Whether to overwrite an existing file. Defaults to false."],
                     "create_parent_directories": ["type": "boolean", "description": "Whether to create missing parent folders. Defaults to true."]
@@ -831,6 +843,19 @@ struct DirectAPIClient: Sendable {
                 required: ["command"]
             )
         ]
+
+        guard ragEnabled else {
+            return tools.filter { tool in
+                guard let function = tool["function"] as? [String: Any],
+                      let name = function["name"] as? String
+                else {
+                    return true
+                }
+                return !name.hasPrefix("ghost_rag_")
+            }
+        }
+
+        return tools
     }
 
     private func openAIFunctionTool(
@@ -853,8 +878,18 @@ struct DirectAPIClient: Sendable {
         ]
     }
 
-    private var localToolSystemPrompt: String {
-        """
+    private func localToolSystemPrompt(outputDirectory: String, ragEnabled: Bool) -> String {
+        let ragToolSummary = ragEnabled
+            ? """
+            - ghost_rag_ingest_file / ghost_rag_ingest_folder / ghost_rag_sync_folder: index or refresh local documents for Ghost RAG.
+            - ghost_rag_query / ghost_rag_search_chunks: retrieve cited chunks from indexed documents before answering document questions.
+            - ghost_rag_status / ghost_rag_remove_document / ghost_rag_reindex / ghost_rag_open_source / ghost_rag_clear_index: manage the local RAG index.
+            """
+            : """
+            - Ghost RAG is disabled by user preference. Do not call or mention RAG tools. If document indexing is needed, tell the user to turn on RAG in Settings first.
+            """
+
+        return """
         You are Ghost, a native macOS assistant running with a local model through LM Studio or Ollama.
 
         You have real Ghost-managed tools in Direct API mode:
@@ -866,9 +901,7 @@ struct DirectAPIClient: Sendable {
         - ghost_create_pdf / ghost_create_docx / ghost_create_pptx / ghost_create_xlsx: native real document generation with verification.
         - ghost_create_folder / ghost_copy_file / ghost_move_file / ghost_delete_file: verified file management. Delete is high-risk; only use after explicit deletion intent.
         - ghost_open_file / ghost_reveal_in_finder: open or reveal verified allowed files.
-        - ghost_rag_ingest_file / ghost_rag_ingest_folder / ghost_rag_sync_folder: index or refresh local documents for Ghost RAG.
-        - ghost_rag_query / ghost_rag_search_chunks: retrieve cited chunks from indexed documents before answering document questions.
-        - ghost_rag_status / ghost_rag_remove_document / ghost_rag_reindex / ghost_rag_open_source / ghost_rag_clear_index: manage the local RAG index.
+        \(ragToolSummary)
         - ghost_schedule_reminder: create a one-shot macOS Reminder.
         - ghost_create_calendar_event: create a Calendar event with a notification.
         - ghost_query_calendar: read events from macOS Calendar for a concrete date range.
@@ -879,11 +912,13 @@ struct DirectAPIClient: Sendable {
         - Never output hidden channel syntax, browser.run, analysis to=..., <|channel|>, <|message|>, JSON blobs, XML tags, or markdown tool requests.
         - Do not invent tools. Use only the listed tools.
         - Prefer deterministic tools over guessing: search before claiming file contents, create files before saying they were saved, schedule reminders before confirming them.
-        - When the user asks what a document, PDF, folder, syllabus, contract, uploaded document, note, or indexed file says, call ghost_rag_query first and answer only from returned chunks with citations like [1].
-        - If a document question names a file or folder that has not been indexed, call ghost_rag_ingest_file or ghost_rag_ingest_folder first, then ghost_rag_query.
+        - Default Ghost-produced documents and code artifacts to \(outputDirectory) unless the user names another folder.
+        - When RAG is enabled and the user asks what a document, PDF, folder, syllabus, contract, uploaded document, note, or indexed file says, call ghost_rag_query first and answer only from returned chunks with citations like [1].
+        - When RAG is enabled and a document question names a file or folder that has not been indexed, call ghost_rag_ingest_file or ghost_rag_ingest_folder first, then ghost_rag_query.
         - If the user asks to create, make, save, write, or generate a text-based file such as .html, .md, .txt, .json, .csv, .css, .js, .py, .swift, or .svg, you must call ghost_create_file with the full file content before your final answer.
         - If the user says Desktop, Downloads, or Documents, the ghost_create_file path must be explicit, e.g. ~/Desktop/name.html. Do not save to the workspace and claim it is on Desktop.
         - Use ghost_web_search only for current/recent/source-backed facts, or when the user asks to look something up.
+        - If you use ghost_web_search or RAG results, end the final answer with `## References` and list each source title plus URL or file path you relied on.
         - Use native document tools for requested binary documents: ghost_create_pdf, ghost_create_docx, ghost_create_pptx, and ghost_create_xlsx. Do not fake these as plain text files.
         - For screenshots/OCR, email sending, broad computer control, dangerous shell actions, and large coding agent work, say Ghost Agent/OpenCode mode or explicit approval is needed unless Ghost already routed you there.
         - For reminders and calendar events, ask a clarifying question when date/time is ambiguous. For explicit one-shot reminders, call ghost_schedule_reminder. For explicit events, call ghost_create_calendar_event. For read-only calendar questions with an explicit or inferable range, call ghost_query_calendar before answering.
@@ -1112,6 +1147,15 @@ struct DirectAPIClient: Sendable {
         settings: GhostRunSettings,
         onActivity: (@Sendable (GhostActivityEntry) -> Void)?
     ) -> String {
+        guard settings.ragEnabled else {
+            return jsonString([
+                "ok": false,
+                "tool": toolCall.name,
+                "verified": false,
+                "error": "RAG is disabled by user preference. Turn on RAG in Ghost Settings before indexing or querying documents."
+            ])
+        }
+
         let arguments = jsonDictionary(from: toolCall.argumentsJSON)
         let path = (arguments["path"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         let query = (arguments["query"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1204,12 +1248,12 @@ struct DirectAPIClient: Sendable {
             return value
         }
 
-        return jsonString([
-            "ok": true,
-            "query": query,
-            "results": payloadResults,
-            "citation_instruction": "When using these results, cite them inline as [1], [2], etc."
-        ])
+            return jsonString([
+                "ok": true,
+                "query": query,
+                "results": payloadResults,
+                "citation_instruction": "When using these results, cite them inline as [1], [2], etc. End the final answer with ## References listing each relied-on source title and URL."
+            ])
     }
 
     private func executeSearchFilesTool(
@@ -2141,7 +2185,7 @@ struct DirectAPIClient: Sendable {
             Current web search results for "\(query)":
             \(formatSearchResults(results))
 
-            Answer using the search results as source material. Prefer specific facts, dates, locations, numbers, and named sources. Cite sources inline as [1], [2], etc. If sources conflict, say so plainly.
+            Answer using the search results as source material. Prefer specific facts, dates, locations, numbers, and named sources. Cite sources inline as [1], [2], etc. End with `## References` listing every source you relied on with title and URL. If sources conflict, say so plainly.
             """
         } catch {
             onActivity?(
@@ -2228,27 +2272,40 @@ struct DirectAPIClient: Sendable {
 
     private func buildRequest(
         prompt: String,
+        imageAttachment: GhostImageAttachment? = nil,
         settings: GhostRunSettings,
         apiKey: String,
         stream: Bool = false
     ) throws -> URLRequest {
         switch settings.provider {
         case .claude:
-            return try anthropicRequest(prompt: prompt, settings: settings, apiKey: apiKey, stream: stream)
+            return try anthropicRequest(prompt: prompt, imageAttachment: imageAttachment, settings: settings, apiKey: apiKey, stream: stream)
         case .gemini:
-            return try geminiRequest(prompt: prompt, settings: settings, apiKey: apiKey)
+            return try geminiRequest(prompt: prompt, imageAttachment: imageAttachment, settings: settings, apiKey: apiKey)
         case .deepSeek:
             return try openAICompatibleRequest(
                 prompt: prompt,
+                imageAttachment: imageAttachment,
                 settings: settings,
                 apiKey: apiKey,
                 endpoint: URL(string: "https://api.deepseek.com/v1/chat/completions")!,
                 requiresKey: true,
                 stream: stream
             )
+        case .openCodeGo:
+            return try openAICompatibleRequest(
+                prompt: prompt,
+                imageAttachment: imageAttachment,
+                settings: settings,
+                apiKey: apiKey,
+                endpoint: openAICompatibleEndpoint(for: settings),
+                requiresKey: true,
+                stream: stream
+            )
         case .lmStudio, .ollama:
             return try openAICompatibleRequest(
                 prompt: prompt,
+                imageAttachment: imageAttachment,
                 settings: settings,
                 apiKey: apiKey,
                 endpoint: openAICompatibleEndpoint(for: settings),
@@ -2260,6 +2317,7 @@ struct DirectAPIClient: Sendable {
 
     private func anthropicRequest(
         prompt: String,
+        imageAttachment: GhostImageAttachment? = nil,
         settings: GhostRunSettings,
         apiKey: String,
         stream: Bool
@@ -2270,10 +2328,25 @@ struct DirectAPIClient: Sendable {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
         request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
+        var content: Any = prompt
+        if let imageAttachment {
+            content = [
+                ["type": "text", "text": prompt],
+                [
+                    "type": "image",
+                    "source": [
+                        "type": "base64",
+                        "media_type": imageAttachment.mimeType,
+                        "data": imageAttachment.base64String
+                    ]
+                ]
+            ]
+        }
+
         var body: [String: Any] = [
             "model": settings.model,
             "max_tokens": settings.effortMode.maxTokens,
-            "messages": [["role": "user", "content": prompt]]
+            "messages": [["role": "user", "content": content]]
         ]
         if stream {
             body["stream"] = true
@@ -2282,7 +2355,12 @@ struct DirectAPIClient: Sendable {
         return request
     }
 
-    private func geminiRequest(prompt: String, settings: GhostRunSettings, apiKey: String) throws -> URLRequest {
+    private func geminiRequest(
+        prompt: String,
+        imageAttachment: GhostImageAttachment? = nil,
+        settings: GhostRunSettings,
+        apiKey: String
+    ) throws -> URLRequest {
         try requireKey(apiKey, provider: settings.provider)
         let urlString = "https://generativelanguage.googleapis.com/v1beta/models/\(settings.model):generateContent?key=\(apiKey)"
         guard let url = URL(string: urlString) else {
@@ -2291,16 +2369,45 @@ struct DirectAPIClient: Sendable {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        var parts: [[String: Any]] = [["text": prompt]]
+        if let imageAttachment {
+            parts.append([
+                "inline_data": [
+                    "mime_type": imageAttachment.mimeType,
+                    "data": imageAttachment.base64String
+                ]
+            ])
+        }
         let body: [String: Any] = [
-            "contents": [["parts": [["text": prompt]]]],
+            "contents": [["parts": parts]],
             "generationConfig": ["maxOutputTokens": settings.effortMode.maxTokens]
         ]
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
         return request
     }
 
+    private func openAICompatibleUserContent(
+        prompt: String,
+        imageAttachment: GhostImageAttachment?
+    ) -> Any {
+        guard let imageAttachment else {
+            return prompt
+        }
+
+        return [
+            ["type": "text", "text": prompt],
+            [
+                "type": "image_url",
+                "image_url": [
+                    "url": imageAttachment.dataURLString
+                ]
+            ]
+        ]
+    }
+
     private func openAICompatibleRequest(
         prompt: String,
+        imageAttachment: GhostImageAttachment? = nil,
         settings: GhostRunSettings,
         apiKey: String,
         endpoint: URL,
@@ -2317,14 +2424,14 @@ struct DirectAPIClient: Sendable {
             request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         }
 
-        let messages: [[String: String]]
+        let messages: [[String: Any]]
         if usesLocalOpenAIToolLoop(settings.provider) {
             messages = [
-                ["role": "system", "content": localToolSystemPrompt],
-                ["role": "user", "content": prompt]
+                ["role": "system", "content": localToolSystemPrompt(outputDirectory: settings.documentOutputDirectory.path, ragEnabled: settings.ragEnabled)],
+                ["role": "user", "content": openAICompatibleUserContent(prompt: prompt, imageAttachment: imageAttachment)]
             ]
         } else {
-            messages = [["role": "user", "content": prompt]]
+            messages = [["role": "user", "content": openAICompatibleUserContent(prompt: prompt, imageAttachment: imageAttachment)]]
         }
 
         var body: [String: Any] = [
@@ -2353,6 +2460,8 @@ struct DirectAPIClient: Sendable {
             return endpoint
         case .deepSeek:
             return URL(string: "https://api.deepseek.com/v1/chat/completions")!
+        case .openCodeGo:
+            return URL(string: "https://opencode.ai/zen/go/v1/chat/completions")!
         case .claude, .gemini:
             throw GhostClientError.commandFailed("\(settings.provider.title) does not use the OpenAI-compatible endpoint builder.")
         }
@@ -2360,7 +2469,7 @@ struct DirectAPIClient: Sendable {
 
     private func supportsStreaming(_ provider: GhostProvider) -> Bool {
         switch provider {
-        case .claude, .deepSeek:
+        case .claude, .deepSeek, .openCodeGo:
             true
         case .lmStudio, .ollama, .gemini:
             false
@@ -2371,7 +2480,7 @@ struct DirectAPIClient: Sendable {
         switch provider {
         case .lmStudio, .ollama:
             true
-        case .claude, .gemini, .deepSeek:
+        case .claude, .gemini, .deepSeek, .openCodeGo:
             false
         }
     }
@@ -2411,7 +2520,7 @@ struct DirectAPIClient: Sendable {
             else { return nil }
             let texts = parts.compactMap { $0["text"] as? String }
             return texts.isEmpty ? nil : texts.joined()
-        case .deepSeek, .lmStudio, .ollama:
+        case .deepSeek, .lmStudio, .ollama, .openCodeGo:
             guard
                 let choices = json["choices"] as? [[String: Any]],
                 let first = choices.first,
@@ -2459,7 +2568,7 @@ struct DirectAPIClient: Sendable {
             }
             return delta["text"] as? String
 
-        case .deepSeek, .lmStudio, .ollama:
+        case .deepSeek, .lmStudio, .ollama, .openCodeGo:
             guard let choices = json["choices"] as? [[String: Any]],
                   let first = choices.first
             else {

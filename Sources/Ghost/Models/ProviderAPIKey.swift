@@ -16,6 +16,7 @@ enum ProviderAPIKey: String, CaseIterable, Identifiable {
     case nvidia
     case moonshot
     case ollamaCloud
+    case openCodeGo
 
     var id: String { rawValue }
 
@@ -47,6 +48,8 @@ enum ProviderAPIKey: String, CaseIterable, Identifiable {
             "Moonshot AI"
         case .ollamaCloud:
             "Ollama Cloud"
+        case .openCodeGo:
+            "OpenCode Go"
         }
     }
 
@@ -54,7 +57,7 @@ enum ProviderAPIKey: String, CaseIterable, Identifiable {
         switch self {
         case .anthropic, .gemini, .deepSeek:
             "Ghost direct providers"
-        case .openAI, .openRouter, .groq, .xAI, .mistral, .together, .fireworks, .nvidia, .moonshot, .ollamaCloud:
+        case .openAI, .openRouter, .groq, .xAI, .mistral, .together, .fireworks, .nvidia, .moonshot, .ollamaCloud, .openCodeGo:
             "OpenCode / agent provider keys"
         }
     }
@@ -91,6 +94,8 @@ enum ProviderAPIKey: String, CaseIterable, Identifiable {
             "MOONSHOT_API_KEY"
         case .ollamaCloud:
             "OLLAMA_API_KEY"
+        case .openCodeGo:
+            "OPENCODE_API_KEY"
         }
     }
 }

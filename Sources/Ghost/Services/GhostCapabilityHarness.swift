@@ -59,19 +59,25 @@ struct GhostCapabilityHarness: Sendable {
     struct Roots: Sendable {
         let workspace: URL
         let home: URL
+        let customOutput: URL
         let ghostOutputs: URL
         let desktop: URL
         let downloads: URL
         let documents: URL
 
-        var readAllowed: [URL] { [workspace, ghostOutputs, desktop, downloads, documents] }
-        var writeAllowed: [URL] { [workspace, ghostOutputs, desktop, downloads, documents] }
+        var readAllowed: [URL] { [workspace, customOutput, ghostOutputs, desktop, downloads, documents] }
+        var writeAllowed: [URL] { [workspace, customOutput, ghostOutputs, desktop, downloads, documents] }
         var defaultWriteRoot: URL { workspace.appendingPathComponent("Ghost Outputs", isDirectory: true) }
 
         init(workspace: URL) {
             let fm = FileManager.default
             self.workspace = GhostCapabilityHarness.standardized(workspace).resolvingSymlinksInPath()
             self.home = fm.homeDirectoryForCurrentUser
+            let savedOutput = UserDefaults.standard.string(forKey: "documentOutputDirectoryPath")?.nonEmpty
+            let outputPath = ((savedOutput ?? "\(NSHomeDirectory())/Ghost Outputs") as NSString).expandingTildeInPath
+            self.customOutput = GhostCapabilityHarness.standardized(
+                URL(fileURLWithPath: outputPath, isDirectory: true)
+            ).resolvingSymlinksInPath()
             self.ghostOutputs = fm.homeDirectoryForCurrentUser.appendingPathComponent("Ghost Outputs", isDirectory: true)
             self.desktop = fm.homeDirectoryForCurrentUser.appendingPathComponent("Desktop", isDirectory: true)
             self.downloads = fm.homeDirectoryForCurrentUser.appendingPathComponent("Downloads", isDirectory: true)
@@ -541,7 +547,7 @@ struct GhostCapabilityHarness: Sendable {
             candidate = roots.documents.appendingPathComponent(suffix)
         } else if lower == "ghost outputs" || lower.hasPrefix("ghost outputs/") || lower.hasPrefix("ghost outputs/") {
             let suffix = lower == "ghost outputs" ? "" : String(trimmed.dropFirst("ghost outputs/".count))
-            candidate = roots.ghostOutputs.appendingPathComponent(suffix)
+            candidate = roots.customOutput.appendingPathComponent(suffix)
         } else {
             let expanded = (trimmed as NSString).expandingTildeInPath
             if expanded.hasPrefix("/") {
@@ -557,7 +563,7 @@ struct GhostCapabilityHarness: Sendable {
             throw HarnessError.pathNotAllowed("Path traversal is not allowed.")
         }
         guard allowedRoots.contains(where: { isContained(standardizedCandidate, in: Self.standardized($0).resolvingSymlinksInPath()) }) else {
-            throw HarnessError.pathNotAllowed("Path must stay inside an allowed folder: workspace, ~/Ghost Outputs, ~/Desktop, ~/Downloads, or ~/Documents.")
+            throw HarnessError.pathNotAllowed("Path must stay inside an allowed folder: workspace, Ghost output folder, ~/Ghost Outputs, ~/Desktop, ~/Downloads, or ~/Documents.")
         }
         return standardizedCandidate
     }

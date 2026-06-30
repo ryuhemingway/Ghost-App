@@ -4,11 +4,11 @@ import Darwin
 
 final class GhostDesktopRAGWatcher: @unchecked Sendable {
     private let store: GhostRAGStore
-    private let desktopURL: URL
     private let queue = DispatchQueue(label: "ghost.desktop-rag-watcher", qos: .utility)
     private let rescanIntervalNanoseconds: UInt64
     private let maxFiles: Int
 
+    private var watchedURL: URL?
     private var source: DispatchSourceFileSystemObject?
     private var descriptor: CInt = -1
     private var periodicTask: Task<Void, Never>?
@@ -17,22 +17,22 @@ final class GhostDesktopRAGWatcher: @unchecked Sendable {
 
     init(
         store: GhostRAGStore = GhostRAGStore(),
-        desktopURL: URL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Desktop", isDirectory: true),
         rescanInterval: TimeInterval = 900,
         maxFiles: Int = 20_000
     ) {
         self.store = store
-        self.desktopURL = desktopURL
         self.rescanIntervalNanoseconds = UInt64(max(30, rescanInterval) * 1_000_000_000)
         self.maxFiles = maxFiles
     }
 
     func start(
+        watchedURL: URL,
         workspace: URL,
         onActivity: @escaping @Sendable (GhostActivityEntry) -> Void
     ) {
         queue.async { [weak self] in
             guard let self, !self.isRunning else { return }
+            self.watchedURL = watchedURL
             self.isRunning = true
             self.startFileSystemSource(workspace: workspace, onActivity: onActivity)
             self.scheduleSync(reason: "startup", workspace: workspace, delay: 0, onActivity: onActivity)
@@ -54,6 +54,7 @@ final class GhostDesktopRAGWatcher: @unchecked Sendable {
                 close(self.descriptor)
                 self.descriptor = -1
             }
+            self.watchedURL = nil
         }
     }
 
@@ -61,9 +62,14 @@ final class GhostDesktopRAGWatcher: @unchecked Sendable {
         workspace: URL,
         onActivity: @escaping @Sendable (GhostActivityEntry) -> Void
     ) {
-        descriptor = open(desktopURL.path, O_EVTONLY)
+        guard let watchedURL else {
+            onActivity(GhostActivityEntry(kind: .error, title: "RAG watcher", detail: "No folder selected."))
+            return
+        }
+
+        descriptor = open(watchedURL.path, O_EVTONLY)
         guard descriptor >= 0 else {
-            onActivity(GhostActivityEntry(kind: .error, title: "Desktop RAG watcher", detail: "Could not watch \(desktopURL.path)."))
+            onActivity(GhostActivityEntry(kind: .error, title: "RAG watcher", detail: "Could not watch \(watchedURL.path)."))
             return
         }
 
@@ -73,7 +79,7 @@ final class GhostDesktopRAGWatcher: @unchecked Sendable {
             queue: queue
         )
         source.setEventHandler { [weak self] in
-            self?.scheduleSync(reason: "Desktop changed", workspace: workspace, delay: 2, onActivity: onActivity)
+            self?.scheduleSync(reason: "folder changed", workspace: workspace, delay: 2, onActivity: onActivity)
         }
         source.setCancelHandler { [weak self] in
             guard let self, self.descriptor >= 0 else { return }
@@ -83,7 +89,7 @@ final class GhostDesktopRAGWatcher: @unchecked Sendable {
         self.source = source
         source.resume()
 
-        onActivity(GhostActivityEntry(kind: .info, title: "Desktop RAG watcher", detail: "Watching \(desktopURL.path)."))
+        onActivity(GhostActivityEntry(kind: .info, title: "RAG watcher", detail: "Watching \(watchedURL.path)."))
     }
 
     private func startPeriodicRescan(
@@ -119,8 +125,13 @@ final class GhostDesktopRAGWatcher: @unchecked Sendable {
         workspace: URL,
         onActivity: @escaping @Sendable (GhostActivityEntry) -> Void
     ) {
+        guard let watchedURL else {
+            onActivity(GhostActivityEntry(kind: .error, title: "RAG sync failed", detail: "No folder selected."))
+            return
+        }
+
         let result = store.syncFolder(
-            path: desktopURL.path,
+            path: watchedURL.path,
             recursive: true,
             removeMissing: true,
             maxFiles: maxFiles,
@@ -133,10 +144,10 @@ final class GhostDesktopRAGWatcher: @unchecked Sendable {
         let title: String
         let kind: GhostActivityEntry.Kind
         if result["ok"] as? Bool == true {
-            title = truncated ? "Desktop RAG synced (truncated)" : "Desktop RAG synced"
+            title = truncated ? "RAG folder synced (truncated)" : "RAG folder synced"
             kind = .success
         } else {
-            title = "Desktop RAG sync failed"
+            title = "RAG sync failed"
             kind = .error
         }
 

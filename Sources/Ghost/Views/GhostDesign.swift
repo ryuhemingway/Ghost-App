@@ -67,6 +67,10 @@ enum GhostRadii {
     static let window: CGFloat = 20
 }
 
+enum GhostVersion {
+    static let current = "1.0.0"
+}
+
 enum GhostSpacing {
     static let compact4: CGFloat = 4
     static let compact6: CGFloat = 6

@@ -139,6 +139,8 @@ final class GhostConversationStore {
             UserDefaults.standard.set(selectedProvider.rawValue, forKey: Self.providerDefaultsKey)
             if selectedProvider == .ollama {
                 refreshOllamaModels()
+            } else if selectedProvider == .openCodeGo {
+                refreshOpenCodeGoModels()
             }
         }
     }
@@ -162,6 +164,13 @@ final class GhostConversationStore {
 
     var ollamaModels: [LocalModel] = []
     var isRefreshingOllamaModels = false
+    var selectedOpenCodeGoModel: String {
+        didSet {
+            UserDefaults.standard.set(selectedOpenCodeGoModel, forKey: Self.openCodeGoModelDefaultsKey)
+        }
+    }
+    var openCodeGoModels: [LocalModel] = []
+    var isRefreshingOpenCodeGoModels = false
     var selectedDeepSeekModel: String {
         didSet {
             UserDefaults.standard.set(selectedDeepSeekModel, forKey: Self.deepSeekModelDefaultsKey)
@@ -178,6 +187,42 @@ final class GhostConversationStore {
             UserDefaults.standard.set(workingDirectoryPath, forKey: Self.workingDirectoryDefaultsKey)
         }
     }
+    var documentOutputDirectoryPath: String {
+        didSet {
+            UserDefaults.standard.set(documentOutputDirectoryPath, forKey: Self.documentOutputDirectoryDefaultsKey)
+            ensureDocumentOutputDirectory()
+        }
+    }
+    var ragRootPath: String {
+        didSet {
+            UserDefaults.standard.set(ragRootPath, forKey: Self.ragRootDefaultsKey)
+            if isRAGEnabled {
+                desktopRAGWatcher.stop()
+                startDesktopRAGWatcher()
+            }
+        }
+    }
+    var isRAGEnabled: Bool {
+        didSet {
+            UserDefaults.standard.set(isRAGEnabled, forKey: Self.ragEnabledDefaultsKey)
+            if isRAGEnabled {
+                startDesktopRAGWatcher()
+                syncSelectedRAGFolder(reason: "enabled")
+            } else {
+                desktopRAGWatcher.stop()
+            }
+        }
+    }
+    var isPersistentWindow: Bool {
+        didSet {
+            UserDefaults.standard.set(isPersistentWindow, forKey: Self.persistentWindowDefaultsKey)
+        }
+    }
+    var terminalTheme: GhostTerminalTheme {
+        didSet {
+            UserDefaults.standard.set(terminalTheme.rawValue, forKey: Self.terminalThemeDefaultsKey)
+        }
+    }
     var localModels: [LocalModel] = []
     var isRefreshingLocalModels = false
     var settingsMessage: String?
@@ -189,6 +234,12 @@ final class GhostConversationStore {
     var messages: [GhostMessage] = []
     var activityEntries: [GhostActivityEntry] = []
     var isActivityVisible = false
+    var isDocumentStudioVisible = false
+    var producedDocuments: [GhostProducedDocument] = [] {
+        didSet {
+            persistProducedDocuments()
+        }
+    }
     var isPinnedToBottom = true
     var isScrolledAwayFromBottom: Bool { !isPinnedToBottom && !messages.isEmpty }
 
@@ -206,14 +257,21 @@ final class GhostConversationStore {
             UserDefaults.standard.set(isTerminalToolDetailsVisible, forKey: Self.terminalToolDetailsDefaultsKey)
         }
     }
+    var isTaskVerificationEnabled = true {
+        didSet {
+            UserDefaults.standard.set(isTaskVerificationEnabled, forKey: Self.taskVerificationDefaultsKey)
+        }
+    }
     var isSending = false
     var activeRunStartedAt: Date?
     var currentIntent: GhostDetectedIntent = .idle
     var activeContextChips: [GhostContextChip] = []
 
     var taskTimeline: GhostTaskTimeline = .idle
+    var taskTimelineAnchorMessageID: GhostMessage.ID?
 
     var lastTaskContext: GhostTaskContext?
+    var pendingImageAttachment: GhostImageAttachment?
 
     private var progressMarkerBuffer = ""
     private var ghostFallbackOutputTicks = 0
@@ -246,6 +304,125 @@ final class GhostConversationStore {
 
     var currentWorkLine: String {
         taskTimeline.isVisible ? taskTimeline.currentLine : "Thinking"
+    }
+
+    var presenceState: GhostPresenceState {
+        if isSending {
+            if taskTimeline.isWaitingForGhostPlan {
+                return GhostPresenceState(
+                    mode: .planning,
+                    title: "Planning",
+                    detail: "Creating the task plan",
+                    systemImage: "list.bullet.clipboard"
+                )
+            }
+
+            let lowerLine = currentWorkLine.lowercased()
+            if lowerLine.contains("verify")
+                || lowerLine.contains("test")
+                || lowerLine.contains("build")
+                || lowerLine.contains("checking")
+                || lowerLine.contains("confirmed") {
+                return GhostPresenceState(
+                    mode: .verifying,
+                    title: "Verifying",
+                    detail: currentWorkLine,
+                    systemImage: "checkmark.seal"
+                )
+            }
+
+            if lowerLine.contains("read")
+                || lowerLine.contains("search")
+                || lowerLine.contains("rag")
+                || lowerLine.contains("lookup")
+                || lowerLine.contains("reference") {
+                return GhostPresenceState(
+                    mode: .reading,
+                    title: "Reading",
+                    detail: currentWorkLine,
+                    systemImage: "doc.text.magnifyingglass"
+                )
+            }
+
+            if executionEngine == .ghostAgent || currentIntent.kind.requiresAgentTools {
+                return GhostPresenceState(
+                    mode: .working,
+                    title: "Working",
+                    detail: currentWorkLine,
+                    systemImage: "hammer"
+                )
+            }
+
+            return GhostPresenceState(
+                mode: .waiting,
+                title: "Thinking",
+                detail: currentWorkLine,
+                systemImage: "sparkles"
+            )
+        }
+
+        switch lastRunStatus {
+        case .completed:
+            return GhostPresenceState(
+                mode: .done,
+                title: "Ready",
+                detail: lastRunDuration.map { "Last run \(GhostTelemetrySnapshot.formatDuration($0))" } ?? "Last task finished",
+                systemImage: "checkmark.circle"
+            )
+        case .failed, .stopped:
+            return GhostPresenceState(
+                mode: .blocked,
+                title: "Needs attention",
+                detail: lastRunStatus == .stopped ? "Last run was stopped" : "Last run failed",
+                systemImage: "exclamationmark.triangle"
+            )
+        case .idle:
+            return GhostPresenceState(
+                mode: .ready,
+                title: "Ready",
+                detail: "Ask anything",
+                systemImage: "sparkles"
+            )
+        case .running:
+            return GhostPresenceState(
+                mode: .waiting,
+                title: "Thinking",
+                detail: currentWorkLine,
+                systemImage: "sparkles"
+            )
+        }
+    }
+
+    var routingShortLine: String {
+        if currentIntent == .idle {
+            return "Waiting for prompt"
+        }
+
+        let reason = currentIntent.reason
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .nonEmpty ?? currentIntent.shortTitle
+        return "\(executionEngine.title): \(reason)"
+    }
+
+    var routingExplanation: String {
+        if currentIntent == .idle {
+            return "Ghost is waiting for a prompt before choosing a route."
+        }
+
+        var parts: [String] = []
+        parts.append("Route: \(executionEngine.title)")
+        parts.append("Intent: \(currentIntent.title)")
+        parts.append("Reason: \(currentIntent.reason)")
+        if !currentIntent.routeLine.isEmpty {
+            parts.append("Plan: \(currentIntent.routeLine)")
+        }
+        let activeChips = activeContextChips
+            .filter(\.isActive)
+            .map { "\($0.title): \($0.detail)" }
+        if !activeChips.isEmpty {
+            parts.append("Context: \(activeChips.joined(separator: ", "))")
+        }
+        return parts.joined(separator: "\n")
     }
 
     var lastRunStartedAt: Date?
@@ -320,14 +497,14 @@ final class GhostConversationStore {
     private let ghostCodeChangeSetService = GhostCodeChangeSetService()
     private let intentRouter = GhostIntentRouter()
     private let ragStore = GhostRAGStore()
-    private let desktopRAGWatcher = GhostDesktopRAGWatcher()
+    private var desktopRAGWatcher = GhostDesktopRAGWatcher()
 
     var isRAGWatcherPaused: Bool {
         get { UserDefaults.standard.bool(forKey: Self.ragPausedDefaultsKey) }
         set {
             UserDefaults.standard.set(newValue, forKey: Self.ragPausedDefaultsKey)
             if newValue { desktopRAGWatcher.stop() }
-            else { startDesktopRAGWatcher() }
+            else if isRAGEnabled { startDesktopRAGWatcher() }
         }
     }
 
@@ -366,17 +543,25 @@ final class GhostConversationStore {
     private static let deepSeekModelDefaultsKey = "selectedDeepSeekModel"
     private static let localContextDefaultsKey = "localContextWindow"
     private static let workingDirectoryDefaultsKey = "workingDirectoryPath"
+    private static let documentOutputDirectoryDefaultsKey = "documentOutputDirectoryPath"
+    private static let ragRootDefaultsKey = "ragRootPath"
+    private static let ragEnabledDefaultsKey = "ragEnabled"
+    private static let persistentWindowDefaultsKey = "persistentWindow"
+    private static let terminalThemeDefaultsKey = "ghostTerminalTheme"
     private static let effortModeDefaultsKey = "effortMode"
     private static let approvalModeDefaultsKey = "approvalMode"
     private static let includeClipboardDefaultsKey = "includeClipboard"
     private static let toolsetsDefaultsKey = "toolsets"
     private static let recentPromptsDefaultsKey = "recentPrompts"
     private static let terminalToolDetailsDefaultsKey = "terminalToolDetailsVisible"
+    private static let taskVerificationDefaultsKey = "taskVerificationMode"
+    private static let producedDocumentsDefaultsKey = "ghostProducedDocuments"
     private static let onboardingCompleteDefaultsKey = "ghost.onboarding.completed.v1"
     private static let useHermesAgentDefaultsKey = "useHermesAgent"
     private static let hermesExecutablePathDefaultsKey = "hermesExecutablePath"
     private static let ollamaModelDefaultsKey = "ollamaModel"
     private static let ollamaBaseURLDefaultsKey = "ollamaBaseURL"
+    private static let openCodeGoModelDefaultsKey = "openCodeGoModel"
 
     init(
         ghostClient: GhostClient,
@@ -413,17 +598,26 @@ final class GhostConversationStore {
         approvalMode = savedApproval.flatMap(ApprovalMode.init(rawValue:)) ?? .ask
         includeClipboard = UserDefaults.standard.object(forKey: Self.includeClipboardDefaultsKey) as? Bool ?? false
         isTerminalToolDetailsVisible = UserDefaults.standard.object(forKey: Self.terminalToolDetailsDefaultsKey) as? Bool ?? true
+        isTaskVerificationEnabled = UserDefaults.standard.object(forKey: Self.taskVerificationDefaultsKey) as? Bool ?? true
         toolsets = UserDefaults.standard.string(forKey: Self.toolsetsDefaultsKey) ?? ""
         useHermesAgent = UserDefaults.standard.object(forKey: Self.useHermesAgentDefaultsKey) as? Bool ?? false
         hermesExecutablePath = UserDefaults.standard.string(forKey: Self.hermesExecutablePathDefaultsKey) ?? ""
         selectedLocalModel = UserDefaults.standard.string(forKey: Self.localModelDefaultsKey) ?? "qwen/qwen3.6-35b-a3b"
         selectedOllamaModel = UserDefaults.standard.string(forKey: Self.ollamaModelDefaultsKey) ?? "llama3.1:8b"
+        selectedOpenCodeGoModel = UserDefaults.standard.string(forKey: Self.openCodeGoModelDefaultsKey) ?? "deepseek-v4-flash"
         ollamaBaseURLString = UserDefaults.standard.string(forKey: Self.ollamaBaseURLDefaultsKey) ?? "http://localhost:11434"
         selectedDeepSeekModel = UserDefaults.standard.string(forKey: Self.deepSeekModelDefaultsKey) ?? "deepseek-v4-pro"
         let savedContext = UserDefaults.standard.integer(forKey: Self.localContextDefaultsKey)
         localContextWindow = savedContext == 0 ? 65_536 : savedContext
         workingDirectoryPath = UserDefaults.standard.string(forKey: Self.workingDirectoryDefaultsKey) ?? NSHomeDirectory()
+        documentOutputDirectoryPath = UserDefaults.standard.string(forKey: Self.documentOutputDirectoryDefaultsKey) ?? "\(NSHomeDirectory())/Ghost Outputs"
+        ragRootPath = UserDefaults.standard.string(forKey: Self.ragRootDefaultsKey) ?? "\(NSHomeDirectory())/Desktop"
+        isRAGEnabled = UserDefaults.standard.object(forKey: Self.ragEnabledDefaultsKey) as? Bool ?? false
+        isPersistentWindow = UserDefaults.standard.object(forKey: Self.persistentWindowDefaultsKey) as? Bool ?? false
+        let savedTerminalTheme = UserDefaults.standard.string(forKey: Self.terminalThemeDefaultsKey)
+        terminalTheme = savedTerminalTheme.flatMap(GhostTerminalTheme.init(rawValue:)) ?? .ghost
         recentPrompts = UserDefaults.standard.stringArray(forKey: Self.recentPromptsDefaultsKey) ?? []
+        producedDocuments = Self.loadProducedDocuments()
         conversations = historyStore.listConversations()
         savedPrompts = promptLibrary.load()
         restoreMostRecentConversation()
@@ -436,6 +630,9 @@ final class GhostConversationStore {
             activityCount: 0
         )
         loadSavedAPIKeyState()
+        if selectedProvider == .openCodeGo, savedAPIKeyProviders.contains(.openCodeGo) {
+            refreshOpenCodeGoModels()
+        }
         isOnboardingPresented = !UserDefaults.standard.bool(forKey: Self.onboardingCompleteDefaultsKey)
         if isOnboardingPresented {
             panelMode = .chat
@@ -443,12 +640,99 @@ final class GhostConversationStore {
         }
         detectHermesAgent()
         applyAppearance()
-        if !isRAGWatcherPaused { startDesktopRAGWatcher() }
-        ingestIBooks()
+        ensureDocumentOutputDirectory()
+        if isRAGEnabled && !isRAGWatcherPaused { startDesktopRAGWatcher() }
+    }
+
+    private var ragRootURL: URL {
+        resolvedPath(ragRootPath)
+    }
+
+    private var documentOutputDirectoryURL: URL {
+        resolvedPath(documentOutputDirectoryPath)
     }
 
     private func startDesktopRAGWatcher() {
-        desktopRAGWatcher.start(workspace: workspaceRootURL, onActivity: activityRecorder())
+        guard isRAGEnabled, !isRAGWatcherPaused else { return }
+        desktopRAGWatcher.start(watchedURL: ragRootURL, workspace: workspaceRootURL, onActivity: activityRecorder())
+    }
+
+    private func ensureDocumentOutputDirectory() {
+        do {
+            try FileManager.default.createDirectory(
+                at: documentOutputDirectoryURL,
+                withIntermediateDirectories: true
+            )
+        } catch {
+            settingsMessage = "Could not create output folder: \(error.localizedDescription)"
+        }
+    }
+
+    func chooseRAGFolder() {
+        chooseFolder(title: "Choose RAG Folder", currentPath: ragRootPath) { [weak self] url in
+            guard let self else { return }
+            ragRootPath = url.path
+            if isRAGEnabled {
+                syncSelectedRAGFolder(reason: "folder selected")
+            }
+        }
+    }
+
+    func chooseDocumentOutputFolder() {
+        chooseFolder(title: "Choose Ghost Output Folder", currentPath: documentOutputDirectoryPath) { [weak self] url in
+            guard let self else { return }
+            documentOutputDirectoryPath = url.path
+            settingsMessage = "Ghost documents will be saved in \(url.path)."
+        }
+    }
+
+    func chooseWorkingDirectory() {
+        chooseFolder(title: "Choose Working Folder", currentPath: workingDirectoryPath) { [weak self] url in
+            self?.workingDirectoryPath = url.path
+        }
+    }
+
+    private func chooseFolder(title: String, currentPath: String, onSelect: @escaping (URL) -> Void) {
+        let panel = NSOpenPanel()
+        panel.title = title
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.canCreateDirectories = true
+        panel.directoryURL = resolvedPath(currentPath)
+        if panel.runModal() == .OK, let url = panel.url {
+            onSelect(url)
+        }
+    }
+
+    func syncSelectedRAGFolder(reason: String = "manual sync") {
+        guard isRAGEnabled else {
+            settingsMessage = "Turn on RAG before indexing a folder."
+            return
+        }
+
+        let root = ragRootURL
+        let workspace = workspaceRootURL
+        let onActivity = activityRecorder()
+        Task.detached(priority: .utility) { [ragStore] in
+            onActivity(GhostActivityEntry(kind: .info, title: "RAG sync", detail: "Indexing \(root.path)..."))
+            let result = ragStore.syncFolder(
+                path: root.path,
+                recursive: true,
+                removeMissing: true,
+                maxFiles: 50_000,
+                workspace: workspace
+            )
+
+            let ok = result["ok"] as? Bool == true
+            onActivity(
+                GhostActivityEntry(
+                    kind: ok ? .success : .error,
+                    title: ok ? "RAG folder synced" : "RAG sync failed",
+                    detail: result["summary"] as? String ?? result["error"] as? String ?? reason
+                )
+            )
+        }
     }
 
     private func ingestIBooks() {
@@ -485,6 +769,10 @@ final class GhostConversationStore {
     }
 
     func reindexRAG() {
+        guard isRAGEnabled else {
+            settingsMessage = "Turn on RAG before reindexing."
+            return
+        }
         let result = ragStore.reindex(workspace: workspaceRootURL)
         let ok = result["ok"] as? Bool == true
         recordActivity(
@@ -497,6 +785,10 @@ final class GhostConversationStore {
     }
 
     func ingestRAGFile(path: String) {
+        guard isRAGEnabled else {
+            settingsMessage = "Turn on RAG before indexing files."
+            return
+        }
         let result = ragStore.ingestFile(path: path, workspace: workspaceRootURL)
         let ok = result["ok"] as? Bool == true
         recordActivity(
@@ -509,6 +801,10 @@ final class GhostConversationStore {
     }
 
     func ingestRAGFolder(path: String) {
+        guard isRAGEnabled else {
+            settingsMessage = "Turn on RAG before indexing folders."
+            return
+        }
         let result = ragStore.ingestFolder(path: path, recursive: true, maxFiles: 50_000, workspace: workspaceRootURL)
         let ok = result["ok"] as? Bool == true
         recordActivity(
@@ -550,6 +846,7 @@ final class GhostConversationStore {
     func send() {
         let text = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
+        let imageAttachment = pendingImageAttachment
 
         if isSending {
             queueQuickAskFollowUp(text)
@@ -593,7 +890,8 @@ final class GhostConversationStore {
         lastRunStatus = .running
         activeProcessIdentifier = nil
         let clipboardText = shouldReadClipboard(for: text) ? ClipboardService().readText() : nil
-        let routingPrompt = contextualPromptForRouting(text)
+        let routingSeed = imageAttachment == nil ? text : "\(text)\n\n[Pasted screenshot attached]"
+        let routingPrompt = contextualPromptForRouting(routingSeed)
 
         let detectedIntent = intentRouter.detect(
             prompt: routingPrompt,
@@ -637,7 +935,7 @@ final class GhostConversationStore {
             ? projectContextService.resolvedFileContexts(in: text, root: workspaceRootURL)
             : []
         let ragContext: String?
-        if detectedIntent.kind == .fileSummary {
+        if isRAGEnabled, detectedIntent.kind == .fileSummary {
             let ragResult = ragStore.query(runPrompt, maxResults: selectedProvider.isLocal ? 4 : 8, workspace: workspaceRootURL)
             if ragResult["ok"] as? Bool == true,
                let payload = ragResult["payload"] as? [String: Any],
@@ -655,6 +953,21 @@ final class GhostConversationStore {
         } else {
             ragContext = nil
         }
+        let snapshotSettings = runSettings()
+        let snapshotRunEngine = runEngine
+        let snapshotEffectiveRunEngine: ExecutionEngine = snapshotSettings.provider.isLocal && snapshotRunEngine == .ghostAgent
+            ? .directAPI
+            : snapshotRunEngine
+        let imageForDirectAPI = imageAttachmentForDirectAPI(
+            imageAttachment,
+            engine: snapshotEffectiveRunEngine,
+            settings: snapshotSettings
+        )
+        let runPromptWithAttachment = runPrompt + imageAttachmentPromptBlock(
+            imageAttachment,
+            engine: snapshotEffectiveRunEngine,
+            settings: snapshotSettings
+        )
         let finalPrompt: String
         if selectedProvider.isLocal {
             let clip = clipboard?.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -662,10 +975,10 @@ final class GhostConversationStore {
             let ragBlock = ragContext.map { "\n\nRAG document context:\n\($0)" } ?? ""
             let fileCtx = terminalFileContextBlock(fileContexts)
             let conv = context.map { "\n\nRecent conversation:\n\($0)" } ?? ""
-            finalPrompt = "\(runPrompt)\(clipped)\(ragBlock)\(conv)\(fileCtx)"
+            finalPrompt = "\(runPromptWithAttachment)\(clipped)\(ragBlock)\(conv)\(fileCtx)"
         } else {
             finalPrompt = promptWithEffort(
-                runPrompt,
+                runPromptWithAttachment,
                 clipboard: clipboard,
                 conversationContext: context,
                 fileContexts: fileContexts,
@@ -674,12 +987,13 @@ final class GhostConversationStore {
                 runEngine: runEngine
             )
         }
-        let snapshotSettings = runSettings()
-        let snapshotRunEngine = runEngine
         let snapshotRunModeLabel = runModeLabel(for: snapshotRunEngine)
         let snapshotStartedAt = Date()
         saveRecentPrompt(text)
-        messages.append(GhostMessage(role: .user, text: text))
+        let userMessage = GhostMessage(role: .user, text: visibleUserText(text, imageAttachment: imageAttachment))
+        messages.append(userMessage)
+        taskTimelineAnchorMessageID = userMessage.id
+        pendingImageAttachment = nil
         schedulePersist()
 
         if !fileContexts.isEmpty {
@@ -711,8 +1025,9 @@ final class GhostConversationStore {
                     engine: snapshotRunEngine,
                     prompt: finalPrompt,
                     settings: snapshotSettings,
+                    imageAttachment: imageForDirectAPI,
                     onActivity: activityRecorder(),
-                    onToken: snapshotRunEngine == .directAPI ? directTokenRecorder() : nil
+                    onToken: snapshotRunEngine == .directAPI && imageForDirectAPI == nil ? directTokenRecorder() : nil
                 )
                 let finishedAt = Date()
                 lastRunFinishedAt = finishedAt
@@ -743,7 +1058,22 @@ final class GhostConversationStore {
                     from: result.output.isEmpty ? "Ghost finished but returned no output." : result.output
                 )
 
-                let responseText = formatGhostResponse(cleanedOutput)
+                let producedDocuments = registerProducedDocuments(
+                    from: cleanedOutput,
+                    source: snapshotRunEngine.title
+                )
+
+                let baseResponseText = formatGhostResponse(cleanedOutput)
+                let verificationBlock = taskVerificationBlock(
+                    result: result,
+                    runEngine: snapshotRunEngine,
+                    intent: detectedIntent,
+                    producedDocuments: producedDocuments
+                )
+                let responseText = appendVerificationBlock(
+                    verificationBlock,
+                    to: baseResponseText
+                )
 
                 finishTaskTimeline(
                     success: result.exitStatus == 0,
@@ -814,7 +1144,9 @@ final class GhostConversationStore {
 
         prompt = ""
         saveRecentPrompt(text)
-        messages.append(GhostMessage(role: .user, text: text))
+        let userMessage = GhostMessage(role: .user, text: text)
+        messages.append(userMessage)
+        taskTimelineAnchorMessageID = userMessage.id
 
         isSending = true
         activeRunStartedAt = Date()
@@ -923,7 +1255,9 @@ final class GhostConversationStore {
 
         prompt = ""
         saveRecentPrompt(text)
-        messages.append(GhostMessage(role: .user, text: text))
+        let userMessage = GhostMessage(role: .user, text: text)
+        messages.append(userMessage)
+        taskTimelineAnchorMessageID = userMessage.id
 
         isSending = true
         activeRunStartedAt = Date()
@@ -1039,7 +1373,9 @@ final class GhostConversationStore {
 
         prompt = ""
         saveRecentPrompt(text)
-        messages.append(GhostMessage(role: .user, text: text))
+        let userMessage = GhostMessage(role: .user, text: text)
+        messages.append(userMessage)
+        taskTimelineAnchorMessageID = userMessage.id
 
         isSending = true
         activeRunStartedAt = Date()
@@ -1258,6 +1594,10 @@ final class GhostConversationStore {
 
     func toggleHistory() {
         isHistoryVisible.toggle()
+        if isHistoryVisible {
+            isDocumentStudioVisible = false
+            isPromptLibraryVisible = false
+        }
     }
 
     func startNewConversation() {
@@ -1333,6 +1673,118 @@ final class GhostConversationStore {
         }
     }
 
+    // MARK: - Document Studio
+
+    func toggleDocumentStudio() {
+        isDocumentStudioVisible.toggle()
+        if isDocumentStudioVisible {
+            isHistoryVisible = false
+            isPromptLibraryVisible = false
+        }
+    }
+
+    func openProducedDocument(_ document: GhostProducedDocument) {
+        NSWorkspace.shared.open(URL(fileURLWithPath: document.path))
+    }
+
+    func revealProducedDocument(_ document: GhostProducedDocument) {
+        NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: document.path)])
+    }
+
+    func revealDocumentOutputFolder() {
+        ensureDocumentOutputDirectory()
+        NSWorkspace.shared.activateFileViewerSelecting([documentOutputDirectoryURL])
+    }
+
+    func copyProducedDocumentPath(_ document: GhostProducedDocument) {
+        ClipboardService().writeText(document.path)
+        recordActivity(GhostActivityEntry(kind: .info, title: "Copied", detail: "Document path copied."))
+    }
+
+    func clearProducedDocuments() {
+        producedDocuments.removeAll()
+    }
+
+    private static func loadProducedDocuments() -> [GhostProducedDocument] {
+        guard let data = UserDefaults.standard.data(forKey: producedDocumentsDefaultsKey),
+              let decoded = try? JSONDecoder().decode([GhostProducedDocument].self, from: data)
+        else {
+            return []
+        }
+
+        return decoded
+    }
+
+    private func persistProducedDocuments() {
+        guard let data = try? JSONEncoder().encode(producedDocuments) else { return }
+        UserDefaults.standard.set(data, forKey: Self.producedDocumentsDefaultsKey)
+    }
+
+    @discardableResult
+    private func registerProducedDocument(path rawPath: String, source: String) -> GhostProducedDocument? {
+        let url = resolvedPath(rawPath)
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) else {
+            return nil
+        }
+
+        let title = url.lastPathComponent.isEmpty ? url.path : url.lastPathComponent
+        let kind: String
+        if isDirectory.boolValue {
+            kind = "Folder"
+        } else {
+            let ext = url.pathExtension.uppercased()
+            kind = ext.isEmpty ? source : ext
+        }
+
+        let document = GhostProducedDocument(
+            title: title,
+            path: url.path,
+            kind: kind,
+            createdAt: Date(),
+            verified: true
+        )
+
+        producedDocuments.removeAll { $0.path == document.path }
+        producedDocuments.insert(document, at: 0)
+        producedDocuments = Array(producedDocuments.prefix(80))
+        return document
+    }
+
+    private func registerProducedDocuments(from output: String, source: String) -> [GhostProducedDocument] {
+        let lines = output.components(separatedBy: .newlines)
+        var documents: [GhostProducedDocument] = []
+        let pathKeywords = ["saved", "created", "wrote", "written", "exported", "path:", "file:"]
+
+        for line in lines {
+            let lower = line.lowercased()
+            guard pathKeywords.contains(where: { lower.contains($0) }) else { continue }
+
+            for path in likelyFilePaths(in: line) {
+                if let document = registerProducedDocument(path: path, source: source),
+                   !documents.contains(where: { $0.path == document.path }) {
+                    documents.append(document)
+                }
+            }
+        }
+
+        return documents
+    }
+
+    private func likelyFilePaths(in text: String) -> [String] {
+        let pattern = #"(?:(?:~|/Users|/Applications|/tmp|/var|/private)/[^\s`"')\]]+)"#
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return [] }
+        let range = NSRange(text.startIndex..<text.endIndex, in: text)
+
+        return regex.matches(in: text, range: range).compactMap { match in
+            guard let matchRange = Range(match.range, in: text) else { return nil }
+            return String(text[matchRange])
+                .trimmingCharacters(in: CharacterSet(charactersIn: ".,;:"))
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .nonEmpty
+        }
+    }
+
     // MARK: - Message actions
 
     func copyMessage(id: GhostMessage.ID) {
@@ -1398,6 +1850,7 @@ final class GhostConversationStore {
         let desktop = URL(fileURLWithPath: NSHomeDirectory() + "/Desktop").appendingPathComponent(fileName)
         do {
             try markdown.write(to: desktop, atomically: true, encoding: .utf8)
+            registerProducedDocument(path: desktop.path, source: "Conversation export")
             recordActivity(GhostActivityEntry(kind: .success, title: "Exported", detail: "Conversation saved to Desktop as \(fileName)."))
             messages.append(GhostMessage(role: .system, text: "Exported conversation to Desktop as \(fileName)."))
             schedulePersist()
@@ -1410,6 +1863,10 @@ final class GhostConversationStore {
 
     func togglePromptLibrary() {
         isPromptLibraryVisible.toggle()
+        if isPromptLibraryVisible {
+            isHistoryVisible = false
+            isDocumentStudioVisible = false
+        }
     }
 
     func useSavedPrompt(_ prompt: SavedPrompt) {
@@ -1453,8 +1910,12 @@ final class GhostConversationStore {
         switch mode {
         case .glass:
             interfacePreference = .glass
+            panelMode = .chat
+            panelSizeMode = .normal
         case .terminal:
             interfacePreference = .terminal
+            panelMode = .chat
+            panelSizeMode = .normal
         }
     }
 
@@ -1468,8 +1929,12 @@ final class GhostConversationStore {
             break
         case .glass:
             interfaceMode = .glass
+            panelMode = .chat
+            panelSizeMode = .normal
         case .terminal:
             interfaceMode = .terminal
+            panelMode = .chat
+            panelSizeMode = .normal
         }
     }
 
@@ -1479,7 +1944,11 @@ final class GhostConversationStore {
             return
         }
 
-        interfaceMode = mode
+        if interfaceMode != mode {
+            interfaceMode = mode
+            panelMode = .chat
+            panelSizeMode = .normal
+        }
     }
 
     private func applyInterfaceRouting(for intent: GhostDetectedIntent, engine: ExecutionEngine) {
@@ -1534,6 +2003,8 @@ final class GhostConversationStore {
         selectedProvider = provider
         if provider == .ollama {
             refreshOllamaModels()
+        } else if provider == .openCodeGo {
+            refreshOpenCodeGoModels()
         }
     }
 
@@ -1541,6 +2012,46 @@ final class GhostConversationStore {
         if let text = ClipboardService().readText() {
             prompt = text
         }
+    }
+
+    func attachPastedScreenshot(_ image: NSImage) {
+        guard let data = pngData(from: image) else {
+            messages.append(GhostMessage(role: .system, text: "Could not read the pasted screenshot."))
+            return
+        }
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd-HHmmss"
+        let attachment = GhostImageAttachment(
+            data: data,
+            mimeType: "image/png",
+            filename: "ghost-screenshot-\(formatter.string(from: Date())).png",
+            createdAt: Date()
+        )
+        pendingImageAttachment = attachment
+        if prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            prompt = "Interpret the pasted screenshot."
+        }
+        recordActivity(
+            GhostActivityEntry(
+                kind: .info,
+                title: "Screenshot attached",
+                detail: "\(attachment.filename) · \(attachment.sizeDescription)"
+            )
+        )
+    }
+
+    func clearPendingImageAttachment() {
+        pendingImageAttachment = nil
+    }
+
+    private func pngData(from image: NSImage) -> Data? {
+        guard let tiff = image.tiffRepresentation,
+              let bitmap = NSBitmapImageRep(data: tiff)
+        else {
+            return nil
+        }
+        return bitmap.representation(using: .png, properties: [:])
     }
 
     func enqueueCurrentPrompt() {
@@ -1615,7 +2126,9 @@ final class GhostConversationStore {
                 let snapshotRunEngine = runEngine
                 let snapshotRunModeLabel = runModeLabel(for: snapshotRunEngine)
                 let snapshotStartedAt = Date()
-                messages.append(GhostMessage(role: .user, text: task.prompt))
+                let userMessage = GhostMessage(role: .user, text: task.prompt)
+                messages.append(userMessage)
+                taskTimelineAnchorMessageID = userMessage.id
                 do {
                     let result = try await runHarness(
                         engine: snapshotRunEngine,
@@ -2024,6 +2537,35 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
         }
     }
 
+    func refreshOpenCodeGoModels() {
+        guard !isRefreshingOpenCodeGoModels else { return }
+
+        isRefreshingOpenCodeGoModels = true
+        settingsMessage = nil
+
+        let apiKey = secretsService.read(for: .openCodeGo)
+            ?? ProcessInfo.processInfo.environment[ProviderAPIKey.openCodeGo.environmentKey]
+            ?? ""
+
+        Task {
+            do {
+                let models = try await localModelsService.fetchOpenCodeGoModels(apiKey: apiKey)
+                openCodeGoModels = models
+
+                if !models.contains(where: { $0.id == selectedOpenCodeGoModel }),
+                   let first = models.first {
+                    selectedOpenCodeGoModel = first.id
+                }
+
+                settingsMessage = "OpenCode Go models refreshed."
+            } catch {
+                settingsMessage = error.localizedDescription
+            }
+
+            isRefreshingOpenCodeGoModels = false
+        }
+    }
+
     func refreshLocalModels() {
         guard !isRefreshingLocalModels else { return }
         isRefreshingLocalModels = true
@@ -2046,14 +2588,21 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
 
     func saveAPIKeys() {
         do {
+            var savedOpenCodeGoKey = false
             for provider in ProviderAPIKey.allCases {
                 let draft = apiKeyDrafts[provider]?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                 if !draft.isEmpty {
                     try secretsService.save(draft, for: provider)
+                    if provider == .openCodeGo {
+                        savedOpenCodeGoKey = true
+                    }
                 }
             }
             loadSavedAPIKeyState(clearDrafts: true)
             settingsMessage = "API keys saved."
+            if selectedProvider == .openCodeGo && (savedOpenCodeGoKey || savedAPIKeyProviders.contains(.openCodeGo)) {
+                refreshOpenCodeGoModels()
+            }
         } catch {
             settingsMessage = error.localizedDescription
         }
@@ -2076,6 +2625,8 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
             selectedLocalModel
         case .ollama:
             selectedOllamaModel
+        case .openCodeGo:
+            selectedOpenCodeGoModel
         case .claude:
             "claude-sonnet-4-6"
         case .gemini:
@@ -2116,7 +2667,7 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
         case .ollama:
             return "Direct API uses Ollama at \(ollamaBaseURLString). Local models get Ghost-managed tools for web, workspace files, text-file creation, read-only commands, reminders, and calendar read/create actions."
 
-        case .claude, .gemini, .deepSeek:
+        case .claude, .gemini, .deepSeek, .openCodeGo:
             if directAPIKey(for: selectedProvider) == nil {
                 return "No saved API key for \(selectedProvider.title). Add one under API Keys below."
             }
@@ -2137,6 +2688,8 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
             selectedLocalModel
         case .ollama:
             selectedOllamaModel
+        case .openCodeGo:
+            selectedOpenCodeGoModel
         case .claude, .gemini:
             model(for: selectedProvider)
         }
@@ -2147,6 +2700,7 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
         engine: ExecutionEngine,
         prompt: String,
         settings: GhostRunSettings,
+        imageAttachment: GhostImageAttachment? = nil,
         onActivity: @escaping @Sendable (GhostActivityEntry) -> Void,
         onToken: (@Sendable (String) async -> Void)? = nil
     ) async throws -> GhostRunResult {
@@ -2180,6 +2734,7 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
             let key = directAPIKey(for: settings.provider) ?? ""
             return try await directAPIClient.send(
                 prompt,
+                imageAttachment: imageAttachment,
                 settings: settings,
                 apiKey: key,
                 onActivity: onActivity,
@@ -3463,6 +4018,7 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
 
     private func clearTaskTimeline() {
         taskTimeline = .idle
+        taskTimelineAnchorMessageID = nil
     }
 
     private func touchTaskTimeline() {
@@ -3840,6 +4396,8 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
             keyType = .gemini
         case .deepSeek:
             keyType = .deepSeek
+        case .openCodeGo:
+            keyType = .openCodeGo
         case .lmStudio, .ollama:
             keyType = nil
         }
@@ -3854,14 +4412,85 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
             model: model(for: provider),
             localContextWindow: localContextWindow,
             workingDirectory: workspaceRootURL,
+            documentOutputDirectory: documentOutputDirectoryURL,
             apiKeys: keyedEnvironment(for: provider),
             approvalMode: approvalMode,
             toolsets: toolsets.trimmingCharacters(in: .whitespacesAndNewlines),
             effortMode: effortMode,
             ollamaBaseURL: ollamaBaseURL,
+            ragEnabled: isRAGEnabled,
             agentKind: activeLocalAgentKind,
             agentExecutableURL: activeLocalAgentExecutableURL
         )
+    }
+
+    private func imageAttachmentForDirectAPI(
+        _ attachment: GhostImageAttachment?,
+        engine: ExecutionEngine,
+        settings: GhostRunSettings
+    ) -> GhostImageAttachment? {
+        guard let attachment, engine == .directAPI, settings.supportsVision else {
+            return nil
+        }
+        return attachment
+    }
+
+    private func imageAttachmentPromptBlock(
+        _ attachment: GhostImageAttachment?,
+        engine: ExecutionEngine,
+        settings: GhostRunSettings
+    ) -> String {
+        guard let attachment else { return "" }
+
+        if engine == .directAPI, settings.supportsVision {
+            return """
+
+
+            Pasted screenshot:
+            - \(attachment.filename) is attached as an image payload.
+            - Read and interpret the screenshot directly.
+            """
+        }
+
+        if engine == .ghostAgent, let path = saveImageAttachmentToOutputFolder(attachment) {
+            return """
+
+
+            Pasted screenshot:
+            - The screenshot was saved at \(path).
+            - If your active agent/model supports vision, inspect that image. If not, say that screenshot interpretation needs a vision-capable model.
+            """
+        }
+
+        return """
+
+
+        Pasted screenshot:
+        - \(attachment.filename) was pasted, but \(settings.provider.title) model \(settings.model) is not marked as vision-capable in Ghost.
+        - State this limitation and answer from the text prompt only, or ask the user to switch to Claude, Gemini, or a local vision model.
+        """
+    }
+
+    private func visibleUserText(_ text: String, imageAttachment: GhostImageAttachment?) -> String {
+        guard let imageAttachment else { return text }
+        return """
+        \(text)
+
+        [Attached screenshot: \(imageAttachment.filename), \(imageAttachment.sizeDescription)]
+        """
+    }
+
+    private func saveImageAttachmentToOutputFolder(_ attachment: GhostImageAttachment) -> String? {
+        let directory = documentOutputDirectoryURL.appendingPathComponent("Attachments", isDirectory: true)
+        let url = directory.appendingPathComponent(attachment.filename)
+        do {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            try attachment.data.write(to: url, options: .atomic)
+            return url.path
+        } catch {
+            recordActivity(GhostActivityEntry(kind: .error, title: "Screenshot save failed", detail: error.localizedDescription))
+            return nil
+        }
     }
 
     private func promptWithEffort(
@@ -3888,6 +4517,7 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
         let clipped = clip.map { "\n\nContext from clipboard:\n\($0)" } ?? ""
         let conversation = conversationContext.map { "\n\nRecent conversation:\n\($0)" } ?? ""
         let fileContextBlock = terminalFileContextBlock(fileContexts)
+        let outputFolder = documentOutputDirectoryURL.path
         let intentInstructions = detectedIntent.map { intentRouter.instructions(for: $0, workspaceRoot: workspaceRootURL) } ?? ""
         let agentInstructions = interfaceMode == .terminal ? openCodeCompatService.agentInstructionsBlock(root: workspaceRootURL) : ""
         let effortInstruction = runEngine == .directAPI
@@ -3951,10 +4581,12 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
         Local tool and computer-use rules:
         - If the user asks to create, save, move, edit, delete, organize, or place a file on the Mac, you must actually use filesystem tools or shell commands.
         - Do not say a file was saved unless it was actually written and you verified the path.
+        - Default Ghost-produced documents and code artifacts to \(outputFolder) unless the user names another folder.
         - For Desktop requests, save to ~/Desktop unless the user specifies another folder.
         - When saving a file, report the real absolute path.
         - For PDF/DOCX/PPTX/XLSX artifacts, create a valid file package, not a fake text file with that extension.
         - For reminders, calendar events, notifications, email, screenshots/OCR, and app control, use the available macOS tools when routed through Ghost Agent. Never claim setup succeeded without a tool result.
+        - If you use web search, RAG, or any external lookup, end with `## References` and list the source title or file plus URL/path for every source you relied on.
         - Simple one-shot reminders may be handled by Ghost's native deterministic reminder parser before the model runs; if this prompt reaches you, the timing likely needs clarification or agent tool access.
         - If the file, reminder, event, command, or app action cannot be completed, say exactly why and what permission/setup is missing.
         """
@@ -3977,6 +4609,7 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
         - Put a blank line between sections.
         - Keep the answer clear, useful, and concise.
         - Do not use Markdown tables unless explicitly requested. Prefer bullet lists.
+        - If information was looked up through web, RAG, files, or another source, end with `## References` containing source titles and URLs or file paths.
         \(conversation)
         \(fileContextBlock)
 
@@ -4001,7 +4634,8 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
         let clipped = clip.map { "\n\nClipboard context:\n\($0)" } ?? ""
         let conversation = conversationContext.map { "\n\nRecent conversation:\n\($0)" } ?? ""
         let fileContextBlock = terminalFileContextBlock(fileContexts)
-        let ragBlock = ragContext.map { "\n\nRAG document context (answer from these cited chunks):\n\($0)\n\nIf these chunks answer the question, cite them inline like [1], [2]. If they do not answer the question, say so and suggest what file might help." } ?? ""
+        let ragBlock = ragContext.map { "\n\nRAG document context (answer from these cited chunks):\n\($0)\n\nIf these chunks answer the question, cite them inline like [1], [2] and end with `## References` listing the document names/paths used. If they do not answer the question, say so and suggest what file might help." } ?? ""
+        let outputFolder = documentOutputDirectoryURL.path
 
         let taskInstruction: String
         switch intentKind {
@@ -4024,12 +4658,14 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
         \(directAPIEffortInstruction)
         \(taskInstruction)
         \(ragBlock)
+        Default Ghost-produced documents and code artifacts to \(outputFolder) unless the user names another folder.
 
         Formatting:
         - Return clean Markdown.
         - Do not mention internal routing, tools, timelines, permissions, or diagnostics.
         - Do not create todo lists unless the user asks for one.
         - Prefer a direct answer first.
+        - If information was looked up through web, RAG, files, or another source, end with `## References` containing source titles and URLs or file paths.
         \(conversation)
         \(fileContextBlock)
 
@@ -4061,6 +4697,7 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
         You are Ghost, a universal Mac assistant with an adaptive coding terminal.
 
         Current workspace: \(workspaceRootURL.path)
+        Default Ghost output folder: \(documentOutputDirectoryURL.path)
         Current inferred intent: \(currentIntent.title) — \(currentIntent.routeLine)
         Current internal code workflow: \(codeAgentMode.title) — \(codeAgentMode.instruction)
 
@@ -4166,6 +4803,9 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
 
         Task {
             let result = await shellCommandService.run(command, workingDirectory: workspaceRootURL)
+            if let finalWorkingDirectory = result.finalWorkingDirectory {
+                workingDirectoryPath = finalWorkingDirectory
+            }
             lastRunFinishedAt = Date()
             lastRunDuration = Date().timeIntervalSince(startedAt)
             lastExitStatus = result.exitCode
@@ -4476,6 +5116,64 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
         }
     }
 
+    private func appendVerificationBlock(_ block: String, to text: String) -> String {
+        let trimmedBlock = block.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedBlock.isEmpty else { return text }
+
+        return [text, trimmedBlock]
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+            .joined(separator: "\n\n")
+    }
+
+    private func taskVerificationBlock(
+        result: GhostRunResult,
+        runEngine: ExecutionEngine,
+        intent: GhostDetectedIntent,
+        producedDocuments: [GhostProducedDocument]
+    ) -> String {
+        guard isTaskVerificationEnabled else { return "" }
+
+        let shouldVerify = runEngine == .ghostAgent
+            || intent.kind.requiresAgentTools
+            || intent.usesWeb
+            || intent.kind == .fileSummary
+            || intent.kind == .localFiles
+            || !producedDocuments.isEmpty
+            || result.exitStatus != 0
+
+        guard shouldVerify else { return "" }
+
+        let statusText = result.exitStatus == 0 ? "completed" : "failed with exit \(result.exitStatus)"
+        var lines: [String] = [
+            "## Verification",
+            "- Status: \(statusText).",
+            "- Route: \(runEngine.title) using \(result.provider.title) · \(result.model)."
+        ]
+
+        if !routingShortLine.isEmpty {
+            lines.append("- Routing: \(routingShortLine).")
+        }
+
+        if producedDocuments.isEmpty {
+            if intent.kind == .createArtifact {
+                lines.append("- Files: no new verified output path was detected.")
+            }
+        } else {
+            let fileList = producedDocuments
+                .prefix(5)
+                .map { "`\($0.path)`" }
+                .joined(separator: ", ")
+            lines.append("- Files: verified \(fileList).")
+        }
+
+        if intent.usesWeb {
+            lines.append("- Sources: when web lookup is used, Ghost should include a References section with source URLs.")
+        }
+
+        return lines.joined(separator: "\n")
+    }
+
     private func formatGhostResponse(_ text: String) -> String {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -4593,6 +5291,16 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
 
         updateTaskTimeline(from: entryToStore)
 
+        if entryToStore.kind == .success {
+            if entryToStore.title == "Harness verified" {
+                registerProducedDocument(path: entryToStore.detail, source: entryToStore.title)
+            }
+
+            for path in likelyFilePaths(in: entryToStore.detail) {
+                registerProducedDocument(path: path, source: entryToStore.title)
+            }
+        }
+
         if entry.title == "Process launched", entry.detail.hasPrefix("pid ") {
             let pidString = entry.detail.replacingOccurrences(of: "pid ", with: "")
             activeProcessIdentifier = Int32(pidString)
@@ -4635,6 +5343,9 @@ messages.append(GhostMessage(role: .system, text: error.localizedDescription))
 
         case .deepSeek:
             return [.deepSeek]
+
+        case .openCodeGo:
+            return [.openCodeGo]
         }
     }
 

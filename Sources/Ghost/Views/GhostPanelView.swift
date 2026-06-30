@@ -10,6 +10,9 @@ private struct ScrollOffsetPreferenceKey: PreferenceKey {
 
 struct GhostPanelView: View {
     @Bindable var store: GhostConversationStore
+    var configuresWindow: Bool = true
+    var panelSizeProvider: ((CGSize) -> CGSize)?
+    var onPanelSizeChange: ((CGSize) -> Void)?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var fittedPanelSize: CGSize?
     @State private var miniReplyNaturalHeight: CGFloat = 0
@@ -19,12 +22,15 @@ struct GhostPanelView: View {
         let panelSize = fittedPanelSize ?? preferredSize
 
         ZStack {
+            VisualEffectBackground(material: .hudWindow, blending: .behindWindow)
+                .ignoresSafeArea()
+
             if store.visibleInterfaceMode == .terminal && !store.isOnboardingPresented {
                 OpenCodeColors.appBackground
                     .ignoresSafeArea()
             } else {
                 CosmicBackground()
-                    .opacity(0.30)
+                    .opacity(1.0)
                     .ignoresSafeArea()
             }
 
@@ -51,7 +57,19 @@ struct GhostPanelView: View {
             .allowsHitTesting(false)
         )
         .preferredColorScheme(store.visibleInterfaceMode == .terminal ? .dark : store.appearanceMode.colorScheme)
-        .background(
+        .background(windowConfigurator(preferredSize: preferredSize))
+        .onAppear {
+            store.applyAppearance()
+            onPanelSizeChange?(preferredSize)
+        }
+        .onChange(of: preferredSize) { _, newSize in
+            onPanelSizeChange?(newSize)
+        }
+    }
+
+    @ViewBuilder
+    private func windowConfigurator(preferredSize: CGSize) -> some View {
+        if configuresWindow {
             PanelWindowConfigurator(
                 appearance: store.visibleInterfaceMode == .terminal ? NSAppearance(named: .darkAqua) : store.appearanceMode.nsAppearance,
                 preferredSize: preferredSize,
@@ -59,8 +77,7 @@ struct GhostPanelView: View {
                 sizeMode: store.panelSizeMode,
                 fittedSize: $fittedPanelSize
             )
-        )
-        .onAppear { store.applyAppearance() }
+        }
     }
 
     private var standardPanel: some View {
@@ -139,19 +156,16 @@ struct GhostPanelView: View {
     }
 
     private var effectivePreferredPanelSize: CGSize {
-        guard store.panelSizeMode == .mini else {
-            return store.preferredPanelSize
-        }
-
-        return miniPreferredPanelSize
+        let preferredSize = store.panelSizeMode == .mini ? miniPreferredPanelSize : store.preferredPanelSize
+        return panelSizeProvider?(preferredSize) ?? preferredSize
     }
 
     private var miniHeaderStatus: String {
         if store.isSending {
-            return "Received · \(store.currentWorkLine)"
+            return "\(store.presenceState.title) · \(store.currentWorkLine)"
         }
 
-        return "Quick ask"
+        return store.presenceState.detail
     }
 
     private var miniPreferredPanelSize: CGSize {
@@ -341,55 +355,33 @@ struct GhostPanelView: View {
 
     private var header: some View {
         HStack(spacing: headerControlSpacing) {
-            GhostLogoMark(size: usesCompactHeader ? 34 : 46)
+            brandHeader
 
-            Text("Ghost")
-                .font(GhostTypography.displayBold(size: headerTitleSize))
-                .tracking(usesCompactHeader ? -0.3 : -0.9)
-                .foregroundStyle(store.visibleInterfaceMode == .terminal ? OpenCodeColors.text : Color.black)
-                .lineLimit(1)
-                .minimumScaleFactor(0.84)
-                .fixedSize(horizontal: true, vertical: false)
+            Spacer(minLength: usesCompactHeader ? 6 : 12)
+
+            headerSelectorPills
 
             Spacer(minLength: usesCompactHeader ? 4 : 8)
 
-            SelectorPill(
-                icon: "cpu",
-                title: store.effectiveProvider.title,
-                subtitle: store.modelDisplayName
-            ) {
-                CosmicPopover {
-                    ProviderPopoverContent(store: store)
-                }
+            if !usesCompactHeader {
+                GlassIconButton(
+                    systemImage: "square.and.pencil",
+                    help: "New chat",
+                    isActive: false
+                ) { store.startNewConversation() }
+
+                GlassIconButton(
+                    systemImage: "clock.arrow.circlepath",
+                    help: "History",
+                    isActive: store.isHistoryVisible
+                ) { store.toggleHistory() }
+
+                GlassIconButton(
+                    systemImage: "tray.full",
+                    help: "Document Studio",
+                    isActive: store.isDocumentStudioVisible
+                ) { store.toggleDocumentStudio() }
             }
-            .frame(width: providerSelectorWidth)
-            .layoutPriority(3)
-
-            SelectorPill(
-                icon: "speedometer",
-                title: store.effortMode.title(for: store.selectedProvider),
-                subtitle: runModeSubtitle
-            ) {
-                CosmicPopover {
-                    EffortPopoverContent(store: store)
-                }
-            }
-            .frame(width: effortSelectorWidth)
-            .layoutPriority(3)
-
-            Spacer(minLength: usesCompactHeader ? 4 : 8)
-
-            GlassIconButton(
-                systemImage: "square.and.pencil",
-                help: "New chat",
-                isActive: false
-            ) { store.startNewConversation() }
-
-            GlassIconButton(
-                systemImage: "clock.arrow.circlepath",
-                help: "History",
-                isActive: store.isHistoryVisible
-            ) { store.toggleHistory() }
 
             PanelSizeSwitcher(store: store)
 
@@ -412,59 +404,12 @@ struct GhostPanelView: View {
                 isActive: store.panelMode == .settings
             ) { store.toggleSettings() }
 
-            Menu {
-                Picker("Theme", selection: $store.appearanceMode) {
-                    ForEach(GhostAppearance.allCases) { mode in
-                        Label(mode.title, systemImage: mode.symbol).tag(mode)
-                    }
-                }
-                Divider()
-                Picker("Terminal Output", selection: $store.ghostCodeOutputMode) {
-                    ForEach(GhostCodeOutputMode.allCases) { mode in
-                        Label(mode.title, systemImage: mode.systemImage).tag(mode)
-                    }
-                }
-                Divider()
-                Button { store.startNewConversation() } label: {
-                    Label("New Chat", systemImage: "square.and.pencil")
-                }
-                Button { store.toggleHistory() } label: {
-                    Label("History", systemImage: "clock.arrow.circlepath")
-                }
-                Button { store.exportConversationToDesktop() } label: {
-                    Label("Export to Markdown", systemImage: "square.and.arrow.up")
-                }
-                Button { store.togglePromptLibrary() } label: {
-                    Label("Prompt Library", systemImage: "bookmark")
-                }
-                Divider()
-                Button { store.clearConversation() } label: {
-                    Label("Clear Chat", systemImage: "trash")
-                }
-                Button { store.toggleActivity() } label: {
-                    Label(store.isActivityVisible ? "Hide Telemetry" : "Telemetry", systemImage: "chart.bar.doc.horizontal")
-                }
-                Divider()
-                Button(role: .destructive) {
-                    NSApplication.shared.terminate(nil)
-                } label: {
-                    Label("Quit Ghost", systemImage: "power")
-                }
-            } label: {
-                Image(systemName: "ellipsis")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(GhostColors.mutedPlatinum)
-            }
-            .menuStyle(.borderlessButton)
-            .menuIndicator(.hidden)
-            .fixedSize()
-            .accessibilityLabel(Text("More actions"))
+            headerMoreMenu
         }
-        .padding(.horizontal, GhostSpacing.wide)
-        .padding(.top, 10)
-        .padding(.bottom, 6)
+        .padding(.horizontal, usesCompactHeader ? 12 : GhostSpacing.wide)
+        .padding(.top, usesCompactHeader ? 7 : 10)
+        .padding(.bottom, usesCompactHeader ? 5 : 6)
         .frame(maxWidth: .infinity)
-        .clipped()
         .background {
             if store.visibleInterfaceMode == .terminal {
                 OpenCodeColors.appBackground
@@ -472,25 +417,149 @@ struct GhostPanelView: View {
         }
     }
 
+    private var brandHeader: some View {
+        HStack(spacing: usesCompactHeader ? 6 : 10) {
+            GhostLogoMark(size: usesCompactHeader ? 24 : 46)
+
+            Text("Ghost")
+                .font(GhostTypography.displayBold(size: headerTitleSize))
+                .tracking(usesCompactHeader ? 0 : -0.9)
+                .foregroundStyle(store.visibleInterfaceMode == .terminal ? OpenCodeColors.text : Color.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.84)
+        }
+        .layoutPriority(10)
+        .accessibilityElement(children: .combine)
+    }
+
+    private var headerSelectorPills: some View {
+        HStack(spacing: usesCompactHeader ? 5 : 8) {
+            if usesCompactHeader {
+                SelectorPill(
+                    icon: "cpu",
+                    title: store.effectiveProvider.title,
+                    subtitle: store.modelDisplayName
+                ) {
+                    CosmicPopover {
+                        ProviderPopoverContent(store: store)
+                    }
+                }
+                .frame(width: providerSelectorWidth)
+
+                SelectorPill(
+                    icon: "speedometer",
+                    title: store.effortMode.title(for: store.selectedProvider),
+                    subtitle: runModeSubtitle
+                ) {
+                    CosmicPopover {
+                        EffortPopoverContent(store: store)
+                    }
+                }
+                .frame(width: effortSelectorWidth)
+            } else {
+                SelectorPill(
+                    icon: "cpu",
+                    title: store.effectiveProvider.title,
+                    subtitle: store.modelDisplayName
+                ) {
+                    CosmicPopover {
+                        ProviderPopoverContent(store: store)
+                    }
+                }
+                .frame(width: providerSelectorWidth)
+
+                SelectorPill(
+                    icon: "speedometer",
+                    title: store.effortMode.title(for: store.selectedProvider),
+                    subtitle: runModeSubtitle
+                ) {
+                    CosmicPopover {
+                        EffortPopoverContent(store: store)
+                    }
+                }
+                .frame(width: effortSelectorWidth)
+            }
+        }
+        .frame(maxWidth: usesCompactHeader ? providerSelectorWidth + effortSelectorWidth + 5 : providerSelectorWidth + effortSelectorWidth + 8)
+        .layoutPriority(4)
+    }
+
+    private var headerMoreMenu: some View {
+        Menu {
+            Picker("Theme", selection: $store.appearanceMode) {
+                ForEach(GhostAppearance.allCases) { mode in
+                    Label(mode.title, systemImage: mode.symbol).tag(mode)
+                }
+            }
+            Divider()
+            Picker("Terminal Output", selection: $store.ghostCodeOutputMode) {
+                ForEach(GhostCodeOutputMode.allCases) { mode in
+                    Label(mode.title, systemImage: mode.systemImage).tag(mode)
+                }
+            }
+            Divider()
+            Button { store.startNewConversation() } label: {
+                Label("New Chat", systemImage: "square.and.pencil")
+            }
+            Button { store.toggleHistory() } label: {
+                Label("History", systemImage: "clock.arrow.circlepath")
+            }
+            Button { store.toggleDocumentStudio() } label: {
+                Label("Document Studio", systemImage: "tray.full")
+            }
+            Button { store.exportConversationToDesktop() } label: {
+                Label("Export to Markdown", systemImage: "square.and.arrow.up")
+            }
+            Button { store.togglePromptLibrary() } label: {
+                Label("Prompt Library", systemImage: "bookmark")
+            }
+            Button { GhostUpdater.shared.checkForUpdates() } label: {
+                Label("Check for Updates...", systemImage: "arrow.down.circle")
+            }
+            .disabled(!GhostUpdater.shared.canCheckForUpdates)
+            Divider()
+            Button { store.clearConversation() } label: {
+                Label("Clear Chat", systemImage: "trash")
+            }
+            Button { store.toggleActivity() } label: {
+                Label(store.isActivityVisible ? "Hide Telemetry" : "Telemetry", systemImage: "chart.bar.doc.horizontal")
+            }
+            Divider()
+            Button(role: .destructive) {
+                NSApplication.shared.terminate(nil)
+            } label: {
+                Label("Quit Ghost", systemImage: "power")
+            }
+        } label: {
+            Image(systemName: "ellipsis")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(GhostColors.mutedPlatinum)
+        }
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .accessibilityLabel(Text("More actions"))
+    }
+
     private var usesCompactHeader: Bool {
         store.panelSizeMode == .normal && store.visibleInterfaceMode == .glass
     }
 
     private var headerControlSpacing: CGFloat {
-        usesCompactHeader ? 6 : 10
+        usesCompactHeader ? 4 : 10
     }
 
     private var providerSelectorWidth: CGFloat {
-        usesCompactHeader ? 168 : 190
+        190
     }
 
     private var effortSelectorWidth: CGFloat {
-        usesCompactHeader ? 156 : 174
+        174
     }
 
     private var headerTitleSize: CGFloat {
         if usesCompactHeader {
-            return 29
+            return 21
         }
 
         return store.visibleInterfaceMode == .terminal ? 34 : 36
@@ -508,8 +577,12 @@ struct GhostPanelView: View {
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: store.isActivityVisible)
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: store.isHistoryVisible)
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: store.isPromptLibraryVisible)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: store.isDocumentStudioVisible)
         .overlay(alignment: .trailing) {
-            if store.isHistoryVisible {
+            if store.isDocumentStudioVisible {
+                DocumentStudioDrawerView(store: store)
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
+            } else if store.isHistoryVisible {
                 HistoryDrawerView(store: store)
                     .transition(.move(edge: .trailing).combined(with: .opacity))
             }
@@ -542,9 +615,16 @@ struct GhostPanelView: View {
                             ForEach(store.messages) { message in
                                 FloatingMessageCard(message: message, store: store)
                                     .id(message.id)
+
+                                if store.taskTimeline.isVisible,
+                                   store.taskTimelineAnchorMessageID == message.id {
+                                    GhostTaskTimelineCard(store: store)
+                                        .id("task-timeline")
+                                }
                             }
 
-                            if store.taskTimeline.isVisible {
+                            if store.taskTimeline.isVisible,
+                               store.taskTimelineAnchorMessageID == nil {
                                 GhostTaskTimelineCard(store: store)
                                     .id("task-timeline")
                             }
@@ -699,6 +779,28 @@ struct GhostPanelView: View {
                 .fill(.white.opacity(0.05))
                 .frame(height: 1)
 
+            if let attachment = store.pendingImageAttachment {
+                HStack(spacing: 8) {
+                    Image(systemName: "photo")
+                        .font(.system(size: 11, weight: .semibold))
+                    Text("\(attachment.filename) · \(attachment.sizeDescription)")
+                        .font(.system(size: 11, weight: .medium, design: .default))
+                        .lineLimit(1)
+                    Spacer()
+                    Button {
+                        store.clearPendingImageAttachment()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 10, weight: .bold))
+                    }
+                    .buttonStyle(.plain)
+                    .help("Remove screenshot")
+                }
+                .foregroundStyle(GhostColors.mutedPlatinum)
+                .padding(.horizontal, GhostSpacing.wide)
+                .padding(.top, GhostSpacing.standard)
+            }
+
             HStack(alignment: .bottom, spacing: GhostSpacing.standard) {
                 ComposerButton(systemImage: "doc.on.clipboard", help: "Use Clipboard") {
                     store.useClipboard()
@@ -723,7 +825,8 @@ struct GhostPanelView: View {
                 ComposerTextView(
                     text: $store.prompt,
                     placeholder: "How can I help?",
-                    onSubmit: { store.send() }
+                    onSubmit: { store.send() },
+                    onPasteImage: { image in store.attachPastedScreenshot(image) }
                 )
                 .frame(maxWidth: .infinity)
                 .frame(height: composerHeight)
@@ -801,19 +904,19 @@ private struct PanelSizeSwitcher: View {
 // MARK: - Terminal Mode
 
 private enum OpenCodeColors {
-    static let appBackground = Color(red: 0.095, green: 0.115, blue: 0.145)
-    static let transcriptBackground = Color(red: 0.125, green: 0.150, blue: 0.185)
-    static let sidebarBackground = Color(red: 0.100, green: 0.125, blue: 0.155)
-    static let promptBackground = Color(red: 0.145, green: 0.170, blue: 0.205)
-    static let border = Color.white.opacity(0.055)
-    static let text = Color(red: 0.72, green: 0.76, blue: 0.82)
-    static let muted = Color(red: 0.44, green: 0.49, blue: 0.58)
-    static let faint = Color(red: 0.32, green: 0.37, blue: 0.45)
-    static let orange = Color(red: 1.00, green: 0.61, blue: 0.28)
-    static let green = Color(red: 0.55, green: 0.86, blue: 0.43)
-    static let yellow = Color(red: 0.95, green: 0.74, blue: 0.34)
-    static let cyan = Color(red: 0.55, green: 0.75, blue: 0.95)
-    static let purple = Color(red: 0.86, green: 0.42, blue: 1.0)
+    static var appBackground: Color { GhostTerminalTheme.saved.appBackground }
+    static var transcriptBackground: Color { GhostTerminalTheme.saved.transcriptBackground }
+    static var sidebarBackground: Color { GhostTerminalTheme.saved.sidebarBackground }
+    static var promptBackground: Color { GhostTerminalTheme.saved.promptBackground }
+    static var border: Color { GhostTerminalTheme.saved.border }
+    static var text: Color { GhostTerminalTheme.saved.text }
+    static var muted: Color { GhostTerminalTheme.saved.muted }
+    static var faint: Color { GhostTerminalTheme.saved.faint }
+    static var orange: Color { GhostTerminalTheme.saved.orange }
+    static var green: Color { GhostTerminalTheme.saved.green }
+    static var yellow: Color { GhostTerminalTheme.saved.yellow }
+    static var cyan: Color { GhostTerminalTheme.saved.cyan }
+    static var purple: Color { GhostTerminalTheme.saved.purple }
 }
 
 private struct TerminalModeView: View {
@@ -845,9 +948,16 @@ private struct TerminalModeView: View {
                     ForEach(store.messages) { message in
                         TerminalMessageView(store: store, message: message, outputMode: store.ghostCodeOutputMode)
                             .id(message.id)
+
+                        if store.taskTimeline.isVisible,
+                           store.taskTimelineAnchorMessageID == message.id {
+                            TerminalTaskTimelineView(store: store)
+                                .id("terminal-task-timeline")
+                        }
                     }
 
-                    if store.taskTimeline.isVisible {
+                    if store.taskTimeline.isVisible,
+                       store.taskTimelineAnchorMessageID == nil {
                         TerminalTaskTimelineView(store: store)
                             .id("terminal-task-timeline")
                     }
@@ -1419,10 +1529,30 @@ private struct TerminalMessageView: View {
             case .user:
                 TerminalLineView(kind: .prompt, text: "\(store.terminalLinePrefix(for: .user)) \(message.text)")
             case .ghost:
-                if outputMode == .markdown {
-                    GhostCodeMarkdownOutputView(text: message.text)
-                } else {
-                    TerminalAssistantOutputView(text: message.text)
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Spacer()
+                        Button {
+                            store.copyMessage(id: message.id)
+                        } label: {
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(OpenCodeColors.faint)
+                                .frame(width: 26, height: 24)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                        .fill(OpenCodeColors.appBackground.opacity(0.72))
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .help("Copy answer")
+                    }
+
+                    if outputMode == .markdown {
+                        GhostCodeMarkdownOutputView(text: message.text)
+                    } else {
+                        TerminalAssistantOutputView(text: message.text)
+                    }
                 }
             case .system:
                 TerminalLineView(kind: terminalKind(for: message.text), text: message.text.hasPrefix("[") || message.text.hasPrefix("+") ? message.text : "\(store.terminalLinePrefix(for: .system)) \(message.text)")
@@ -1986,6 +2116,8 @@ private struct CompactTelemetryStrip: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 7) {
                 StatusIndicator(status: snap.status)
+                compactChip("Presence", store.presenceState.title)
+                compactChip("Route", store.routingShortLine, help: store.routingExplanation)
                 compactChip("Model", store.modelDisplayName)
                 compactChip("Effort", snap.effortTitle)
                 compactChip("Approval", snap.approvalMode)
@@ -2008,7 +2140,7 @@ private struct CompactTelemetryStrip: View {
         }
     }
 
-    private func compactChip(_ label: String, _ value: String, isActive: Bool = true) -> some View {
+    private func compactChip(_ label: String, _ value: String, isActive: Bool = true, help: String? = nil) -> some View {
         HStack(spacing: 4) {
             Text(label)
                 .font(.system(size: 9, weight: .semibold, design: .default))
@@ -2026,6 +2158,7 @@ private struct CompactTelemetryStrip: View {
                 .fill(GhostColors.glassFill.opacity(0.62))
         )
         .opacity(isActive ? 1.0 : 0.45)
+        .help(help ?? "\(label): \(value)")
     }
 }
 
@@ -2488,6 +2621,26 @@ private struct FloatingMessageCard: View {
                 }
 
                 MessageBodyText(message: message)
+                    .textSelection(.enabled)
+
+                if message.role == .ghost {
+                    Button {
+                        store.copyMessage(id: message.id)
+                    } label: {
+                        Label("Copy", systemImage: "doc.on.doc")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(GhostColors.mutedPlatinum)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .fill(GhostColors.glassFill.opacity(0.7))
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .help("Copy answer")
+                    .padding(.top, 2)
+                }
 
                 if message.role == .ghost, let meta = message.runMetadata {
                     RunMetadataBadge(meta: meta)
@@ -3009,8 +3162,12 @@ private struct MiniQuickMessageRow: View {
         }
         .padding(8)
         .background(
-            RoundedRectangle(cornerRadius: 9, style: .continuous)
-                .fill(isUser ? GhostColors.champagne.opacity(0.08) : Color.white.opacity(0.035))
+            Group {
+                if !isUser {
+                    RoundedRectangle(cornerRadius: 9, style: .continuous)
+                        .fill(Color.white.opacity(0.035))
+                }
+            }
         )
     }
 }
@@ -3226,6 +3383,7 @@ private struct ComposerTextView: NSViewRepresentable {
     @Binding var text: String
     let placeholder: String
     let onSubmit: () -> Void
+    let onPasteImage: (NSImage) -> Void
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -3242,6 +3400,9 @@ private struct ComposerTextView: NSViewRepresentable {
         scrollView.appearance = NSAppearance(named: .darkAqua)
 
         let textView = GhostComposerTextView()
+        textView.onPasteImage = { image in
+            context.coordinator.parent.onPasteImage(image)
+        }
         textView.delegate = context.coordinator
         textView.appearance = NSAppearance(named: .darkAqua)
         textView.isRichText = false
@@ -3336,6 +3497,8 @@ private struct ComposerTextView: NSViewRepresentable {
 }
 
 private final class GhostComposerTextView: NSTextView {
+    var onPasteImage: ((NSImage) -> Void)?
+
     private static let composerColor: NSColor = {
         let light = NSColor(red: 0.13, green: 0.11, blue: 0.20, alpha: 1.0)
         let dark = NSColor(calibratedWhite: 0.94, alpha: 1.0)
@@ -3387,6 +3550,12 @@ private final class GhostComposerTextView: NSTextView {
     }
 
     override func paste(_ sender: Any?) {
+        if let image = NSPasteboard.general.readObjects(forClasses: [NSImage.self], options: nil)?.first as? NSImage {
+            onPasteImage?(image)
+            forceReadableTextStyle()
+            return
+        }
+
         super.paste(sender)
         forceReadableTextStyle()
     }
@@ -3555,6 +3724,34 @@ private struct ProviderPopoverContent: View {
 
                 Button("Refresh Ollama Models") {
                     store.refreshOllamaModels()
+                }
+                .font(.system(size: 11))
+                .buttonStyle(.plain)
+                .foregroundStyle(GhostColors.faintPlatinum)
+                .padding(.top, 4)
+            }
+
+            if store.selectedProvider == .openCodeGo {
+                Divider().overlay(.white.opacity(0.08)).padding(.vertical, 4)
+                PopoverLabel("OPENCODE GO MODEL")
+                VStack(spacing: 1) {
+                    ForEach(store.openCodeGoModels) { model in
+                        PopoverRow(
+                            title: model.id,
+                            subtitle: model.ownedBy,
+                            isSelected: store.selectedOpenCodeGoModel == model.id
+                        ) {
+                            store.selectedOpenCodeGoModel = model.id
+                        }
+                    }
+
+                    if store.openCodeGoModels.isEmpty {
+                        PopoverRow(title: store.selectedOpenCodeGoModel, subtitle: nil, isSelected: true) { }
+                    }
+                }
+
+                Button("Refresh OpenCode Go Models") {
+                    store.refreshOpenCodeGoModels()
                 }
                 .font(.system(size: 11))
                 .buttonStyle(.plain)
@@ -4377,6 +4574,8 @@ private struct GhostOnboardingPanelView: View {
             return .gemini
         case .deepSeek:
             return .deepSeek
+        case .openCodeGo:
+            return .openCodeGo
         case .lmStudio, .ollama:
             return nil
         }
@@ -4836,6 +5035,26 @@ private struct SettingsPanelView: View {
                             }
                             .pickerStyle(.segmented)
                         }
+
+                        Toggle("Persistent Window", isOn: $store.isPersistentWindow)
+                            .toggleStyle(.switch)
+
+                        Text("When on, Ghost stays open after you click another app. Use the menu bar icon or Option+Space to hide it.")
+                            .font(.system(size: 11, design: .default))
+                            .foregroundStyle(GhostColors.mutedPlatinum)
+
+                        SettingsSegmentBlock(title: "Terminal theme") {
+                            Picker("Terminal theme", selection: $store.terminalTheme) {
+                                ForEach(GhostTerminalTheme.allCases) { theme in
+                                    Text(theme.title).tag(theme)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                        }
+
+                        Text(store.terminalTheme.subtitle)
+                            .font(.system(size: 11, design: .default))
+                            .foregroundStyle(GhostColors.mutedPlatinum)
                     }
                 }
 
@@ -4868,6 +5087,28 @@ private struct SettingsPanelView: View {
                                 value: store.taskTimeline.route.nonEmpty ?? "Waiting"
                             )
                         }
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            Label("Why this route", systemImage: "point.topleft.down.curvedto.point.bottomright.up")
+                                .font(.system(size: 10, weight: .semibold, design: .default))
+                                .foregroundStyle(GhostColors.faintPlatinum)
+
+                            Text(store.routingExplanation)
+                                .font(.system(size: 10.5, weight: .medium, design: .monospaced))
+                                .foregroundStyle(GhostColors.mutedPlatinum)
+                                .textSelection(.enabled)
+                                .lineLimit(5)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .padding(10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(GhostColors.glassFill.opacity(0.52))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .strokeBorder(GhostColors.glassBorder.opacity(0.7), lineWidth: 1)
+                        )
 
                         if let warning = store.engineWarning {
                             SettingsWarning(text: warning)
@@ -5032,6 +5273,52 @@ private struct SettingsPanelView: View {
                                 )
                             }
                         }
+
+                        if store.selectedProvider == .openCodeGo {
+                            VStack(alignment: .leading, spacing: 12) {
+                                SettingsSectionIntro(
+                                    title: "Use OpenCode Go models.",
+                                    subtitle: "Save your OpenCode Go API key under API Keys, then refresh to sync available models."
+                                )
+
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("OpenCode Go model")
+                                        .font(.system(size: 10, weight: .semibold, design: .default))
+                                        .foregroundStyle(GhostColors.labelPlatinum)
+
+                                    HStack(spacing: 8) {
+                                        Picker("Model", selection: $store.selectedOpenCodeGoModel) {
+                                            if store.openCodeGoModels.isEmpty {
+                                                Text(store.selectedOpenCodeGoModel).tag(store.selectedOpenCodeGoModel)
+                                            }
+
+                                            ForEach(store.openCodeGoModels) { model in
+                                                Text(model.id).tag(model.id)
+                                            }
+                                        }
+                                        .frame(maxWidth: .infinity)
+
+                                        Button {
+                                            store.refreshOpenCodeGoModels()
+                                        } label: {
+                                            if store.isRefreshingOpenCodeGoModels {
+                                                ProgressView()
+                                                    .controlSize(.small)
+                                            } else {
+                                                Image(systemName: "arrow.clockwise")
+                                            }
+                                        }
+                                        .buttonStyle(.plain)
+                                        .foregroundStyle(GhostColors.mutedPlatinum)
+                                        .help("Refresh OpenCode Go models")
+                                    }
+                                }
+
+                                SettingsWarning(
+                                    text: "OpenCode Go uses your saved OPENCODE_API_KEY. Broad Mac actions, screenshots/OCR, binary documents, and coding edits still need Hermes Agent or Ghost Agent mode."
+                                )
+                            }
+                        }
                     }
                 }
                 }
@@ -5059,6 +5346,13 @@ private struct SettingsPanelView: View {
                             }
                             .pickerStyle(.segmented)
                         }
+
+                        Toggle("Verify completed tool work", isOn: $store.isTaskVerificationEnabled)
+                            .toggleStyle(.switch)
+
+                        Text("When enabled, Ghost adds a factual verification footer for agent, file, web, and failed runs.")
+                            .font(.system(size: 11, design: .default))
+                            .foregroundStyle(GhostColors.mutedPlatinum)
                     }
                 }
 
@@ -5074,11 +5368,39 @@ private struct SettingsPanelView: View {
 
                 SettingsCard(title: "RAG Index", systemImage: "doc.text.magnifyingglass") {
                     VStack(alignment: .leading, spacing: 12) {
-                        Toggle("Watch Desktop for changes", isOn: Binding(
-                            get: { !store.isRAGWatcherPaused },
+                        Toggle("Enable RAG", isOn: $store.isRAGEnabled)
+                        .toggleStyle(.switch)
+                        .font(.system(size: 12, weight: .medium))
+
+                        Text("RAG stays off until you opt in. When enabled, Ghost indexes only the folder you choose here.")
+                            .font(.system(size: 10.5, design: .default))
+                            .foregroundStyle(GhostColors.mutedPlatinum)
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("RAG folder")
+                                .font(.system(size: 10, weight: .semibold, design: .default))
+                                .foregroundStyle(GhostColors.labelPlatinum)
+
+                            HStack(spacing: 8) {
+                                TextField("Folder to index", text: $store.ragRootPath)
+                                    .textFieldStyle(.roundedBorder)
+
+                                Button {
+                                    store.chooseRAGFolder()
+                                } label: {
+                                    Label("Choose", systemImage: "folder")
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                            }
+                        }
+
+                        Toggle("Watch selected folder for changes", isOn: Binding(
+                            get: { store.isRAGEnabled && !store.isRAGWatcherPaused },
                             set: { store.isRAGWatcherPaused = !$0 }
                         ))
                         .toggleStyle(.switch)
+                        .disabled(!store.isRAGEnabled)
                         .font(.system(size: 12, weight: .medium))
 
                         HStack {
@@ -5088,7 +5410,7 @@ private struct SettingsPanelView: View {
                             Spacer()
                         }
 
-                        Text("Your Desktop is automatically watched and indexed every 15 min. Supported types: PDF, EPUB, DOCX, Markdown, code, CSV, plain text, and more.")
+                        Text("Supported types include PDF, EPUB, DOCX, Markdown, code, CSV, plain text, JSON, HTML, and RTF.")
                             .font(.system(size: 10.5, design: .default))
                             .foregroundStyle(GhostColors.mutedPlatinum)
 
@@ -5104,10 +5426,49 @@ private struct SettingsPanelView: View {
                             .controlSize(.small)
 
                             Button {
-                                store.reindexRAG()
+                                store.syncSelectedRAGFolder()
                             } label: {
-                                Label("Reindex", systemImage: "arrow.triangle.2.circlepath")
+                                Label("Sync Folder", systemImage: "arrow.triangle.2.circlepath")
                                     .font(.system(size: 11, weight: .medium))
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                            .disabled(!store.isRAGEnabled)
+                        }
+                    }
+                }
+
+                SettingsCard(title: "Workspace", systemImage: "folder") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Where Ghost Agent runs local tools.")
+                            .font(.system(size: 11, design: .default))
+                            .foregroundStyle(GhostColors.mutedPlatinum)
+
+                        HStack(spacing: 8) {
+                            TextField("Working folder", text: $store.workingDirectoryPath)
+                                .textFieldStyle(.roundedBorder)
+
+                            Button {
+                                store.chooseWorkingDirectory()
+                            } label: {
+                                Label("Choose", systemImage: "folder")
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                        }
+
+                        Text("Where Ghost-produced documents and code artifacts should go by default.")
+                            .font(.system(size: 11, design: .default))
+                            .foregroundStyle(GhostColors.mutedPlatinum)
+
+                        HStack(spacing: 8) {
+                            TextField("Output folder", text: $store.documentOutputDirectoryPath)
+                                .textFieldStyle(.roundedBorder)
+
+                            Button {
+                                store.chooseDocumentOutputFolder()
+                            } label: {
+                                Label("Choose", systemImage: "folder.badge.plus")
                             }
                             .buttonStyle(.bordered)
                             .controlSize(.small)
@@ -5115,20 +5476,26 @@ private struct SettingsPanelView: View {
                     }
                 }
 
-                SettingsCard(title: "Workspace", systemImage: "folder") {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Where Ghost Agent runs local tools.")
-                            .font(.system(size: 11, design: .default))
-                            .foregroundStyle(GhostColors.mutedPlatinum)
+                SettingsCard(title: "How To", systemImage: "book") {
+                    HowToSettingsContent()
+                }
 
-                        TextField("Working folder", text: $store.workingDirectoryPath)
-                            .textFieldStyle(.roundedBorder)
-                    }
+                SettingsCard(title: "Intelligence Roadmap", systemImage: "brain") {
+                    IntelligenceRoadmapContent()
                 }
 
                 SettingsCard(title: "API Keys", systemImage: "key") {
                     APIKeysSettingsContent(store: store)
                 }
+
+                HStack {
+                    Spacer()
+                    Text("Ghost v\(GhostVersion.current)")
+                        .font(.system(size: 11, weight: .medium, design: .default))
+                        .foregroundStyle(GhostColors.mutedPlatinum.opacity(0.6))
+                    Spacer()
+                }
+                .padding(.top, 4)
 
                 if let message = store.settingsMessage {
                     Text(message)
@@ -5330,6 +5697,69 @@ private struct SettingsWarning: View {
     }
 }
 
+private struct HowToSettingsContent: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SettingsSectionIntro(
+                title: "Hermes Agent for full desktop work",
+                subtitle: "Install Hermes when Ghost should edit files, run multi-step coding workflows, use approvals, and coordinate broader Mac actions."
+            )
+
+            VStack(alignment: .leading, spacing: 6) {
+                howToLine("1. Download Hermes Agent from the Ghost/Hermes release source you trust.")
+                howToLine("2. Put the binary somewhere stable, for example ~/.local/bin/hermes, and make it executable.")
+                howToLine("3. In Settings, turn on Hermes Agent and choose the executable if Ghost does not detect it.")
+                howToLine("4. Keep routing on Auto so simple answers use Direct API and desktop/coding work uses the agent.")
+            }
+
+            SettingsSectionIntro(
+                title: "API-key-only mode",
+                subtitle: "Direct API mode works for normal chat, web-assisted answers, local-model file tools, reminders, calendar reads, and simple document creation through Ghost's built-in harness."
+            )
+
+            SettingsWarning(
+                text: "Without Hermes Agent, broad computer control, large code edits, approval-driven shell workflows, app automation, and non-text desktop actions are limited or unavailable."
+            )
+        }
+    }
+
+    private func howToLine(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: 11.5, design: .default))
+            .foregroundStyle(GhostColors.mutedPlatinum)
+            .lineSpacing(3)
+    }
+}
+
+private struct IntelligenceRoadmapContent: View {
+    private let ideas = [
+        "Prompt memory: remember preferred tone, output folders, recurring projects, and tool risk tolerance.",
+        "Task classifier: score prompts for answer, file work, coding, automation, vision, RAG, and web before routing.",
+        "Readiness checks: show whether agent, API key, local model, calendar, reminders, RAG, and shell are ready.",
+        "Vision fallback: run local OCR when the selected model is not vision-capable, then send extracted text.",
+        "Autonomous validation: after creating docs or code, verify files, run focused checks, and report exact evidence.",
+        "Live presence: small professional status states such as reading, planning, editing, waiting for approval, and done."
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(ideas, id: \.self) { idea in
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "sparkle")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(GhostColors.royalViolet.opacity(0.78))
+                        .padding(.top, 2)
+
+                    Text(idea)
+                        .font(.system(size: 11.5, design: .default))
+                        .foregroundStyle(GhostColors.mutedPlatinum)
+                        .lineSpacing(3)
+                }
+            }
+        }
+    }
+}
+
 private struct ModelSummaryCard: View {
     @Bindable var store: GhostConversationStore
 
@@ -5380,6 +5810,8 @@ private struct ModelSummaryCard: View {
             return "Local model through LM Studio"
         case .ollama:
             return "Local model through Ollama"
+        case .openCodeGo:
+            return "OpenCode Go model"
         }
     }
 }
@@ -5899,6 +6331,234 @@ extension NSFont {
             name = "HK Grotesk"
         }
         return NSFont(name: name, size: size) ?? NSFont.systemFont(ofSize: size, weight: weight)
+    }
+}
+
+// MARK: - Document Studio drawer
+
+private struct DocumentStudioDrawerView: View {
+    @Bindable var store: GhostConversationStore
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Spacer()
+            VStack(spacing: 0) {
+                drawerHeader
+                Divider().background(GhostColors.glassBorder)
+
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 8) {
+                        if store.producedDocuments.isEmpty {
+                            emptyState
+                        } else {
+                            ForEach(store.producedDocuments) { document in
+                                DocumentStudioRow(
+                                    document: document,
+                                    onOpen: { store.openProducedDocument(document) },
+                                    onReveal: { store.revealProducedDocument(document) },
+                                    onCopyPath: { store.copyProducedDocumentPath(document) }
+                                )
+                            }
+                        }
+                    }
+                    .padding(10)
+                }
+            }
+            .frame(width: 320)
+            .background(GhostColors.drawerFill.opacity(0.92))
+            .background(.ultraThinMaterial)
+            .overlay(
+                RoundedRectangle(cornerRadius: GhostRadii.card, style: .continuous)
+                    .stroke(GhostColors.glassBorder, lineWidth: 1)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: GhostRadii.card, style: .continuous))
+            .shadow(color: .black.opacity(0.4), radius: 20, y: 8)
+            .padding(8)
+        }
+    }
+
+    private var drawerHeader: some View {
+        HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Document Studio")
+                    .font(GhostTypography.displayBold(size: 18))
+                    .tracking(-0.3)
+                    .foregroundStyle(GhostColors.platinum)
+
+                Text("\(store.producedDocuments.count) verified outputs")
+                    .font(.system(size: 10.5, weight: .medium))
+                    .foregroundStyle(GhostColors.mutedPlatinum)
+            }
+
+            Spacer()
+
+            Button {
+                store.revealDocumentOutputFolder()
+            } label: {
+                Image(systemName: "folder")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(GhostColors.mutedPlatinum)
+            }
+            .buttonStyle(.plain)
+            .help("Reveal output folder")
+
+            Button {
+                store.clearProducedDocuments()
+            } label: {
+                Image(systemName: "trash")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(GhostColors.mutedPlatinum)
+            }
+            .buttonStyle(.plain)
+            .help("Clear list")
+            .disabled(store.producedDocuments.isEmpty)
+
+            Button {
+                store.toggleDocumentStudio()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(GhostColors.mutedPlatinum)
+            }
+            .buttonStyle(.plain)
+            .help("Close")
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "tray")
+                .font(.system(size: 24, weight: .medium))
+                .foregroundStyle(GhostColors.faintPlatinum)
+
+            Text("No verified outputs yet.")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(GhostColors.platinum)
+
+            Text("Files Ghost creates or verifies will appear here with open, reveal, and copy-path actions.")
+                .font(.system(size: 11))
+                .foregroundStyle(GhostColors.mutedPlatinum)
+                .multilineTextAlignment(.center)
+                .lineLimit(3)
+
+            Button {
+                store.revealDocumentOutputFolder()
+            } label: {
+                Label("Open output folder", systemImage: "folder")
+                    .font(.system(size: 11, weight: .medium))
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 28)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct DocumentStudioRow: View {
+    let document: GhostProducedDocument
+    let onOpen: () -> Void
+    let onReveal: () -> Void
+    let onCopyPath: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Button(action: onOpen) {
+                HStack(alignment: .top, spacing: 9) {
+                    Image(systemName: icon)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(GhostColors.royalViolet.opacity(0.8))
+                        .frame(width: 20, height: 22)
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(document.title)
+                            .font(.system(size: 12.5, weight: .semibold))
+                            .foregroundStyle(GhostColors.platinum)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+
+                        Text(document.displayPath)
+                            .font(.system(size: 10, weight: .medium, design: .monospaced))
+                            .foregroundStyle(GhostColors.mutedPlatinum)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                    }
+
+                    Spacer(minLength: 4)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help("Open")
+
+            HStack(spacing: 8) {
+                Text(document.kind)
+                    .font(.system(size: 9.5, weight: .semibold))
+                    .foregroundStyle(GhostColors.faintPlatinum)
+                    .textCase(.uppercase)
+
+                Text(document.createdAt, style: .date)
+                    .font(.system(size: 9.5, weight: .medium))
+                    .foregroundStyle(GhostColors.faintPlatinum)
+
+                Text(document.createdAt, style: .time)
+                    .font(.system(size: 9.5, weight: .medium))
+                    .foregroundStyle(GhostColors.faintPlatinum)
+
+                Spacer()
+
+                rowButton(systemImage: "arrow.up.forward.app", help: "Open", action: onOpen)
+                rowButton(systemImage: "magnifyingglass", help: "Reveal in Finder", action: onReveal)
+                rowButton(systemImage: "doc.on.doc", help: "Copy path", action: onCopyPath)
+            }
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: GhostRadii.small, style: .continuous)
+                .fill(GhostColors.glassFill)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: GhostRadii.small, style: .continuous)
+                .stroke(GhostColors.glassBorder.opacity(0.7), lineWidth: 1)
+        )
+    }
+
+    private var icon: String {
+        switch document.kind.lowercased() {
+        case "folder":
+            return "folder"
+        case "pdf":
+            return "doc.richtext"
+        case "docx":
+            return "doc.text"
+        case "pptx":
+            return "rectangle.on.rectangle"
+        case "xlsx", "csv":
+            return "tablecells"
+        case "png", "jpg", "jpeg", "gif", "heic", "webp":
+            return "photo"
+        default:
+            return "doc"
+        }
+    }
+
+    private func rowButton(systemImage: String, help: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(GhostColors.mutedPlatinum)
+                .frame(width: 22, height: 22)
+                .background(
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(GhostColors.glassFill.opacity(0.9))
+                )
+        }
+        .buttonStyle(.plain)
+        .help(help)
     }
 }
 

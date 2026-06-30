@@ -6,6 +6,7 @@ enum GhostProvider: String, CaseIterable, Identifiable, Sendable {
     case claude
     case gemini
     case deepSeek
+    case openCodeGo
 
     var id: String { rawValue }
 
@@ -21,6 +22,8 @@ enum GhostProvider: String, CaseIterable, Identifiable, Sendable {
             "Gemini"
         case .deepSeek:
             "DeepSeek v4"
+        case .openCodeGo:
+            "OpenCode Go"
         }
     }
 
@@ -36,6 +39,8 @@ enum GhostProvider: String, CaseIterable, Identifiable, Sendable {
             "Google AI Studio"
         case .deepSeek:
             "DeepSeek API"
+        case .openCodeGo:
+            "OpenCode Go API"
         }
     }
 
@@ -51,6 +56,8 @@ enum GhostProvider: String, CaseIterable, Identifiable, Sendable {
             "gemini"
         case .deepSeek:
             "deepseek"
+        case .openCodeGo:
+            "opencode-go"
         }
     }
 
@@ -68,6 +75,8 @@ enum GhostProvider: String, CaseIterable, Identifiable, Sendable {
             "gemini"
         case .deepSeek:
             "deepseek"
+        case .openCodeGo:
+            "opencode-go"
         }
     }
 
@@ -75,8 +84,32 @@ enum GhostProvider: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .lmStudio, .ollama:
             true
-        case .claude, .gemini, .deepSeek:
+        case .claude, .gemini, .deepSeek, .openCodeGo:
             false
+        }
+    }
+
+    func supportsVision(model: String) -> Bool {
+        switch self {
+        case .claude, .gemini:
+            return true
+        case .lmStudio, .ollama:
+            let normalized = model.lowercased()
+            return [
+                "vision",
+                "vl",
+                "llava",
+                "moondream",
+                "bakllava",
+                "minicpm-v",
+                "qwen2-vl",
+                "qwen2.5-vl",
+                "qwen-vl",
+                "gemma3",
+                "pixtral"
+            ].contains { normalized.contains($0) }
+        case .deepSeek, .openCodeGo:
+            return false
         }
     }
 
@@ -92,6 +125,8 @@ enum GhostProvider: String, CaseIterable, Identifiable, Sendable {
             ["gemini", "google"]
         case .deepSeek:
             ["deepseek"]
+        case .openCodeGo:
+            ["opencode-go", "opencode", "go"]
         }
     }
 
@@ -107,6 +142,8 @@ enum GhostProvider: String, CaseIterable, Identifiable, Sendable {
             "Requires a Gemini API key."
         case .deepSeek:
             "Uses your DeepSeek API key."
+        case .openCodeGo:
+            "Uses your OpenCode Go API key and syncs models from OpenCode Go."
         }
     }
 
@@ -122,6 +159,8 @@ enum GhostProvider: String, CaseIterable, Identifiable, Sendable {
             return "diamond"
         case .deepSeek:
             return "bolt.horizontal"
+        case .openCodeGo:
+            return "globe"
         }
     }
 }

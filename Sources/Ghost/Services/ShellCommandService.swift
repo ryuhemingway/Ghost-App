@@ -7,6 +7,7 @@ struct ShellCommandResult: Sendable {
     let exitCode: Int32
     let timedOut: Bool
     let duration: TimeInterval
+    let finalWorkingDirectory: String?
 
     var formattedTerminalOutput: String {
         var parts: [String] = []
@@ -26,6 +27,10 @@ struct ShellCommandResult: Sendable {
             parts.append("[timeout]\nCommand exceeded the time limit and was stopped.")
         }
 
+        if let finalWorkingDirectory, !finalWorkingDirectory.isEmpty {
+            parts.append("[cwd]\n\(finalWorkingDirectory)")
+        }
+
         parts.append("[exit \(exitCode)] \(String(format: "%.2fs", duration))")
         return parts.joined(separator: "\n\n")
     }
@@ -43,9 +48,16 @@ struct ShellCommandService: Sendable {
             let stdout = Pipe()
             let stderr = Pipe()
             let state = ShellCommandState()
+            let sentinel = "__GHOST_FINAL_PWD__="
+            let wrappedCommand = """
+            \(command)
+            __ghost_status=$?
+            printf '\\n\(sentinel)%s\\n' "$PWD"
+            exit $__ghost_status
+            """
 
             process.executableURL = URL(fileURLWithPath: "/bin/zsh")
-            process.arguments = ["-lc", command]
+            process.arguments = ["-lic", wrappedCommand]
             process.currentDirectoryURL = workingDirectory
             process.standardOutput = stdout
             process.standardError = stderr
@@ -61,7 +73,8 @@ struct ShellCommandService: Sendable {
                         stderr: "Could not launch command: \(error.localizedDescription)",
                         exitCode: 127,
                         timedOut: false,
-                        duration: Date().timeIntervalSince(startedAt)
+                        duration: Date().timeIntervalSince(startedAt),
+                        finalWorkingDirectory: nil
                     )
                     state.resumeOnce(continuation, with: result)
                     return
@@ -83,17 +96,33 @@ struct ShellCommandService: Sendable {
                 let errorData = stderr.fileHandleForReading.readDataToEndOfFile()
                 process.waitUntilExit()
 
+                let rawStdout = String(data: outputData, encoding: .utf8) ?? ""
+                let parsed = parseFinalWorkingDirectory(from: rawStdout, sentinel: sentinel)
                 let result = ShellCommandResult(
                     command: command,
-                    stdout: String(data: outputData, encoding: .utf8) ?? "",
+                    stdout: parsed.stdout,
                     stderr: String(data: errorData, encoding: .utf8) ?? "",
                     exitCode: process.terminationStatus,
                     timedOut: state.timedOut,
-                    duration: Date().timeIntervalSince(startedAt)
+                    duration: Date().timeIntervalSince(startedAt),
+                    finalWorkingDirectory: parsed.cwd
                 )
                 state.resumeOnce(continuation, with: result)
             }
         }
+    }
+
+    private func parseFinalWorkingDirectory(from stdout: String, sentinel: String) -> (stdout: String, cwd: String?) {
+        guard let range = stdout.range(of: sentinel, options: .backwards) else {
+            return (stdout, nil)
+        }
+
+        let before = String(stdout[..<range.lowerBound])
+        let after = stdout[range.upperBound...]
+        let cwd = after.split(separator: "\n", maxSplits: 1, omittingEmptySubsequences: false).first
+            .map(String.init)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return (before.trimmingCharacters(in: .newlines), cwd?.isEmpty == false ? cwd : nil)
     }
 
     private func shellEnvironment(workingDirectory: URL) -> [String: String] {
@@ -102,6 +131,10 @@ struct ShellCommandService: Sendable {
         environment["PWD"] = workingDirectory.path
         environment["GHOST_CWD"] = workingDirectory.path
         environment["TERM"] = "xterm-256color"
+        environment["TERM_PROGRAM"] = "Ghost"
+        environment["COLORTERM"] = "truecolor"
+        environment["LANG"] = environment["LANG"] ?? "en_US.UTF-8"
+        environment["LC_ALL"] = environment["LC_ALL"] ?? "en_US.UTF-8"
         environment["PATH"] = [
             "\(NSHomeDirectory())/.local/bin",
             "/opt/homebrew/bin",

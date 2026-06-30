@@ -1,12 +1,15 @@
 import AppKit
 import SwiftUI
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusBarController: GhostStatusBarController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         FontRegistry.registerFonts()
+        applyApplicationIcon()
         NSApp.setActivationPolicy(.accessory)
+        _ = GhostUpdater.shared
 
         let store = GhostConversationStore(
             ghostClient: GhostClient(),
@@ -22,6 +25,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 NotificationCenter.default.post(name: .ghostTogglePanel, object: nil)
             }
         }
+    }
+
+    private func applyApplicationIcon() {
+        guard let iconURL = Bundle.main.url(forResource: "Ghost", withExtension: "icns"),
+              let icon = NSImage(contentsOf: iconURL)
+        else { return }
+
+        NSApp.applicationIconImage = icon
     }
 }
 

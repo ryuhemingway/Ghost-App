@@ -46,7 +46,7 @@ enum EffortMode: String, CaseIterable, Identifiable {
             case .high: "Deep"
             case .max: "Max"
             }
-        case .claude:
+        case .claude, .openCodeGo:
             switch self {
             case .low: "Quick"
             case .medium: "Balanced"

@@ -411,6 +411,13 @@ struct GhostClient: Sendable {
             // DeepSeek's API expects bare model names such as deepseek-v4-pro.
             // Keep them unprefixed so DeepSeek runs continue to work.
             return model.removingProviderPrefix("deepseek")
+
+        case .openCodeGo:
+            return providerScopedModel(
+                model,
+                preferredPrefix: "opencode-go",
+                acceptedPrefixes: settings.provider.acceptedAgentModelPrefixes
+            )
         }
     }
 
@@ -487,7 +494,7 @@ struct GhostClient: Sendable {
                 // DeepSeek Hermes runs may use a bare DeepSeek model or a deepseek/ prefix.
                 return
 
-            case .lmStudio, .ollama, .claude, .gemini:
+            case .lmStudio, .ollama, .claude, .gemini, .openCodeGo:
                 if !hasAcceptedPrefix {
                     throw GhostClientError.commandFailed(
                         "Provider isolation blocked a run before launch: \(settings.provider.title) was selected, but Hermes would have launched model `\(modelArgument)`. Expected prefix: \(acceptedPrefixes.map { $0 + "/" }.joined(separator: " or "))."
@@ -562,6 +569,10 @@ struct GhostClient: Sendable {
             environment["OPENAI_BASE_URL"] = "\(ollamaHost)/v1"
             environment["OPENAI_API_KEY"] = "ollama"
 
+        case .openCodeGo:
+            environment["OPENAI_BASE_URL"] = "https://opencode.ai/zen/go/v1"
+            environment["OPENCODE_BASE_URL"] = "https://opencode.ai/zen/go/v1"
+
         case .claude, .gemini, .deepSeek:
             break
         }
@@ -608,6 +619,10 @@ struct GhostClient: Sendable {
             environment["OPENAI_BASE_URL"] = "\(ollamaHost)/v1"
             environment["OPENAI_API_KEY"] = "ollama"
 
+        case .openCodeGo:
+            environment["OPENAI_BASE_URL"] = "https://opencode.ai/zen/go/v1"
+            environment["OPENCODE_BASE_URL"] = "https://opencode.ai/zen/go/v1"
+
         case .claude, .gemini, .deepSeek:
             break
         }
@@ -647,6 +662,9 @@ struct GhostClient: Sendable {
 
         case .deepSeek:
             return ["DEEPSEEK_API_KEY"]
+
+        case .openCodeGo:
+            return ["OPENCODE_API_KEY", "OPENAI_BASE_URL", "OPENCODE_BASE_URL"]
         }
     }
 
@@ -671,7 +689,9 @@ struct GhostClient: Sendable {
             "FIREWORKS_API_KEY",
             "NVIDIA_API_KEY",
             "MOONSHOT_API_KEY",
-            "OLLAMA_API_KEY"
+            "OLLAMA_API_KEY",
+            "OPENCODE_API_KEY",
+            "OPENCODE_BASE_URL"
         ]
     }
 
@@ -695,11 +715,13 @@ struct GhostClient: Sendable {
                 model: "",
                 localContextWindow: 65_536,
                 workingDirectory: FileManager.default.homeDirectoryForCurrentUser,
+                documentOutputDirectory: FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Ghost Outputs", isDirectory: true),
                 apiKeys: [:],
                 approvalMode: .ask,
                 toolsets: "",
                 effortMode: .low,
                 ollamaBaseURL: URL(string: "http://localhost:11434")!,
+                ragEnabled: false,
                 agentKind: .ghost,
                 agentExecutableURL: fallbackExecutableURL
             )
@@ -727,13 +749,19 @@ struct GhostRunSettings: Sendable {
     let model: String
     let localContextWindow: Int
     let workingDirectory: URL
+    let documentOutputDirectory: URL
     let apiKeys: [String: String]
     let approvalMode: ApprovalMode
     let toolsets: String
     let effortMode: EffortMode
     let ollamaBaseURL: URL
+    let ragEnabled: Bool
     let agentKind: LocalAgentKind
     let agentExecutableURL: URL
+
+    var supportsVision: Bool {
+        provider.supportsVision(model: model)
+    }
 }
 
 enum GhostClientError: LocalizedError {
