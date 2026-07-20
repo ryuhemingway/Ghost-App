@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Solar System</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a1a;
+    color: #e0e0e0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+  }
+  header {
+    text-align: center;
+    padding: 3rem 1rem 1rem;
+    background: linear-gradient(180deg, #0d0d2b 0%, #0a0a1a 100%);
+  }
+  header h1 {
+    font-size: 3rem;
+    background: linear-gradient(135deg, #f9d423, #ff4e50);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header p { color: #888; margin-top: 0.5rem; font-size: 1.1rem; }
+  .orbit-container {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    margin: 2rem auto;
+    aspect-ratio: 1;
+  }
+  .sun {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 80px; height: 80px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, #fceabb, #f8b500);
+    border-radius: 50%;
+    box-shadow: 0 0 60px #f8b500, 0 0 120px rgba(248,181,0,0.3);
+    z-index: 10;
+  }
+  .sun-label {
+    position: absolute;
+    top: calc(50% + 50px);
+    left: 50%;
+    transform: translateX(-50%);
+    color: #f8b500;
+    font-weight: 600;
+    font-size: 0.9rem;
+    z-index: 10;
+  }
+  .orbit {
+    position: absolute;
+    top: 50%; left: 50%;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .planet {
+    position: absolute;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+  }
+  .planet:hover { transform: scale(1.4) !important; z-index: 20; }
+  .planet-label {
+    position: absolute;
+    white-space: nowrap;
+    font-size: 0.7rem;
+    color: #aaa;
+    pointer-events: none;
+  }
+  /* Orbit sizes and planet positions — all positioned at "right" (0deg) */
+  /* Mercury */
+  .o-mercury  { width: 120px; height: 120px; }
+  .p-mercury  { width: 10px; height: 10px; background: #b5b5b5; top: calc(50% - 5px); left: calc(50% + 55px); }
+  .l-mercury  { top: calc(50% - 18px); left: calc(50% + 67px); }
+  /* Venus */
+  .o-venus    { width: 170px; height: 170px; }
+  .p-venus    { width: 14px; height: 14px; background: #e6b87e; top: calc(50% - 7px); left: calc(50% + 78px); }
+  .l-venus    { top: calc(50% - 22px); left: calc(50% + 93px); }
+  /* Earth */
+  .o-earth    { width: 220px; height: 220px; }
+  .p-earth    { width: 15px; height: 15px; background: #4b7bec; top: calc(50% - 7.5px); left: calc(50% + 102px); }
+  .l-earth    { top: calc(50% - 24px); left: calc(50% + 118px); }
+  /* Mars */
+  .o-mars     { width: 270px; height: 270px; }
+  .p-mars     { width: 12px; height: 12px; background: #c1440e; top: calc(50% - 6px); left: calc(50% + 129px); }
+  .l-mars     { top: calc(50% - 22px); left: calc(50% + 142px); }
+  /* Jupiter */
+  .o-jupiter  { width: 350px; height: 350px; }
+  .p-jupiter  { width: 28px; height: 28px; background: #d4a574; top: calc(50% - 14px); left: calc(50% + 161px); }
+  .l-jupiter  { top: calc(50% - 30px); left: calc(50% + 190px); }
+  /* Saturn */
+  .o-saturn   { width: 430px; height: 430px; }
+  .p-saturn   { width: 24px; height: 24px; background: #e8d5a3; top: calc(50% - 12px); left: calc(50% + 203px); }
+  .l-saturn   { top: calc(50% - 28px); left: calc(50% + 228px); }
+  /* Uranus */
+  .o-uranus   { width: 500px; height: 500px; }
+  .p-uranus   { width: 18px; height: 18px; background: #7ec8e3; top: calc(50% - 9px); left: calc(50% + 241px); }
+  .l-uranus   { top: calc(50% - 26px); left: calc(50% + 260px); }
+  /* Neptune */
+  .o-neptune  { width: 570px; height: 570px; }
+  .p-neptune  { width: 17px; height: 17px; background: #3b54d4; top: calc(50% - 8.5px); left: calc(50% + 276px); }
+  .l-neptune  { top: calc(50% - 25px); left: calc(50% + 294px); }
+
+  .info-section {
+    max-width: 900px;
+    margin: 2rem auto 4rem;
+    padding: 0 1.5rem;
+  }
+  .info-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #f9d423;
+  }
+  .planet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+  .planet-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 1.2rem;
+    transition: background 0.2s;
+  }
+  .planet-card:hover { background: rgba(255,255,255,0.08); }
+  .planet-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .planet-card .dot {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+  }
+  .planet-card p {
+    font-size: 0.85rem;
+    color: #aaa;
+    line-height: 1.5;
+  }
+  .planet-card .stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #777;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+  }
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: #555;
+    font-size: 0.8rem;
+  }
+  @media (max-width: 640px) {
+    header h1 { font-size: 2rem; }
+    .orbit-container { max-width: 350px; }
+    .sun { width: 50px; height: 50px; }
+    .o-mercury { width: 80px; height: 80px; }
+    .o-venus   { width: 110px; height: 110px; }
+    .o-earth   { width: 140px; height: 140px; }
+    .o-mars    { width: 170px; height: 170px; }
+    .o-jupiter { width: 220px; height: 220px; }
+    .o-saturn  { width: 270px; height: 270px; }
+    .o-uranus  { width: 310px; height: 310px; }
+    .o-neptune { width: 350px; height: 350px; }
+    .p-mercury  { width: 7px; height: 7px; left: calc(50% + 36px); top: calc(50% - 3.5px); }
+    .p-venus    { width: 10px; height: 10px; left: calc(50% + 50px); top: calc(50% - 5px); }
+    .p-earth    { width: 11px; height: 11px; left: calc(50% + 64px); top: calc(50% - 5.5px); }
+    .p-mars     { width: 9px; height: 9px; left: calc(50% + 80px); top: calc(50% - 4.5px); }
+    .p-jupiter  { width: 18px; height: 18px; left: calc(50% + 101px); top: calc(50% - 9px); }
+    .p-saturn   { width: 16px; height: 16px; left: calc(50% + 127px); top: calc(50% - 8px); }
+    .p-uranus   { width: 13px; height: 13px; left: calc(50% + 148px); top: calc(50% - 6.5px); }
+    .p-neptune  { width: 12px; height: 12px; left: calc(50% + 169px); top: calc(50% - 6px); }
+    .l-mercury, .l-venus, .l-earth, .l-mars, .l-jupiter, .l-saturn, .l-uranus, .l-neptune { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>☀ Solar System</h1>
+  <p>A visual guide to our cosmic neighborhood</p>
+</header>
+
+<div class="orbit-container">
+  <div class="sun"></div>
+  <div class="sun-label">Sun</div>
+
+  <div class="orbit o-mercury"></div>
+  <div class="planet p-mercury" style="top: calc(50% - 5px); left: calc(50% + 55px);"></div>
+  <div class="planet-label l-mercury">Mercury</div>
+
+  <div class="orbit o-venus"></div>
+  <div class="planet p-venus" style="top: calc(50% - 7px); left: calc(50% + 78px);"></div>
+  <div class="planet-label l-venus">Venus</div>
+
+  <div class="orbit o-earth"></div>
+  <div class="planet p-earth" style="top: calc(50% - 7.5px); left: calc(50% + 102px);"></div>
+  <div class="planet-label l-earth">Earth</div>
+
+  <div class="orbit o-mars"></div>
+  <div class="planet p-mars" style="top: calc(50% - 6px); left: calc(50% + 129px);"></div>
+  <div class="planet-label l-mars">Mars</div>
+
+  <div class="orbit o-jupiter"></div>
+  <div class="planet p-jupiter" style="top: calc(50% - 14px); left: calc(50% + 161px);"></div>
+  <div class="planet-label l-jupiter">Jupiter</div>
+
+  <div class="orbit o-saturn"></div>
+  <div class="planet p-saturn" style="top: calc(50% - 12px); left: calc(50% + 203px);"></div>
+  <div class="planet-label l-saturn">Saturn</div>
+
+  <div class="orbit o-uranus"></div>
+  <div class="planet p-uranus" style="top: calc(50% - 9px); left: calc(50% + 241px);"></div>
+  <div class="planet-label l-uranus">Uranus</div>
+
+  <div class="orbit o-neptune"></div>
+  <div class="planet p-neptune" style="top: calc(50% - 8.5px); left: calc(50% + 276px);"></div>
+  <div class="planet-label l-neptune">Neptune</div>
+</div>
+
+<div class="info-section">
+  <h2>Planet Facts</h2>
+  <div class="planet-grid">
+    <div class="planet-card">
+      <h3><span class="dot" style="background:#b5b5b5;"></span> Mercury</h3>
+      <p>The smallest planet and closest to the Sun. A year on Mercury is just 88 Earth days.</p>
+      <div class="stat"><span>Diameter</span><span>4,879 km</span></div>
+    </div>
+    <div class="planet-card">
+      <h3><span class="dot" style="background:#e6b87e;"></span> Venus</h3>
+      <p>Earth's "sister planet" — similar in size but shrouded in thick, toxic clouds. Hottest planet.</p>
+      <div class="stat"><span>Diameter</span><span>12,104 km</span></div>
+    </div>
+    <div class="planet-card">
+      <h3><span class="dot" style="background:#4b7bec;"></span> Earth</h3>
+      <p>Our home — the only known planet with liquid water on its surface and life.</p>
+      <div class="stat"><span>Diameter</span><span>12,756 km</span></div>
+    </div>
+    <div class="planet-card">
+      <h3><span class="dot" style="background:#c1440e;"></span> Mars</h3>
+      <p>The Red Planet — home to the tallest mountain in the solar system (Olympus Mons).</p>
+      <div class="stat"><span>Diameter</span><span>6,792 km</span></div>
+    </div>
+    <div class="planet-card">
+      <h3><span class="dot" style="background:#d4a574;"></span> Jupiter</h3>
+      <p>The largest planet — its Great Red Spot is a storm larger than Earth that has raged for centuries.</p>
+      <div class="stat"><span>Diameter</span><span>142,984 km</span></div>
+    </div>
+    <div class="planet-card">
+      <h3><span class="dot" style="background:#e8d5a3;"></span> Saturn</h3>
+      <p>Famous for its spectacular ring system made of ice and rock particles.</p>
+      <div class="stat"><span>Diameter</span><span>120,536 km</span></div>
+    </div>
+    <div class="planet-card">
+      <h3><span class="dot" style="background:#7ec8e3;"></span> Uranus</h3>
+      <p>An ice giant that rotates on its side — its axial tilt is 98°.</p>
+      <div class="stat"><span>Diameter</span><span>51,118 km</span></div>
+    </div>
+    <div class="planet-card">
+      <h3><span class="dot" style="background:#3b54d4;"></span> Neptune</h3>
+      <p>The windiest planet — gusts reach 2,100 km/h. It's the farthest planet from the Sun.</p>
+      <div class="stat"><span>Diameter</span><span>49,528 km</span></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  The Solar System — open this file in any browser
+</footer>
+
+</body>
+</html>

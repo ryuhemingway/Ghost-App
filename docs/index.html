@@ -1,0 +1,1256 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ghost — A notch-first local macOS AI workspace</title>
+    <meta
+      name="description"
+      content="Ghost is a notch-first local macOS AI workspace that lives in your menu bar. Route prompts to local and hosted models, search your private knowledge base, start timers, and run verified Mac actions from one native interface."
+    />
+    <meta
+      property="og:title"
+      content="Ghost — A notch-first local macOS AI workspace"
+    />
+    <meta
+      property="og:description"
+      content="Route models, retrieve local documents, start timers, and run verified Mac actions from one private menu-bar workspace."
+    />
+    <meta property="og:image" content="assets/ghost-hero.png" />
+    <meta name="theme-color" content="#050505" />
+    <link
+      rel="icon"
+      href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%25" stop-color="%2300ff9d"/><stop offset="50%25" stop-color="%23d97757"/><stop offset="100%25" stop-color="%23a855f7"/></linearGradient></defs><rect width="64" height="64" rx="18" fill="%23050505"/><path d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z" fill="url(%23g)"/><circle cx="26" cy="29" r="3" fill="%23050505"/><circle cx="38" cy="29" r="3" fill="%23050505"/></svg>'
+    />
+    <style>
+      html,
+      body {
+        background: #050505;
+      }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="cursor" class="cursor" aria-hidden="true"></div>
+    <div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
+    <div class="noise-overlay" aria-hidden="true"></div>
+    <div class="grid-overlay" aria-hidden="true"></div>
+    <canvas id="hero-canvas" class="hero-canvas" aria-hidden="true"></canvas>
+
+    <!-- SIDE NAV -->
+    <nav class="side-nav" aria-label="Section navigation">
+      <button
+        class="side-nav-btn is-active"
+        data-target="top"
+        data-cursor="pointer"
+        aria-label="Jump to Intro"
+      >
+        <span class="side-dot"></span><span class="side-label">Intro</span>
+      </button>
+      <button
+        class="side-nav-btn"
+        data-target="summon"
+        data-cursor="pointer"
+        aria-label="Jump to Summon"
+      >
+        <span class="side-dot"></span><span class="side-label">Summon</span>
+      </button>
+      <button
+        class="side-nav-btn"
+        data-target="route"
+        data-cursor="pointer"
+        aria-label="Jump to Route"
+      >
+        <span class="side-dot"></span><span class="side-label">Route</span>
+      </button>
+      <button
+        class="side-nav-btn"
+        data-target="remember"
+        data-cursor="pointer"
+        aria-label="Jump to Remember"
+      >
+        <span class="side-dot"></span><span class="side-label">Remember</span>
+      </button>
+      <button
+        class="side-nav-btn"
+        data-target="act"
+        data-cursor="pointer"
+        aria-label="Jump to Act"
+      >
+        <span class="side-dot"></span><span class="side-label">Act</span>
+      </button>
+      <button
+        class="side-nav-btn"
+        data-target="native"
+        data-cursor="pointer"
+        aria-label="Jump to Native"
+      >
+        <span class="side-dot"></span><span class="side-label">Native</span>
+      </button>
+      <button
+        class="side-nav-btn"
+        data-target="build"
+        data-cursor="pointer"
+        aria-label="Jump to Build"
+      >
+        <span class="side-dot"></span><span class="side-label">Build</span>
+      </button>
+      <button
+        class="side-nav-btn"
+        data-target="protect"
+        data-cursor="pointer"
+        aria-label="Jump to Protect"
+      >
+        <span class="side-dot"></span><span class="side-label">Protect</span>
+      </button>
+      <button
+        class="side-nav-btn"
+        data-target="feel"
+        data-cursor="pointer"
+        aria-label="Jump to Feel"
+      >
+        <span class="side-dot"></span><span class="side-label">Feel</span>
+      </button>
+      <button
+        class="side-nav-btn"
+        data-target="faq"
+        data-cursor="pointer"
+        aria-label="Jump to FAQ"
+      >
+        <span class="side-dot"></span><span class="side-label">FAQ</span>
+      </button>
+    </nav>
+
+    <div class="page-wrap">
+      <header class="nav" id="nav">
+        <a
+          class="nav-brand"
+          href="#top"
+          aria-label="Ghost home"
+          data-cursor="pointer"
+        >
+          <svg
+            class="nav-ghost"
+            width="22"
+            height="22"
+            viewBox="0 0 64 64"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z"
+              fill="currentColor"
+            />
+            <circle cx="26" cy="29" r="3" fill="var(--bg)" />
+            <circle cx="38" cy="29" r="3" fill="var(--bg)" />
+          </svg>
+          <span>Ghost</span>
+        </a>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="#summon" data-cursor="pointer">Summon</a>
+          <a href="#route" data-cursor="pointer">Route</a>
+          <a href="#remember" data-cursor="pointer">Remember</a>
+          <a href="#act" data-cursor="pointer">Act</a>
+          <a href="#protect" data-cursor="pointer">Privacy</a>
+          <a href="#faq" data-cursor="pointer">FAQ</a>
+        </nav>
+        <div class="nav-actions">
+          <button
+            class="theme-toggle"
+            id="theme-toggle"
+            aria-label="Toggle theme"
+            data-cursor="pointer"
+          >
+            <svg
+              class="icon-sun"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+              />
+            </svg>
+            <svg
+              class="icon-moon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </button>
+          <a
+            class="nav-cta magnetic"
+            href="https://github.com/ryuhemingway/Ghost-App"
+            target="_blank"
+            rel="noopener"
+            data-cursor="pointer"
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.2 2.8.1 3.1.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.1.9 2.2v3.3c0 .3.1.7.8.6A12 12 0 0 0 12 .3"
+              />
+            </svg>
+            GitHub
+          </a>
+        </div>
+      </header>
+
+      <main id="top">
+        <!-- HERO -->
+        <section class="hero" id="hero">
+          <div class="hero-aura" aria-hidden="true"></div>
+          <svg
+            class="hero-ghost-watermark"
+            viewBox="0 0 64 64"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z"
+              fill="currentColor"
+            />
+            <circle cx="26" cy="29" r="3" fill="var(--bg)" />
+            <circle cx="38" cy="29" r="3" fill="var(--bg)" />
+          </svg>
+          <div class="hero-content">
+            <div class="hero-badge reveal">
+              <span class="pulse-dot"></span>
+              <span class="mono-label">macOS 14+ · Local-first · Menu bar</span>
+            </div>
+            <h1 class="hero-title reveal">
+              A premium AI workspace<br />
+              that lives in your <em>menu bar</em>.
+            </h1>
+            <p class="hero-lede reveal">
+              Ghost routes prompts to local and hosted models, searches your
+              private knowledge base, starts local timers, and runs verified Mac
+              actions — all from one quiet, native notch that appears the moment
+              you need it and vanishes when you don't.
+            </p>
+            <div class="hero-actions reveal">
+              <a
+                class="btn btn-primary magnetic"
+                href="#summon"
+                data-cursor="pointer"
+              >
+                Begin the tour
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </a>
+              <a
+                class="btn btn-ghost magnetic"
+                href="https://github.com/ryuhemingway/Ghost-App"
+                target="_blank"
+                rel="noopener"
+                data-cursor="pointer"
+                >View on GitHub</a
+              >
+            </div>
+          </div>
+          <div class="scroll-cue reveal" aria-hidden="true">
+            <span class="mono-label">scroll</span>
+            <span class="scroll-line"></span>
+          </div>
+        </section>
+
+        <!-- MANIFESTO -->
+        <section class="manifesto" id="manifesto">
+          <div class="manifesto-inner reveal">
+            <span class="eyebrow">What Ghost is</span>
+            <p class="manifesto-line">
+              Ghost is a <em>native SwiftUI menu-bar app</em> for macOS that
+              connects local models, hosted APIs, optional agent CLIs, document
+              retrieval, timers, and verified Mac actions through one quiet
+              notch-first surface.
+            </p>
+            <p class="manifesto-line">
+              It runs as an <em>accessory</em> — no Dock icon, no full-screen
+              takeover. It appears with a keystroke, does the work, and steps
+              back. Your Mac stays your Mac.
+            </p>
+            <p class="manifesto-line">
+              Every capability starts <em>off</em>. You opt into each one —
+              clipboard, web, files, automation, screen, shell — in a six-step
+              onboarding. Nothing is on by default. Nothing runs in the
+              background without you asking.
+            </p>
+          </div>
+        </section>
+
+        <!-- SUMMON -->
+        <section class="chapter" id="summon">
+          <div class="chapter-head reveal">
+            <span class="chapter-num">01</span>
+            <span class="eyebrow">Summon</span>
+            <h2>Call it from <em>anywhere.</em></h2>
+            <p class="chapter-lede">
+              Ghost lives in the menu bar and answers to global shortcuts that
+              work across every app on your Mac. No Accessibility permission
+              required — the hotkeys are registered through Carbon, the same
+              system Spotlight uses.
+            </p>
+          </div>
+
+          <div class="summon-grid">
+            <article class="summon-card reveal" data-cursor="pointer">
+              <div class="summon-icon">
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 64 64"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z"
+                    fill="currentColor"
+                  />
+                  <circle cx="26" cy="29" r="3" fill="var(--bg)" />
+                  <circle cx="38" cy="29" r="3" fill="var(--bg)" />
+                </svg>
+              </div>
+              <h3>Menu bar</h3>
+              <p>
+                Click the ghost in your menu bar to toggle the notch.
+                Right-click for a context menu: New Chat, Agent Console, Usage
+                &amp; Cost, Check for Updates, Quit.
+              </p>
+            </article>
+
+            <article class="summon-card reveal" data-cursor="pointer">
+              <div class="summon-key"><kbd>⌥</kbd><kbd>Space</kbd></div>
+              <h3>Global shortcut</h3>
+              <p>
+                Press <code>Option+Space</code> from anywhere to open the
+                top-center Ghost notch. Configurable to <code>⌘⇧Space</code>,
+                <code>⌃Space</code>, <code>⌃⌥Space</code>, or <code>⌘⌥G</code>.
+              </p>
+            </article>
+
+            <article class="summon-card reveal" data-cursor="pointer">
+              <div class="summon-key"><kbd>⌥⇧</kbd><kbd>Space</kbd></div>
+              <h3>Ghost Bar</h3>
+              <p>
+                A compact quick-ask surface reuses the same routing, tool
+                harness, deterministic parsers, and streaming pipeline for
+                one-off questions from the active screen.
+              </p>
+            </article>
+
+            <article class="summon-card reveal" data-cursor="pointer">
+              <div class="summon-key"><kbd>⌘</kbd><kbd>K</kbd></div>
+              <h3>Command palette</h3>
+              <p>
+                One hub to switch provider and effort, insert saved prompts, run
+                quick actions, and jump to destinations — fully keyboard-driven.
+              </p>
+            </article>
+
+            <article class="summon-card reveal" data-cursor="pointer">
+              <div class="summon-icon">
+                <svg
+                  width="26"
+                  height="26"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                  />
+                  <path
+                    d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                  />
+                </svg>
+              </div>
+              <h3>Deep link</h3>
+              <p>
+                <code>ghost://toggle</code> opens Ghost from any app or
+                script. No file paths or user content accepted — the link only
+                ever opens, never exfiltrates.
+              </p>
+            </article>
+
+            <article class="summon-card reveal" data-cursor="pointer">
+              <div class="summon-icon">
+                <svg
+                  width="26"
+                  height="26"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M4 7V4h16v3M9 20h6M12 4v16" />
+                </svg>
+              </div>
+              <h3>macOS Services</h3>
+              <p>
+                Right-click any text in any app → Services → Ghost for
+                <em>Rewrite Professionally</em>, <em>Rewrite Casually</em>,
+                <em>Check Grammar</em>, or <em>Ask Ghost for Feedback</em>.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <!-- ROUTE -->
+        <section class="chapter" id="route">
+          <div class="chapter-head reveal">
+            <span class="chapter-num">02</span>
+            <span class="eyebrow">Route</span>
+            <h2>
+              One prompt.<br /><em>Two engines.</em><br />Seven providers.
+            </h2>
+            <p class="chapter-lede">
+              You ask naturally. Ghost scores the prompt, picks the provider,
+              model, and engine, and decides whether a fast direct call is
+              enough or whether the work needs a connected agent loop.
+            </p>
+          </div>
+
+          <div class="route-flow reveal">
+            <div class="route-step">
+              <span class="route-step-num">i</span>
+              <h3>Direct API</h3>
+              <p>
+                The default path. Ghost calls the provider's HTTP API directly
+                with its native tool harness — streaming, tool loops, prompt
+                caching on Claude, retry with backoff on transient failures.
+              </p>
+            </div>
+            <div class="route-arrow" aria-hidden="true">
+              <span class="mono-label">or</span>
+            </div>
+            <div class="route-step">
+              <span class="route-step-num">ii</span>
+              <h3>Ghost Agent</h3>
+              <p>
+                For deeper work, Ghost shells out to a local CLI at
+                <code>~/.local/bin/ghost</code> or <code>hermes</code>, passing
+                provider, model, turn limits, approval mode, and toolsets.
+              </p>
+            </div>
+          </div>
+
+          <div class="provider-rail reveal">
+            <div class="provider-pill local">
+              <span class="prov-tag local">Local</span>
+              <h4>LM Studio</h4>
+              <p>localhost:1234</p>
+            </div>
+            <div class="provider-pill local">
+              <span class="prov-tag local">Local</span>
+              <h4>Ollama</h4>
+              <p>localhost:11434</p>
+            </div>
+            <div class="provider-pill cloud">
+              <span class="prov-tag cloud">Cloud</span>
+              <h4>Claude</h4>
+              <p>Anthropic</p>
+            </div>
+            <div class="provider-pill cloud">
+              <span class="prov-tag cloud">Cloud</span>
+              <h4>Gemini</h4>
+              <p>Google</p>
+            </div>
+            <div class="provider-pill cloud">
+              <span class="prov-tag cloud">Cloud</span>
+              <h4>DeepSeek</h4>
+              <p>v4 reasoning</p>
+            </div>
+            <div class="provider-pill cloud">
+              <span class="prov-tag cloud">Cloud</span>
+              <h4>OpenCode Go</h4>
+              <p>zen/go/v1</p>
+            </div>
+            <div class="provider-pill cloud">
+              <span class="prov-tag cloud">Cloud</span>
+              <h4>OpenCode Zen</h4>
+              <p>free tier models</p>
+            </div>
+          </div>
+
+          <div class="effort-row reveal">
+            <span class="eyebrow">Effort modes</span>
+            <div class="effort-track">
+              <div class="effort-node">
+                <span class="effort-label">Quick</span
+                ><span class="effort-meta">4 turns · 4K</span>
+              </div>
+              <div class="effort-node">
+                <span class="effort-label">Balanced</span
+                ><span class="effort-meta">12 turns · 8K</span>
+              </div>
+              <div class="effort-node">
+                <span class="effort-label">Deep</span
+                ><span class="effort-meta">40 turns · 16K</span>
+              </div>
+              <div class="effort-node">
+                <span class="effort-label">Max</span
+                ><span class="effort-meta">90 turns · 32K</span>
+              </div>
+            </div>
+            <p class="effort-note">
+              Four effort levels control how many turns and tokens a run may
+              spend — from a one-shot answer to a ninety-turn deep work session.
+            </p>
+          </div>
+
+          <div class="approval-row reveal">
+            <span class="eyebrow">Approval modes</span>
+            <div class="approval-track">
+              <div class="approval-node">
+                <h4>Ask</h4>
+                <p>Read-only tools auto-run; medium and high risk ask first.</p>
+              </div>
+              <div class="approval-node">
+                <h4>Safe Auto</h4>
+                <p>Low and medium auto-run; high risk still asks.</p>
+              </div>
+              <div class="approval-node">
+                <h4>Auto-run</h4>
+                <p>
+                  Everything classified runs — but file path scope never
+                  expands.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- REMEMBER -->
+        <section class="chapter" id="remember">
+          <div class="chapter-head reveal">
+            <span class="chapter-num">03</span>
+            <span class="eyebrow">Remember</span>
+            <h2>Your files,<br /><em>searchable memory.</em></h2>
+            <p class="chapter-lede">
+              Ghost indexes the folders you approve into a local SQLite database
+              with FTS5 full-text search. When a prompt needs context, it
+              retrieves cited, source-backed chunks — not vague confidence.
+            </p>
+          </div>
+
+          <div class="remember-body">
+            <div class="remember-feature reveal">
+              <span class="eyebrow">The index</span>
+              <h3>Local SQLite · FTS5 · WAL mode</h3>
+              <p>
+                Chunks live in
+                <code
+                  >~/Library/Application
+                  Support/Ghost/rag/ghost_rag.sqlite</code
+                >. Max chunk 3,500 chars, 500-char overlap, sentence-aware
+                splitting, page numbers preserved from PDFs, section titles from
+                markdown headings.
+              </p>
+            </div>
+
+            <div class="remember-feature reveal">
+              <span class="eyebrow">30 file formats</span>
+              <div class="format-cloud">
+                <span>txt</span><span>md</span><span>html</span><span>pdf</span
+                ><span>docx</span><span>epub</span><span>csv</span
+                ><span>json</span><span>rtf</span><span>swift</span
+                ><span>py</span><span>js</span><span>ts</span><span>tsx</span
+                ><span>jsx</span><span>java</span><span>cpp</span><span>c</span
+                ><span>h</span><span>m</span><span>sql</span><span>xml</span
+                ><span>yaml</span><span>toml</span><span>log</span>
+              </div>
+            </div>
+
+            <div class="remember-feature reveal">
+              <span class="eyebrow">Desktop watcher</span>
+              <h3>FSEvents, always in sync</h3>
+              <p>
+                Watch a folder recursively. Startup sync, event-driven sync with
+                8-second debounce, periodic rescan every hour. Up to 50,000
+                files per pass. Skips <code>node_modules</code>,
+                <code>build</code>, <code>__pycache__</code>, <code>venv</code>,
+                and the rest.
+              </p>
+            </div>
+
+            <div class="remember-feature reveal">
+              <span class="eyebrow">Cited answers</span>
+              <h3>Open the source behind every claim</h3>
+              <p>
+                RAG queries return chunk metadata and source paths. Ghost can
+                open the cited file at the right spot, or reveal it in Finder.
+                Ten RAG tools: ingest, sync, query, search, open, status,
+                remove, reindex, clear.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ACT -->
+        <section class="chapter" id="act">
+          <div class="chapter-head reveal">
+            <span class="chapter-num">04</span>
+            <span class="eyebrow">Act</span>
+            <h2>Models request.<br /><em>Ghost verifies.</em></h2>
+            <p class="chapter-lede">
+              The capability harness is Ghost's action layer. The model never
+              touches the filesystem directly — it asks, Ghost normalizes the
+              path, checks permissions, runs app-owned code, and returns a
+              machine-readable receipt. You see what actually happened.
+            </p>
+          </div>
+
+          <div class="act-stats reveal">
+            <div class="act-stat">
+              <span class="act-num">60+</span>
+              <span class="act-label">built-in capabilities</span>
+            </div>
+            <div class="act-stat">
+              <span class="act-num">20+</span>
+              <span class="act-label">file operations</span>
+            </div>
+            <div class="act-stat">
+              <span class="act-num">8</span>
+              <span class="act-label">document formats</span>
+            </div>
+            <div class="act-stat">
+              <span class="act-num">4</span>
+              <span class="act-label">risk tiers</span>
+            </div>
+          </div>
+
+          <div class="act-body">
+            <div class="act-block reveal">
+              <span class="eyebrow">Files</span>
+              <h3>Read, write, move, convert</h3>
+              <p>
+                List, glob, grep, read, write, create, edit, patch, move, copy,
+                delete (trash by default), zip, reveal in Finder. Conversions
+                between PDF, DOCX, HTML, TXT, and Markdown. Desktop, Downloads,
+                Documents, Ghost Outputs, and the workspace are all safe output
+                targets.
+              </p>
+            </div>
+
+            <div class="act-block reveal">
+              <span class="eyebrow">Documents</span>
+              <h3>Generate real artifacts</h3>
+              <p>
+                Create Markdown, HTML, TXT, CSV, JSON, PDF, DOCX, PPTX, and XLSX
+                — all through native macOS frameworks. If a local model returns
+                a usable code block instead of calling a file tool, Ghost can
+                save the artifact itself and return the real path.
+              </p>
+            </div>
+
+            <div class="act-block reveal">
+              <span class="eyebrow">Risk classification</span>
+              <h3>Four tiers, fail closed</h3>
+              <div class="risk-tiers">
+                <div class="risk-tier low">
+                  <span class="risk-dot"></span>
+                  <h4>Low</h4>
+                  <p>
+                    Read-only: search, list, read, grep, weather, web search.
+                  </p>
+                </div>
+                <div class="risk-tier med">
+                  <span class="risk-dot"></span>
+                  <h4>Medium</h4>
+                  <p>
+                    Writes, creates, calendar, reminders, file copy, app launch.
+                  </p>
+                </div>
+                <div class="risk-tier high">
+                  <span class="risk-dot"></span>
+                  <h4>High</h4>
+                  <p>
+                    Patches, moves, deletes, app quit, Shortcuts, shell, index
+                    clear.
+                  </p>
+                </div>
+                <div class="risk-tier block">
+                  <span class="risk-dot"></span>
+                  <h4>Blocked</h4>
+                  <p>Unknown future tools fail closed — never silently run.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="act-block reveal">
+              <span class="eyebrow">Undo</span>
+              <h3>Action journal</h3>
+              <p>
+                Every write, edit, move, and delete records before-and-after
+                state. Up to 100 journal entries. If a run goes sideways, you
+                can roll it back.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- NATIVE -->
+        <section class="chapter" id="native">
+          <div class="chapter-head reveal">
+            <span class="chapter-num">05</span>
+            <span class="eyebrow">Native</span>
+            <h2>It speaks <em>macOS</em><br />fluently.</h2>
+            <p class="chapter-lede">
+              Ghost doesn't shell out to scripts when it doesn't have to. It
+              talks to Calendar, Reminders, Notes, Shortcuts, Vision OCR, and
+              Speech Recognition through the same native APIs your other apps
+              do.
+            </p>
+          </div>
+
+          <div class="native-list">
+            <div class="native-row reveal">
+              <div class="native-glyph">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <path d="M16 2v4M8 2v4M3 10h18" />
+                </svg>
+              </div>
+              <div class="native-text">
+                <h3>Calendar</h3>
+                <p>
+                  Query events in a date range and create new ones after
+                  explicit intent. A deterministic parser turns natural language
+                  into real calendar entries.
+                </p>
+              </div>
+            </div>
+            <div class="native-row reveal">
+              <div class="native-glyph">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                  <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                </svg>
+              </div>
+              <div class="native-text">
+                <h3>Reminders</h3>
+                <p>
+                  Turn "remind me to check the oven in 10 minutes" into a real
+                  macOS Reminder with a due date — parsed deterministically from
+                  your sentence.
+                </p>
+              </div>
+            </div>
+            <div class="native-row reveal">
+              <div class="native-glyph">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 6h18M3 12h18M3 18h12" />
+                </svg>
+              </div>
+              <div class="native-text">
+                <h3>Apple Notes</h3>
+                <p>
+                  Create notes in specified folders, append to existing ones,
+                  and search by title and content — all through AppleScript.
+                </p>
+              </div>
+            </div>
+            <div class="native-row reveal">
+              <div class="native-glyph">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"
+                  />
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" />
+                </svg>
+              </div>
+              <div class="native-text">
+                <h3>Voice input</h3>
+                <p>
+                  On-device <code>SFSpeechRecognizer</code> with a live
+                  three-bar EQ waveform driven by RMS from the audio tap. Start,
+                  stop, send — or press Space to toggle.
+                </p>
+              </div>
+            </div>
+            <div class="native-row reveal">
+              <div class="native-glyph">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"
+                  />
+                  <rect x="7" y="7" width="10" height="10" rx="1" />
+                </svg>
+              </div>
+              <div class="native-text">
+                <h3>Screen capture &amp; OCR</h3>
+                <p>
+                  Capture a region and extract text with Apple Vision OCR — fast
+                  or accurate mode. Ghost hides during capture and restores
+                  afterward.
+                </p>
+              </div>
+            </div>
+            <div class="native-row reveal">
+              <div class="native-glyph">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+              </div>
+              <div class="native-text">
+                <h3>Shortcuts &amp; timers</h3>
+                <p>
+                  Run macOS Shortcuts through <code>/usr/bin/shortcuts</code>.
+                  Set pomodoro and countdown timers in natural language. Active
+                  timers take over the compact notch, and completed timers reopen
+                  with pause, resume, add-time, restart, and dismiss controls.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BUILD -->
+        <section class="chapter" id="build">
+          <div class="chapter-head reveal">
+            <span class="chapter-num">06</span>
+            <span class="eyebrow">Build</span>
+            <h2>A workspace<br />for <em>deeper work.</em></h2>
+            <p class="chapter-lede">
+              When a compact notch isn't enough, Ghost opens into deeper work
+              modes — agent workflows, an in-app terminal, an intent router that
+              classifies prompts before they run, and a local model capability
+              probe that picks the safest calling convention.
+            </p>
+          </div>
+
+          <div class="build-grid">
+            <article class="build-card reveal">
+              <span class="eyebrow">Ghost Code</span>
+              <h3>Four agent modes</h3>
+              <div class="agent-modes">
+                <div>
+                  <span class="agent-mode">Plan</span>
+                  <p>Inspect &amp; propose</p>
+                </div>
+                <div>
+                  <span class="agent-mode">Build</span>
+                  <p>Edit files &amp; run commands</p>
+                </div>
+                <div>
+                  <span class="agent-mode">Explore</span>
+                  <p>Read &amp; map codebase</p>
+                </div>
+                <div>
+                  <span class="agent-mode">Review</span>
+                  <p>Inspect diffs &amp; catch bugs</p>
+                </div>
+              </div>
+              <p class="build-note">
+                Live progress in the notch, including creating-file and
+                using-tools states.
+              </p>
+            </article>
+
+            <article class="build-card reveal">
+              <span class="eyebrow">Agent Console</span>
+              <h3>An in-app terminal</h3>
+              <p>
+                Open with <code>⌘⇧T</code>. Slash commands <code>\clear</code>,
+                <code>\model</code>, <code>\help</code>. An activity timeline
+                with live streaming output.
+              </p>
+            </article>
+
+            <article class="build-card reveal">
+              <span class="eyebrow">Intent Router</span>
+              <h3>13 intent kinds</h3>
+              <p>
+                Classifies prompts into Answer, Research, Files, Summarize,
+                Screenshot, Clipboard, Create Artifact, Organize, Automation,
+                Code, Debug, Review, Shell — then detects filenames, save
+                targets, and RAG references before routing.
+              </p>
+            </article>
+
+            <article class="build-card reveal">
+              <span class="eyebrow">Local model probe</span>
+              <h3>Picks the safest calling convention</h3>
+              <p>
+                Probes LM Studio and Ollama models for chat, JSON mode, native
+                tool calls, and argument accuracy — then recommends
+                <code>native_tool_calls</code>, <code>json_action_mode</code>,
+                <code>harness_first</code>, or <code>answer_only</code>.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <!-- PROTECT -->
+        <section class="chapter" id="protect">
+          <div class="chapter-head reveal">
+            <span class="chapter-num">07</span>
+            <span class="eyebrow">Protect</span>
+            <h2>Local-first<br /><em>by default.</em></h2>
+            <p class="chapter-lede">
+              Privacy isn't a setting you find later. It's the architecture.
+              Ghost separates local providers, local indexes, and hosted key
+              paths — so where your data goes is a routing choice, not an
+              afterthought.
+            </p>
+          </div>
+
+          <div class="protect-grid">
+            <article class="protect-card reveal">
+              <span class="eyebrow">Secrets</span>
+              <h3>Keychain first</h3>
+              <p>
+                API keys live in macOS Keychain. A legacy
+                <code>~/.ghost/.env</code> file is migrated transparently and
+                deleted. Keys are only read when their provider is actually
+                called — no Keychain prompts at launch.
+              </p>
+            </article>
+
+            <article class="protect-card reveal">
+              <span class="eyebrow">Provider isolation</span>
+              <h3>Only the right keys are visible</h3>
+              <p>
+                Environment scrubbing ensures the agent process only sees the
+                selected provider's keys. DeepSeek keys are blocked when any
+                other provider is selected. Local providers can't launch agent
+                mode at all.
+              </p>
+            </article>
+
+            <article class="protect-card reveal">
+              <span class="eyebrow">Web egress guard</span>
+              <h3>No private networks, ever</h3>
+              <p>
+                Web fetches block localhost, private IPv4/IPv6, link-local,
+                multicast, and reserved addresses. DNS resolution checks every
+                address. Redirects to private destinations are blocked.
+                Cookie-free, cache-free, 5MB max.
+              </p>
+            </article>
+
+            <article class="protect-card reveal">
+              <span class="eyebrow">Sensitive access gate</span>
+              <h3>Credentials ask twice</h3>
+              <p>
+                Even with Full Disk Access, paths like <code>.ssh</code>,
+                <code>.gnupg</code>, <code>.aws</code>,
+                <code>login.keychain</code>, <code>.kube/config</code>, and
+                <code>.env</code> require explicit consent — Allow Once, Always
+                This Session, or Deny.
+              </p>
+            </article>
+
+            <article class="protect-card reveal">
+              <span class="eyebrow">Tool access policy</span>
+              <h3>Five independent switches</h3>
+              <p>
+                Web, local files, Mac automation, screen capture, and terminal
+                inspection are each toggled independently. Disabled capabilities
+                are removed from model tool schemas <em>and</em> checked again
+                before execution. Revoking cancels active work mid-flight.
+              </p>
+            </article>
+
+            <article class="protect-card reveal">
+              <span class="eyebrow">Deep link security</span>
+              <h3>Only <code>ghost://toggle</code></h3>
+              <p>
+                The only deep link Ghost accepts is one that opens Ghost. No
+                file paths, no user content, no exfiltration vectors. Older deep
+                link patterns are blocked.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <!-- FEEL -->
+        <section class="chapter" id="feel">
+          <div class="chapter-head reveal">
+            <span class="chapter-num">08</span>
+            <span class="eyebrow">Feel</span>
+            <h2>Cosmic glass,<br /><em>living aurora.</em></h2>
+            <p class="chapter-lede">
+              Ghost's interface is built on a "Cosmic Glass" design system —
+              <code>NSVisualEffectView</code> blur with a subtle noise layer,
+              and an aurora background that shifts hue with the tone of your
+              conversation.
+            </p>
+          </div>
+
+          <div class="feel-auroras reveal">
+            <div class="aura-swatch code">
+              <span class="aura-label">Code</span
+              ><span class="aura-hex">cyan</span>
+            </div>
+            <div class="aura-swatch neutral">
+              <span class="aura-label">Neutral</span
+              ><span class="aura-hex">royal violet</span>
+            </div>
+            <div class="aura-swatch emotional">
+              <span class="aura-label">Emotional</span
+              ><span class="aura-hex">champagne</span>
+            </div>
+            <div class="aura-swatch creative">
+              <span class="aura-label">Creative</span
+              ><span class="aura-hex">orchid</span>
+            </div>
+          </div>
+
+          <div class="feel-list">
+            <div class="feel-row reveal">
+              <h3>Signature animations</h3>
+              <p>
+                The notch condenses into view with scale, blur, and a soft bloom
+                — plus a trackpad haptic. A gentle haptic marks answer
+                completion. Welcome-back confetti fires once a day from the logo.
+              </p>
+            </div>
+            <div class="feel-row reveal">
+              <h3>State-reactive send button</h3>
+              <p>
+                Hollow when the composer is empty, primary accent when ready,
+                red stop button while a run is in flight. Answer blocks ease in
+                from a soft blur.
+              </p>
+            </div>
+            <div class="feel-row reveal">
+              <h3>Premium HUD</h3>
+              <p>
+                Tabular numerals, a latency sparkline, a token counter with
+                rolling number animation, a reasoning depth meter, and skeleton
+                loaders instead of spinners.
+              </p>
+            </div>
+            <div class="feel-row reveal">
+              <h3>Usage &amp; cost</h3>
+              <p>
+                Open with <code>⌘⇧U</code>. Today, 7-day, and 30-day spend, a
+                30-day sparkline, per-model breakdown, and a recent activity log
+                — with cost approximated from a per-model rate table.
+              </p>
+            </div>
+            <div class="feel-row reveal">
+              <h3>Radial context menu</h3>
+              <p>
+                Right-click any message for a circular menu — Copy, Regenerate,
+                Fork, Pin, Copy ID, Delete — with champagne highlight on the
+                active item and red on destructive. A native NSMenu sits
+                underneath for keyboard and VoiceOver.
+              </p>
+            </div>
+            <div class="feel-row reveal">
+              <h3>Flexible surfaces</h3>
+              <p>
+                The compact notch stays small for quick asks, expands for
+                transcripts and settings, and hands deeper work to larger app
+                surfaces when a task needs more room.
+              </p>
+            </div>
+            <div class="feel-row reveal">
+              <h3>Accessibility</h3>
+              <p>
+                All motion respects <code>prefers-reduced-motion</code>.
+                VoiceOver support through native menus. Full keyboard navigation
+                in the command palette. Reduce Motion is honored throughout.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="faq" id="faq">
+          <div class="section-head reveal">
+            <span class="eyebrow">FAQ</span>
+            <h2>Frequently asked <em>questions</em></h2>
+          </div>
+          <div class="faq-list" id="faq-list"></div>
+        </section>
+
+        <!-- CTA -->
+        <section class="cta-band reveal">
+          <div class="cta-aura" aria-hidden="true"></div>
+          <svg
+            class="cta-ghost"
+            viewBox="0 0 64 64"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z"
+              fill="currentColor"
+            />
+            <circle cx="26" cy="29" r="3" fill="var(--bg)" />
+            <circle cx="38" cy="29" r="3" fill="var(--bg)" />
+          </svg>
+          <span class="eyebrow">finale</span>
+          <h2>
+            Bring your models, your files,<br /><em>and your Mac together.</em>
+          </h2>
+          <p>
+            Ghost is open source, native macOS, and runs as a menu-bar app you
+            summon with a keystroke.
+          </p>
+          <div class="hero-actions">
+            <a
+              class="btn btn-primary magnetic"
+              href="https://github.com/ryuhemingway/Ghost-App"
+              target="_blank"
+              rel="noopener"
+              data-cursor="pointer"
+            >
+              View on GitHub
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </a>
+            <a class="btn btn-ghost magnetic" href="#top" data-cursor="pointer"
+              >Back to top</a
+            >
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 64 64"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z"
+                fill="currentColor"
+              />
+              <circle cx="26" cy="29" r="3" fill="var(--bg)" />
+              <circle cx="38" cy="29" r="3" fill="var(--bg)" />
+            </svg>
+            <span>Ghost</span>
+          </div>
+          <p class="footer-note">A premium local-first macOS AI workspace.</p>
+          <p class="footer-copy">
+            © <span id="year"></span> Ghost. Open source.
+          </p>
+        </div>
+      </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
