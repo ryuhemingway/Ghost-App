@@ -232,32 +232,55 @@ function initThree() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  const count = 400;
+  function makeGhostTexture() {
+    const c = document.createElement("canvas");
+    c.width = 64;
+    c.height = 64;
+    const ctx = c.getContext("2d");
+    const grad = ctx.createLinearGradient(0, 0, 64, 64);
+    grad.addColorStop(0, "#00ff9d");
+    grad.addColorStop(0.5, "#d97757");
+    grad.addColorStop(1, "#a855f7");
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(16, 49);
+    ctx.lineTo(16, 28);
+    ctx.quadraticCurveTo(16, 10, 32, 10);
+    ctx.quadraticCurveTo(48, 10, 48, 28);
+    ctx.lineTo(48, 49);
+    ctx.lineTo(43, 45);
+    ctx.lineTo(38, 49);
+    ctx.lineTo(32, 45);
+    ctx.lineTo(26, 49);
+    ctx.lineTo(21, 45);
+    ctx.lineTo(16, 49);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#050505";
+    ctx.beginPath();
+    ctx.arc(26, 29, 3, 0, Math.PI * 2);
+    ctx.arc(38, 29, 3, 0, Math.PI * 2);
+    ctx.fill();
+    const tex = new THREE.CanvasTexture(c);
+    tex.needsUpdate = true;
+    return tex;
+  }
+
+  const ghostTex = makeGhostTexture();
+  const count = 250;
   const positions = new Float32Array(count * 3);
-  const colors = new Float32Array(count * 3);
-  const palette = [
-    [0.0, 1.0, 0.62], // neon green #00ff9d
-    [0.66, 0.33, 0.97], // purple #a855f7
-    [0.85, 0.47, 0.34], // claude orange #d97757
-    [0.29, 0.55, 0.96], // blue #4b8bf5
-  ];
   for (let i = 0; i < count; i++) {
     positions[i * 3] = (Math.random() - 0.5) * 120;
     positions[i * 3 + 1] = (Math.random() - 0.5) * 80;
     positions[i * 3 + 2] = (Math.random() - 0.5) * 60;
-    const c = palette[Math.floor(Math.random() * palette.length)];
-    colors[i * 3] = c[0];
-    colors[i * 3 + 1] = c[1];
-    colors[i * 3 + 2] = c[2];
   }
   particleGeo = new THREE.BufferGeometry();
   particleGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-  particleGeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
   const material = new THREE.PointsMaterial({
-    size: 0.6,
-    vertexColors: true,
+    size: 3.5,
+    map: ghostTex,
     transparent: true,
-    opacity: 0.7,
+    opacity: 0.6,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
   });
