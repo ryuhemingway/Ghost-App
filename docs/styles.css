@@ -369,7 +369,6 @@ h4 em {
   color: var(--text);
 }
 .nav-ghost {
-  color: var(--accent);
   filter: drop-shadow(0 0 8px var(--accent-soft));
 }
 .nav-links {
@@ -543,13 +542,17 @@ h4 em {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: min(60vw, 38rem);
+  width: min(52vw, 32rem);
   height: auto;
   transform: translate(-50%, -50%);
-  color: rgba(0, 255, 157, 0.04);
+  opacity: 0.12;
   pointer-events: none;
   z-index: 0;
   animation: ghostfloat 12s ease-in-out infinite;
+  filter: drop-shadow(0 0 40px rgba(0, 255, 157, 0.15));
+}
+[data-theme="light"] .hero-ghost-watermark {
+  opacity: 0.08;
 }
 @keyframes ghostfloat {
   0%,
@@ -1491,9 +1494,8 @@ h4 em {
   position: relative;
   width: 64px;
   height: 64px;
-  color: var(--accent);
   margin: 0 auto 24px;
-  filter: drop-shadow(0 0 20px var(--accent-soft));
+  filter: drop-shadow(0 0 24px rgba(0, 255, 157, 0.3));
   animation: ghostfloat 8s ease-in-out infinite;
 }
 .cta-band .eyebrow {
@@ -1530,7 +1532,7 @@ h4 em {
   align-items: center;
   gap: 8px;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--text);
   filter: drop-shadow(0 0 8px var(--accent-soft));
 }
 .footer-note {

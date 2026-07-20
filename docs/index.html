@@ -143,12 +143,19 @@
             fill="none"
             aria-hidden="true"
           >
+            <defs>
+              <linearGradient id="nav-ghost-grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#00ff9d" />
+                <stop offset="50%" stop-color="#d97757" />
+                <stop offset="100%" stop-color="#a855f7" />
+              </linearGradient>
+            </defs>
             <path
               d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z"
-              fill="currentColor"
+              fill="url(#nav-ghost-grad)"
             />
-            <circle cx="26" cy="29" r="3" fill="var(--bg)" />
-            <circle cx="38" cy="29" r="3" fill="var(--bg)" />
+            <circle cx="26" cy="29" r="3" fill="#050505" />
+            <circle cx="38" cy="29" r="3" fill="#050505" />
           </svg>
           <span>Ghost</span>
         </a>
@@ -230,12 +237,34 @@
             fill="none"
             aria-hidden="true"
           >
-            <path
-              d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z"
-              fill="currentColor"
-            />
-            <circle cx="26" cy="29" r="3" fill="var(--bg)" />
-            <circle cx="38" cy="29" r="3" fill="var(--bg)" />
+            <defs>
+              <linearGradient id="hero-ghost-grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#00ff9d" />
+                <stop offset="50%" stop-color="#d97757" />
+                <stop offset="100%" stop-color="#a855f7" />
+              </linearGradient>
+              <filter
+                id="hero-ghost-glow"
+                x="-50%"
+                y="-50%"
+                width="200%"
+                height="200%"
+              >
+                <feGaussianBlur stdDeviation="2.5" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <g filter="url(#hero-ghost-glow)">
+              <path
+                d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z"
+                fill="url(#hero-ghost-grad)"
+              />
+              <circle cx="26" cy="29" r="3" fill="#050505" />
+              <circle cx="38" cy="29" r="3" fill="#050505" />
+            </g>
           </svg>
           <div class="hero-content">
             <div class="hero-badge reveal">
@@ -345,12 +374,25 @@
                   fill="none"
                   aria-hidden="true"
                 >
+                  <defs>
+                    <linearGradient
+                      id="summon-ghost-grad"
+                      x1="0"
+                      y1="0"
+                      x2="1"
+                      y2="1"
+                    >
+                      <stop offset="0%" stop-color="#00ff9d" />
+                      <stop offset="50%" stop-color="#d97757" />
+                      <stop offset="100%" stop-color="#a855f7" />
+                    </linearGradient>
+                  </defs>
                   <path
                     d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z"
-                    fill="currentColor"
+                    fill="url(#summon-ghost-grad)"
                   />
-                  <circle cx="26" cy="29" r="3" fill="var(--bg)" />
-                  <circle cx="38" cy="29" r="3" fill="var(--bg)" />
+                  <circle cx="26" cy="29" r="3" fill="#050505" />
+                  <circle cx="38" cy="29" r="3" fill="#050505" />
                 </svg>
               </div>
               <h3>Menu bar</h3>
@@ -1188,12 +1230,19 @@
             fill="none"
             aria-hidden="true"
           >
+            <defs>
+              <linearGradient id="cta-ghost-grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#00ff9d" />
+                <stop offset="50%" stop-color="#d97757" />
+                <stop offset="100%" stop-color="#a855f7" />
+              </linearGradient>
+            </defs>
             <path
               d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z"
-              fill="currentColor"
+              fill="url(#cta-ghost-grad)"
             />
-            <circle cx="26" cy="29" r="3" fill="var(--bg)" />
-            <circle cx="38" cy="29" r="3" fill="var(--bg)" />
+            <circle cx="26" cy="29" r="3" fill="#050505" />
+            <circle cx="38" cy="29" r="3" fill="#050505" />
           </svg>
           <span class="eyebrow">finale</span>
           <h2>
@@ -1251,12 +1300,25 @@
               fill="none"
               aria-hidden="true"
             >
+              <defs>
+                <linearGradient
+                  id="footer-ghost-grad"
+                  x1="0"
+                  y1="0"
+                  x2="1"
+                  y2="1"
+                >
+                  <stop offset="0%" stop-color="#00ff9d" />
+                  <stop offset="50%" stop-color="#d97757" />
+                  <stop offset="100%" stop-color="#a855f7" />
+                </linearGradient>
+              </defs>
               <path
                 d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z"
-                fill="currentColor"
+                fill="url(#footer-ghost-grad)"
               />
-              <circle cx="26" cy="29" r="3" fill="var(--bg)" />
-              <circle cx="38" cy="29" r="3" fill="var(--bg)" />
+              <circle cx="26" cy="29" r="3" fill="#050505" />
+              <circle cx="38" cy="29" r="3" fill="#050505" />
             </svg>
             <span>Ghost</span>
           </div>
