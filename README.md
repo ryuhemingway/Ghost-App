@@ -60,6 +60,8 @@ The capability harness is Ghost's action layer. The model requests an action; Gh
 
 Every tool is classified into four risk tiers — Low (read-only), Medium (writes/creates), High (patches/deletes/shell), and Blocked (unknown tools fail closed). An action journal records before-and-after state for up to 100 entries, so you can roll back any run. Five independent permission switches (web, files, automation, screen, terminal) are all off by default and can be toggled independently.
 
+![Reading a Desktop folder, with a verification receipt showing how the request was routed](docs/screenshots/app/local-file-access.png)
+
 <br/>
 
 ## Timers that mean it.
@@ -68,7 +70,7 @@ Every tool is classified into four risk tiers — Low (read-only), Medium (write
 
 Ask for "a 25 minute focus timer" or "remind me to check the oven in 10 minutes" and Ghost starts a notch countdown — deterministic, local, no model inference. Active timers take over the compact notch. Completed timers reopen with a trackpad haptic. Controls include pause, resume, +5m, restart, cancel, and dismiss.
 
-![Ghost timer showing a completed countdown in the notch](docs/screenshots/app/timer-complete.png)
+![Floating timer overlay on the Ghost surface with Pause, +5m, Cancel, and Ask](docs/screenshots/app/notch-timer-running.png)
 
 <br/>
 
