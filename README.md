@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://integratedagentics.com/ghost"><img src="docs/assets/ghost-hero.png" alt="Ghost — A notch-first local macOS AI workspace. Route prompts across 7 providers, search your files locally, and run verified Mac actions from one menu-bar surface." width="820" /></a>
+<a href="https://integratedagentics.com/ghost"><img src="docs/assets/landing-hero.png" alt="Ghost — a premium local-first macOS AI workspace you summon with a keystroke, living in the notch or a floating bar. Route prompts across 7 providers, search your files locally, and run verified Mac actions from one surface." width="820" /></a>
 
 <samp>notarized · one-time purchase · macOS 14+</samp>
 
