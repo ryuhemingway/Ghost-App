@@ -1,30 +1,53 @@
 <div align="center">
 
-<a href="https://integratedagentics.com/ghost"><img src="docs/assets/landing-hero.png" alt="Ghost — a premium local-first macOS AI workspace you summon with a keystroke, living in the notch or a floating bar. Route prompts across 7 providers, search your files locally, and run verified Mac actions from one surface." width="820" /></a>
+<a href="https://integratedagentics.com/ghost"><img src="docs/assets/landing-hero.png" alt="Ghost 2.0 — a local-first macOS AI workspace you summon with a keystroke, living in the camera notch or a floating text bar. Route prompts across eight providers or your own Claude/ChatGPT plan, remember what matters, search your files locally, and run nearly eighty verified Mac actions from one surface." width="820" /></a>
 
-<samp>notarized · one-time purchase · macOS 14+</samp>
+<samp>v2.0 · notarized · one-time purchase · macOS 14+</samp>
 
 </div>
 
 <br/>
 
-Every AI tool today has the same problem: you're the one doing all the context switching. ChatGPT tab, local model UI, terminal agent, document viewer, timer app, Calendar — six surfaces just to get through a focused hour of work. Ghost replaces all of them with one surface that lives in your menu bar and opens with ⌥Space.
+Every AI tool today has the same problem: you're the one doing all the context switching. ChatGPT tab, local model UI, terminal agent, document viewer, timer app, Calendar, Reminders — seven surfaces just to get through a focused hour of work. Ghost replaces all of them with one surface that lives in your menu bar and opens with ⌥Space.
 
-So you type a question, attach a file, dictate a note, or start a focus timer — and Ghost routes it to the right model, local or cloud, searches your indexed documents, creates real files on your Desktop, and drops back out of sight. No Dock icon, no tab management, no full-screen takeover. Just the work, done.
+So you type a question, attach a file, dictate a note, or start a focus timer — and Ghost routes it to the right model (local or cloud, or your own Claude/ChatGPT plan), searches your indexed documents, remembers what matters about you, creates real files, runs verified Mac actions, and drops back out of sight. No Dock icon, no tab management, no full-screen takeover. Just the work, done.
 
-By default, everything is off: web access, file tools, Calendar, screen capture, shell. You opt in one switch at a time. API keys live in your Keychain, not in a `.env` file. And local models run entirely on your machine with the same tool harness the cloud models get.
+By default, everything is off: web access, file tools, automation, messaging, screen capture, shell. You opt in one switch at a time. API keys live in your Keychain, not in a `.env` file. Local models run entirely on your machine with the same tool harness the cloud models get. And your most personal data — Messages, Notes, Mail, Contacts — is processed **on device only**, and is never sent to a cloud model for anything.
 
 <br/>
 
-## One surface, seven providers, zero context switching.
+## New in 2.0
+
+- **A cleaner surface.** The typing pill now sits flush just below the camera notch — nothing clipped, no matter how much you type. In floating-bar mode it's a genuine floating text field with a frosted, high-contrast background and no dark slab around it.
+- **Ghost remembers you.** An on-device knowledge base quietly grounds every chat, so Ghost knows your people, your preferences, and "the usual." It's plain Markdown you own.
+- **Your private data stays on device.** Messages, Notes, Mail, and Contacts never leave your Mac for a cloud model — not for answers, memory, or tools. Use a local model to let AI touch them.
+- **Your day, handled.** A ranked daily brief, Reminders, Calendar, and Apple Notes — read and write, in plain language.
+- **Messages & FaceTime.** Read and send iMessages and start calls (on-device, opt-in, and confirmed before anything sends).
+- **Computer-use.** For a Mac task no built-in tool covers, Ghost writes an AppleScript and runs it *only* after you approve the exact script.
+- **Bring your own subscription.** Run chat through your existing Claude Code or Codex CLI — your account, your plan, at no extra cost.
+- **Nearly eighty built-in tools**, including a full suite of on-device Mac controls — system report, brightness, audio, dark mode, window snapping, Homebrew, app uninstall, junk cleanup, media conversion, and more.
+
+<br/>
+
+## One surface, eight providers, zero context switching.
 
 <sub><samp>⌥SPACE · ANYWHERE ON MACOS</samp></sub>
 
-Press ⌥Space anywhere on your Mac and a frosted-glass surface drops from the top center — chat, file creation, document search, timers, Calendar, Reminders, screen OCR, and agent coding sessions all from one place. The aurora background shifts hue with the tone of your conversation. Escape dismisses it.
+Press ⌥Space anywhere on your Mac and a frosted-glass surface appears — dropping from the camera notch, or floating up as a text bar near the bottom of the screen, your choice. Chat, file creation, document search, memory, timers, Calendar, Reminders, Notes, screen OCR, and agent coding sessions all live in one place. The aurora background shifts hue with the tone of your conversation. On a notch Mac you can also reveal it by gliding your pointer to the top-center of the screen. Escape dismisses it, and ⌘K opens a command palette for everything else.
 
-Ghost routes every prompt through an intent classifier that detects what you're actually trying to do — Answer, Research, Files, Summarize, Screenshot, Create, Organize, Automation, Code, Debug, Review, Shell — then picks the right provider and model. Local models get probed on first launch for tool-calling capability and assigned the safest calling convention they can handle, so even models that can't do native function calls still get access to the harness.
+Ghost routes every prompt through an intent classifier that detects what you're actually trying to do — Answer, Research, Files, Summarize, Screenshot, Clipboard, Create, Organize, Automation, Messages, Code, Debug, Review, Shell — then picks the right provider and model. Choose from eight providers — **LM Studio** and **Ollama** (fully local), **Claude**, **Gemini**, **DeepSeek**, **OpenCode Go**, **OpenCode Zen**, and any **OpenAI-compatible** server — or run chat on your own **Claude Code** or **Codex** subscription. Local models get probed on first launch for tool-calling capability and assigned the safest calling convention they can handle, so even models that can't do native function calls still get the harness.
 
 <video src="docs/media/ghost-showcase-main.mp4" controls muted loop width="100%"></video>
+
+<br/>
+
+## Ghost remembers you.
+
+<sub><samp>ON-DEVICE KNOWLEDGE BASE · PLAIN MARKDOWN YOU OWN</samp></sub>
+
+Tell Ghost "remember that I take my coffee black" or "my sister's name is Mara," and it saves a durable fact to a personal knowledge base. From then on it quietly grounds your chats with what it knows — no re-explaining yourself every session. Ask "what do you know about me?" to see it all.
+
+It isn't a black box: your knowledge base is plain Markdown at `~/Ghost Outputs/Knowledge`. Read it, edit it, or delete a note anytime. Nothing about you is stored on a server.
 
 <br/>
 
@@ -32,7 +55,7 @@ Ghost routes every prompt through an intent classifier that detects what you're 
 
 <sub><samp>SQLITE + FTS5 · 30+ FORMATS · FSEVENTS SYNC</samp></sub>
 
-Ghost indexes folders you approve into a local SQLite database with FTS5 full-text search — 3,500-character chunks with 500-character overlap, sentence-aware splitting, page numbers from PDFs, section titles from markdown. A desktop watcher keeps everything in sync with 8-second debounce. Queries return source-backed chunks with file paths; Ghost opens the exact file at the right line.
+Ghost indexes folders you approve into a local SQLite database with FTS5 full-text search — 3,500-character chunks with 500-character overlap, sentence-aware splitting, page numbers from PDFs, section titles from Markdown. A desktop watcher keeps everything in sync with an 8-second debounce. Queries return source-backed chunks with file paths; Ghost opens the exact file at the right line.
 
 30+ formats: txt, md, html, pdf, docx, epub, csv, json, rtf, and every major programming language. Everything stays on your machine.
 
@@ -44,7 +67,7 @@ Ghost indexes folders you approve into a local SQLite database with FTS5 full-te
 
 <sub><samp>DOCX · PDF · PPTX · XLSX · MARKDOWN · HTML · CSV · JSON</samp></sub>
 
-Ask Ghost to create a file and it writes one — not a code block you copy-paste out of a chat window. Native macOS frameworks generate DOCX, PDF, PPTX, XLSX, Markdown, HTML, CSV, and JSON. Files land in your workspace, Ghost Outputs, Desktop, Downloads, or Documents. Every write is verified; if a model claims a file was saved without a confirmed write, Ghost treats that as an error instead of silently trusting it.
+Ask Ghost to create a file and it writes one — not a code block you copy-paste out of a chat window. Native macOS frameworks generate DOCX, PDF, PPTX, XLSX, Markdown, HTML, CSV, and JSON. Files land in your workspace, Ghost Outputs, Desktop, Downloads, or Documents, and every produced document is listed in Document Studio so you can find it again. Every write is verified; if a model claims a file was saved without a confirmed write, Ghost treats that as an error instead of silently trusting it.
 
 ![Generated solar system artifact opened in the browser](docs/screenshots/app/solar-system-result.png)
 
@@ -52,15 +75,43 @@ Ask Ghost to create a file and it writes one — not a code block you copy-paste
 
 <br/>
 
-## Sixty tools, four risk tiers, one undo journal.
+## Nearly eighty tools, four risk tiers, one undo journal.
 
 <sub><samp>THE MODEL NEVER TOUCHES YOUR FILESYSTEM</samp></sub>
 
-The capability harness is Ghost's action layer. The model requests an action; Ghost normalizes the path, checks permissions, runs app-owned Swift code, and returns a machine-readable receipt. Over 60 tools span file operations, document generation, Calendar events, Reminders, Apple Notes, Shortcuts, screen capture with Vision OCR, and on-device voice input.
+The capability harness is Ghost's action layer. The model requests an action; Ghost normalizes the path, checks permissions, runs app-owned Swift code, and returns a machine-readable receipt. Around **78 tools** span file operations, document generation and conversion, web search and fetch, Calendar events, Reminders, Apple Notes, iMessage and FaceTime, screen capture with Vision OCR, on-device voice input, memory, and a full suite of Mac controls.
 
-Every tool is classified into four risk tiers — Low (read-only), Medium (writes/creates), High (patches/deletes/shell), and Blocked (unknown tools fail closed). An action journal records before-and-after state for up to 100 entries, so you can roll back any run. Five independent permission switches (web, files, automation, screen, terminal) are all off by default and can be toggled independently.
+Every tool is classified into four risk tiers — Low (read-only), Medium (writes/creates), High (patches/deletes/shell), and Blocked (unknown tools fail closed). An action journal records before-and-after state so you can roll back any run — a created file, note, reminder, or event is one tap of **Undo** away, right on the action card in the transcript. Six independent permission switches (web, files, automation, messaging, screen, terminal) are all off by default and toggle independently, with three approval modes — Ask, Safe, and Auto-run.
 
 ![Reading a Desktop folder, with a verification receipt showing how the request was routed](docs/screenshots/app/local-file-access.png)
+
+<br/>
+
+## Runs your Mac, not just your prompts.
+
+<sub><samp>ON-DEVICE · DETERMINISTIC · APPROVAL-GATED WHEN IT MATTERS</samp></sub>
+
+Ask Ghost to actually *do* things on your Mac. A live **system report** covers CPU, memory, disk, battery health and cycles, chip temperatures, and top processes. Quick actions toggle Dark Mode, set brightness, switch audio devices, mute the mic, empty the Trash, keep the Mac awake, lock the screen, and reveal hidden files. It snaps and tiles windows, manages Homebrew, uninstalls apps completely (with their caches and preferences), scans and clears junk (dry-run first), converts and compresses media, picks a screen color, and runs any macOS Shortcut.
+
+And for anything no built-in tool covers, **computer-use** kicks in: Ghost writes an AppleScript for the task and runs it *only* after you review and approve the exact script — nothing executes until you say yes.
+
+![Ghost settings panel with per-capability access switches](docs/screenshots/app/settings.png)
+
+<br/>
+
+## Your day, handled.
+
+<sub><samp>DAILY BRIEF · REMINDERS · CALENDAR · NOTES</samp></sub>
+
+Ask "what's on my plate?" and Ghost returns a ranked daily brief — overdue and upcoming Reminders plus imminent Calendar events, in one glance. Create reminders and events in plain language ("remind me to call the dentist Thursday at 10"), make and append to Apple Notes, and search your notes on-device. Ghost can also quietly prepare proactive suggestions from what's due — but it never fires them on its own.
+
+<br/>
+
+## Messages, Notes, and calls — on device, by design.
+
+<sub><samp>YOUR PERSONAL DATA NEVER TOUCHES A CLOUD MODEL</samp></sub>
+
+Ghost reads recent iMessages, sends texts, and starts FaceTime calls — after you confirm the recipient and message. It searches your Apple Notes and can read your Contacts to match "Mom" to the right number. This is the most personal data on your Mac, so Ghost draws a hard line: **Messages, Notes, Mail, and Contacts are processed on-device only and are never sent to any cloud model** — not for answers, not for memory, not for tools. To use them with AI at all, pick a local model (LM Studio or Ollama). Messaging is off by default and reading iMessages requires Full Disk Access.
 
 <br/>
 
@@ -68,26 +119,35 @@ Every tool is classified into four risk tiers — Low (read-only), Medium (write
 
 <sub><samp>DETERMINISTIC · LOCAL · NO MODEL CALLED</samp></sub>
 
-Ask for "a 25 minute focus timer" or "remind me to check the oven in 10 minutes" and Ghost starts a notch countdown — deterministic, local, no model inference. Active timers take over the compact notch. Completed timers reopen with a trackpad haptic. Controls include pause, resume, +5m, restart, cancel, and dismiss.
+Ask for "a 25 minute focus timer" or "remind me to check the oven in 10 minutes" and Ghost starts a countdown right in the bar — deterministic, local, no model inference. Active timers take over the compact surface. Completed timers reopen with a trackpad haptic. Controls include pause, resume, +5m, restart, cancel, and dismiss.
 
 ![Floating timer overlay on the Ghost surface with Pause, +5m, Cancel, and Ask](docs/screenshots/app/notch-timer-running.png)
 
 <br/>
 
+## Rewrite anything, anywhere.
+
+<sub><samp>SELECT · RIGHT-CLICK · GHOST</samp></sub>
+
+Select text in any app, right-click, and reach for Ghost: rewrite it professionally or casually, check the grammar, or ask for feedback — without leaving the window you're in. The result comes back inline, ready to drop in.
+
+<br/>
+
 ## The privacy flex.
 
-<sub><samp>SIX ELEMENTS · BUILT SO WE DON'T GET A CHOICE</samp></sub>
+<sub><samp>SEVEN GUARANTEES · BUILT SO WE DON'T GET A CHOICE</samp></sub>
 
 Ghost is local-first by design. Here's the machinery:
 
-1. **API keys live in macOS Keychain.** Not `.env` files, not plaintext configs. Ghost only reads a key when calling that provider.
-2. **Local providers can't launch agent mode.** Ollama and LM Studio stay inside Ghost's managed Direct API tool loop. No escape hatch.
-3. **Web egress is guarded.** Localhost, private IPv4/IPv6, link-local, multicast, and reserved addresses are blocked. DNS resolution checks every address; redirects to private destinations are rejected.
-4. **Sensitive paths require explicit consent.** Before touching `.ssh`, `.gnupg`, `.aws`, `login.keychain`, `.kube/config`, or `.env`, Ghost prompts: Allow Once, Always This Session, or Deny.
-5. **The only deep link is `ghost://toggle`.** No file paths, no user content, no exfiltration vectors.
-6. **Everything starts off.** Web, files, automation, screen, and shell are all disabled on first launch. You opt in one switch at a time.
+1. **Your personal data stays on your Mac.** Messages, Notes, Mail, and Contacts are on-device only. Ghost refuses to send them to any cloud model — for answers, memory, or tools. Use a local model to work with them.
+2. **API keys live in the macOS Keychain.** Not `.env` files, not plaintext configs. Ghost only reads a key when calling that provider.
+3. **Local providers can't launch agent mode.** Ollama and LM Studio stay inside Ghost's managed Direct API tool loop. No escape hatch.
+4. **Web egress is guarded.** Localhost, private IPv4/IPv6, link-local, multicast, and reserved addresses are blocked. DNS resolution checks every address; redirects to private destinations are rejected.
+5. **Sensitive paths require explicit consent.** Before touching `.ssh`, `.gnupg`, `.aws`, `login.keychain`, `.kube/config`, or `.env`, Ghost prompts: Allow Once, Always This Session, or Deny.
+6. **Actions ask first, and can be undone.** High-risk and irreversible actions always confirm, and file changes are journaled and reversible.
+7. **Everything starts off.** Web, files, automation, messaging, screen, and shell are all disabled on first launch. You opt in one switch at a time.
 
-![Ghost settings panel](docs/screenshots/app/settings.png)
+![Ghost model routing across local and cloud providers](docs/screenshots/app/model-routing.png)
 
 <br/>
 
@@ -97,7 +157,7 @@ Ghost is local-first by design. Here's the machinery:
 <summary><b>How is Ghost priced? What's the catch?</b></summary>
 <br/>
 
-Free 2-day trial, then a one-time $10 lifetime license. No subscriptions, no recurring charges, no hidden costs. Bring your own API keys for hosted models or use Ollama and LM Studio for free forever.
+Free 2-day trial, then a one-time $10 lifetime license. No subscriptions, no recurring charges, no hidden costs. Bring your own API keys for hosted models, run your existing Claude/ChatGPT plan through the CLI, or use Ollama and LM Studio for free forever.
 
 </details>
 
@@ -105,7 +165,7 @@ Free 2-day trial, then a one-time $10 lifetime license. No subscriptions, no rec
 <summary><b>Do I need to pay for AI models too?</b></summary>
 <br/>
 
-Local models (Ollama, LM Studio) run entirely on your machine and cost nothing. Hosted models (Claude, Gemini, DeepSeek, OpenCode Go, OpenCode Zen) need your own API keys — you pay those providers directly at their usage rates, not through Ghost. Ghost itself is just the workspace.
+Local models (Ollama, LM Studio) run entirely on your machine and cost nothing. Hosted models (Claude, Gemini, DeepSeek, OpenCode Go, OpenCode Zen, any OpenAI-compatible server) need your own API keys — you pay those providers directly at their usage rates, not through Ghost. You can also point Ghost at your existing Claude Code or Codex subscription and run chat through it at no extra cost. Ghost itself is just the workspace.
 
 </details>
 
@@ -113,7 +173,15 @@ Local models (Ollama, LM Studio) run entirely on your machine and cost nothing. 
 <summary><b>What actually leaves my Mac?</b></summary>
 <br/>
 
-When using local models: nothing. When using hosted models: your prompt and any attached files go to that provider's API, governed by their privacy policy — the same one your account already lives under. Your RAG index and API keys never leave your Mac. Web search fetches public pages through Ghost's egress guard; screenshots sent for OCR go to Apple's on-device Vision framework, not a cloud service.
+Your most personal data — Messages, Notes, Mail, Contacts — never leaves your Mac for a cloud model, ever. When using local models: nothing leaves at all. When using hosted models: your prompt and any attached files go to that provider's API, governed by their privacy policy — the same one your account already lives under. Your knowledge base, RAG index, and API keys never leave your Mac. Web search fetches public pages through Ghost's egress guard; screenshots sent for OCR go to Apple's on-device Vision framework, not a cloud service.
+
+</details>
+
+<details>
+<summary><b>Notch or floating bar?</b></summary>
+<br/>
+
+Both. On a notch Mac, Ghost drops from the camera notch and the typing pill sits flush just below it. Prefer it elsewhere? Switch to the floating bar and Ghost becomes a clean, high-contrast text field near the bottom of the screen. Pick whichever fits your setup in Settings; the shortcut summons either one.
 
 </details>
 
@@ -126,18 +194,10 @@ macOS 14 or later, Apple Silicon or Intel. Ghost is a native SwiftUI app notariz
 </details>
 
 <details>
-<summary><b>Does Ghost work with the lid closed?</b></summary>
-<br/>
-
-Ghost is a menu-bar app, so it's available any time your Mac is awake and logged in. Timers run locally and continue counting down in the notch as long as the app is running.
-
-</details>
-
-<details>
 <summary><b>Can I use Ghost for coding?</b></summary>
 <br/>
 
-Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (edit files and run commands), Explore (read and map a codebase), and Review (inspect diffs and catch bugs). The in-app Agent Console (⌘⇧T) shows an activity timeline with live streaming output.
+Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (edit files and run commands), Explore (read and map a codebase), and Review (inspect diffs and catch bugs). The in-app Agent Console shows an activity timeline with live streaming output, and you can drive it with your own Claude Code or Codex plan.
 
 ![Ghost Code agent mode building a solar system animation](docs/screenshots/app/agent-coding.png)
 
@@ -147,16 +207,18 @@ Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (e
 
 ## Under the hood.
 
-<sub><samp>SWIFTUI · APP KIT · SPARKLE · SQLITE</samp></sub>
+<sub><samp>SWIFTUI · APPKIT · SPARKLE · SQLITE</samp></sub>
 
 Ghost is a native macOS app, not Electron, not a web wrapper.
 
-- **The interface.** <samp>NSVisualEffectView blur · noise texture · reactive aurora background · HK Grotesk + Source Serif Pro · spring animations</samp>
-- **The routing engine.** <samp>13 intent kinds · automatic provider selection · 4 effort levels (Quick / Balanced / Deep / Max) · 3 approval modes</samp>
+- **The interface.** <samp>NSVisualEffectView glass · notch or floating bar · reactive aurora background · HK Grotesk + Source Serif Pro · spring animations</samp>
+- **The routing engine.** <samp>14 intent kinds · eight providers plus BYO Claude/ChatGPT plan · 4 effort levels · 3 approval modes · auto agent-vs-direct routing</samp>
 - **The model probe.** <samp>tests every local model for chat, JSON mode, native tool calls, and argument accuracy · assigns the safest calling convention</samp>
-- **The RAG system.** <samp>SQLite + FTS5 · 3,500-char chunks · 500-char overlap · sentence-aware · page numbers from PDFs · FSEvents watcher · 50K files per pass</samp>
-- **The harness.** <samp>60+ tools · 4 risk tiers · 100-entry undo journal · path normalization · permission gating · verified writes</samp>
-- **The experience details.** <samp>trackpad haptics on summon and answer · once-a-day welcome-back confetti · latency sparkline · token counter · reasoning depth meter · ⌘K command palette</samp>
+- **Memory.** <samp>on-device Markdown knowledge base · remember / recall · ambient grounding · semantic recall · lives in ~/Ghost Outputs/Knowledge</samp>
+- **The RAG system.** <samp>SQLite + FTS5 · 3,500-char chunks · 500-char overlap · sentence-aware · page numbers from PDFs · FSEvents watcher · 30+ formats</samp>
+- **The harness.** <samp>~78 tools · 4 risk tiers · undo journal · path normalization · permission gating · verified writes · approval-gated computer-use</samp>
+- **Privacy engine.** <samp>on-device-only gate for Messages / Notes / Mail / Contacts · web egress guard · Keychain-stored keys · sensitive-path consent</samp>
+- **The experience details.** <samp>trackpad haptics on summon and answer · daily brief · proactive suggestions · latency sparkline · token & cost meter · ⌘K command palette · Prompt Library · right-click rewrite services</samp>
 
 <br/>
 
