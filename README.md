@@ -1,8 +1,12 @@
 <div align="center">
 
-<a href="https://integratedagentics.com/ghost"><img src="docs/assets/landing-hero.png" alt="Ghost 2.0 — a local-first macOS AI workspace you summon with a keystroke, living in the camera notch or a floating text bar. Route prompts across eight providers or your own Claude/ChatGPT plan, remember what matters, search your files locally, and run nearly eighty verified Mac actions from one surface." width="820" /></a>
+<a href="https://integratedagentics.com/ghost"><img src="docs/hero-einstein.png" alt="Ghost answering &quot;What was Albert Einsteins most important equation?&quot; in the notch surface, with inline citations and a numbered reference list" width="820" /></a>
 
 <samp>v2.0 · notarized · one-time purchase · macOS 14+</samp>
+
+<video src="docs/demo-empire-state.mp4" controls muted loop width="800"></video>
+
+[▶ Watch: asking Ghost what the Empire State Building looks like, from the floating bar (MP4)](docs/demo-empire-state.mp4)
 
 </div>
 
@@ -35,7 +39,11 @@ By default, everything is off: web access, file tools, automation, messaging, sc
 
 Press ⌥Space anywhere on your Mac and a frosted-glass surface appears — dropping from the camera notch, or floating up as a text bar near the bottom of the screen, your choice. Chat, file creation, document search, memory, timers, Calendar, Reminders, Notes, screen OCR, and agent coding sessions all live in one place. The aurora background shifts hue with the tone of your conversation. On a notch Mac you can also reveal it by gliding your pointer to the top-center of the screen. Escape dismisses it, and ⌘K opens a command palette for everything else.
 
+![Ghost answering "What does saturn look like?" in the notch surface, with an embedded image of Saturn and a numbered source list](docs/answer-saturn.png)
+
 Ghost routes every prompt through an intent classifier that detects what you're actually trying to do — Answer, Research, Files, Summarize, Screenshot, Clipboard, Create, Organize, Automation, Messages, Code, Debug, Review, Shell — then picks the right provider and model. Choose from eight providers — **LM Studio** and **Ollama** (fully local), **Claude**, **Gemini**, **DeepSeek**, **OpenCode Go**, **OpenCode Zen**, and any **OpenAI-compatible** server — or run chat on your own **Claude Code** or **Codex** subscription. Local models get probed on first launch for tool-calling capability and assigned the safest calling convention they can handle, so even models that can't do native function calls still get the harness.
+
+![Ghost answering "What is the cost of living in San Fran?" with a sourced cost breakdown and a six-entry reference list](docs/answer-sourced-cost.png)
 
 <video src="docs/media/ghost-showcase-main.mp4" controls muted loop width="100%"></video>
 
@@ -59,7 +67,7 @@ Ghost indexes folders you approve into a local SQLite database with FTS5 full-te
 
 30+ formats: txt, md, html, pdf, docx, epub, csv, json, rtf, and every major programming language. Everything stays on your machine.
 
-![RAG document search returning cited chunks from indexed files](docs/screenshots/app/rag-search.png)
+![Ghost listing the contents of a Desktop folder as a table of items, types, and modified dates, with a routing verification block](docs/files-folder-listing.png)
 
 <br/>
 
@@ -69,7 +77,9 @@ Ghost indexes folders you approve into a local SQLite database with FTS5 full-te
 
 Ask Ghost to create a file and it writes one — not a code block you copy-paste out of a chat window. Native macOS frameworks generate DOCX, PDF, PPTX, XLSX, Markdown, HTML, CSV, and JSON. Files land in your workspace, Ghost Outputs, Desktop, Downloads, or Documents, and every produced document is listed in Document Studio so you can find it again. Every write is verified; if a model claims a file was saved without a confirmed write, Ghost treats that as an error instead of silently trusting it.
 
-![Generated solar system artifact opened in the browser](docs/screenshots/app/solar-system-result.png)
+<video src="docs/demo-html-game.mp4" controls muted loop width="800"></video>
+
+[▶ Watch: an HTML game Ghost wrote, running as a real file from the Desktop (MP4)](docs/demo-html-game.mp4)
 
 [View the generated solar system demo](docs/media/solar-system-demo.html)
 
@@ -84,6 +94,10 @@ The capability harness is Ghost's action layer. The model requests an action; Gh
 Every tool is classified into four risk tiers — Low (read-only), Medium (writes/creates), High (patches/deletes/shell), and Blocked (unknown tools fail closed). An action journal records before-and-after state so you can roll back any run — a created file, note, reminder, or event is one tap of **Undo** away, right on the action card in the transcript. Six independent permission switches (web, files, automation, messaging, screen, terminal) are all off by default and toggle independently, with three approval modes — Ask, Safe, and Auto-run.
 
 ![Reading a Desktop folder, with a verification receipt showing how the request was routed](docs/screenshots/app/local-file-access.png)
+
+<video src="docs/demo-moving-screenshots.mp4" controls muted loop width="800"></video>
+
+[▶ Watch: Ghost moving screenshots into a folder as a verified, undoable file action (MP4)](docs/demo-moving-screenshots.mp4)
 
 <br/>
 
@@ -121,7 +135,7 @@ Ghost reads recent iMessages, sends texts, and starts FaceTime calls — after y
 
 Ask for "a 25 minute focus timer" or "remind me to check the oven in 10 minutes" and Ghost starts a countdown right in the bar — deterministic, local, no model inference. Active timers take over the compact surface. Completed timers reopen with a trackpad haptic. Controls include pause, resume, +5m, restart, cancel, and dismiss.
 
-![Floating timer overlay on the Ghost surface with Pause, +5m, Cancel, and Ask](docs/screenshots/app/notch-timer-running.png)
+![Ghost timer bar counting down 4:57 remaining, with Pause, +5m, Cancel, and Ask controls](docs/timer-bar.png)
 
 <br/>
 
@@ -166,6 +180,10 @@ Free 2-day trial, then a one-time $10 lifetime license. No subscriptions, no rec
 <br/>
 
 Local models (Ollama, LM Studio) run entirely on your machine and cost nothing. Hosted models (Claude, Gemini, DeepSeek, OpenCode Go, OpenCode Zen, any OpenAI-compatible server) need your own API keys — you pay those providers directly at their usage rates, not through Ghost. You can also point Ghost at your existing Claude Code or Codex subscription and run chat through it at no extra cost. Ghost itself is just the workspace.
+
+<video src="docs/demo-api-key.mp4" controls muted loop width="800"></video>
+
+[▶ Watch: adding a provider API key in Ghost Settings (MP4)](docs/demo-api-key.mp4)
 
 </details>
 
