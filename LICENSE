@@ -1,4 +1,36 @@
-MIT License
+Ghost — License
+
+Copyright (c) 2026 Ghost. All rights reserved.
+
+This repository holds the public documentation and marketing site for the Ghost
+macOS app. It does not contain the app's source code. Different parts are
+licensed differently, so read this before assuming anything here is reusable.
+
+1. Documentation and website — MIT
+
+   README.md, SECURITY.md, docs/index.html, docs/styles.css, docs/script.js,
+   docs/README.md, and the other written documentation in this repository are
+   released under the MIT License, reproduced in full below.
+
+2. The Ghost application — proprietary, all rights reserved
+
+   The Ghost macOS application — distributed as a compiled, notarized binary
+   through GitHub Releases and the Sparkle update feed — is NOT open source and
+   is NOT covered by the MIT License. It is licensed, not sold, under the terms
+   presented in the app at purchase. You may not decompile, disassemble,
+   reverse-engineer, redistribute, resell, or create derivative works from the
+   application or any part of it.
+
+3. Screenshots, recordings, icons, and the Ghost name — all rights reserved
+
+   Product screenshots, demo recordings, the Ghost icon, and the Ghost name and
+   wordmark are not covered by the MIT License. They may be reproduced for
+   editorial coverage, reviews, and commentary about the app. They may not be
+   used to imply endorsement or to identify another product.
+
+--------------------------------------------------------------------------------
+
+MIT License — applies to section 1 only
 
 Copyright (c) 2026 Ghost
 
