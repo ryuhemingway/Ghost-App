@@ -45,7 +45,19 @@ Ghost routes every prompt through an intent classifier that detects what you're 
 
 ![Ghost answering "What is the cost of living in San Fran?" with a sourced cost breakdown and a six-entry reference list](docs/answer-sourced-cost.png)
 
+![The Ghost provider picker open above the floating bar, listing LM Studio, Ollama, Claude, Gemini, DeepSeek, OpenCode Go, OpenCode Zen, OpenAI Compatible, and your own Claude Code or Codex subscription](docs/providers-picker.png)
+
 <video src="docs/media/ghost-showcase-main.mp4" controls muted loop width="100%"></video>
+
+<br/>
+
+## Or let it drop from the notch.
+
+<sub><samp>NOTCH-FIRST · TOP-CENTER · SAME SURFACE, SAME TOOLS</samp></sub>
+
+Prefer it up top? Ghost condenses out of the camera notch and expands only as far as the answer needs — inline imagery, citations, and the composer in one frosted panel, anchored where your eyes already are. Glide the pointer to the top-center of the screen to reveal it instead of reaching for the shortcut. Everything the floating bar does, the notch does — it's a single toggle in Settings, not a separate mode.
+
+![Ghost answering "What does the solar system look like?" from the camera notch, with an embedded true-color solar system image and numbered sources](docs/notch-solar-system.png)
 
 <br/>
 
@@ -109,7 +121,7 @@ Ask Ghost to actually *do* things on your Mac. A live **system report** covers C
 
 And for anything no built-in tool covers, **computer-use** kicks in: Ghost writes an AppleScript for the task and runs it *only* after you review and approve the exact script — nothing executes until you say yes.
 
-![Ghost settings panel with per-capability access switches](docs/screenshots/app/settings.png)
+![Ghost answering "How much free space do I have?" and "What is my battery health?" with live storage and battery readings from the on-device system report](docs/mac-free-space.png)
 
 <br/>
 
@@ -119,6 +131,8 @@ And for anything no built-in tool covers, **computer-use** kicks in: Ghost write
 
 Ask "what's on my plate?" and Ghost returns a ranked daily brief — overdue and upcoming Reminders plus imminent Calendar events, in one glance. Create reminders and events in plain language ("remind me to call the dentist Thursday at 10"), make and append to Apple Notes, and search your notes on-device. Ghost can also quietly prepare proactive suggestions from what's due — but it never fires them on its own.
 
+![Ghost answering "What's on my plate for today?" with a dated agenda of the day's to-dos and their due times](docs/calendar-agenda.png)
+
 <br/>
 
 ## Messages, Notes, and calls — on device, by design.
@@ -126,6 +140,8 @@ Ask "what's on my plate?" and Ghost returns a ranked daily brief — overdue and
 <sub><samp>YOUR PERSONAL DATA NEVER TOUCHES A CLOUD MODEL</samp></sub>
 
 Ghost reads recent iMessages, sends texts, and starts FaceTime calls — after you confirm the recipient and message. It searches your Apple Notes and can read your Contacts to match "Mom" to the right number. This is the most personal data on your Mac, so Ghost draws a hard line: **Messages, Notes, Mail, and Contacts are processed on-device only and are never sent to any cloud model** — not for answers, not for memory, not for tools. To use them with AI at all, pick a local model (LM Studio or Ollama). Messaging is off by default and reading iMessages requires Full Disk Access.
+
+![Ghost reading a recent iMessage thread on-device, showing the conversation inline with a reply field](docs/messages-katie.png)
 
 <br/>
 
@@ -144,6 +160,8 @@ Ask for "a 25 minute focus timer" or "remind me to check the oven in 10 minutes"
 <sub><samp>SELECT · RIGHT-CLICK · GHOST</samp></sub>
 
 Select text in any app, right-click, and reach for Ghost: rewrite it professionally or casually, check the grammar, or ask for feedback — without leaving the window you're in. The result comes back inline, ready to drop in.
+
+![A note selected in Apple Notes with Ghost's Professional rewrite card below it, showing what changed and Reject / Accept buttons](docs/rewrite-anywhere.png)
 
 <br/>
 
@@ -216,8 +234,6 @@ macOS 14 or later, Apple Silicon or Intel. Ghost is a native SwiftUI app notariz
 <br/>
 
 Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (edit files and run commands), Explore (read and map a codebase), and Review (inspect diffs and catch bugs). The in-app Agent Console shows an activity timeline with live streaming output, and you can drive it with your own Claude Code or Codex plan.
-
-![Ghost Code agent mode building a solar system animation](docs/screenshots/app/agent-coding.png)
 
 </details>
 
