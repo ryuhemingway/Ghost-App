@@ -36,6 +36,23 @@ By default, everything is off: web access, file tools, automation, messaging, sc
 
 <br/>
 
+## Known issue: builds from 2.0.1 onward stop telling you about updates.
+
+<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN THE NEXT RELEASE</samp></sub>
+
+If you are running Ghost 2.0.1 or later, **your copy will not tell you when a new version is out, and it has no button to ask with.** Nothing is broken on your Mac and nothing is at risk; Ghost simply went quiet about its own updates.
+
+What happened: the "Check for Updates" button and the "update available" notice both lived in an older window that was removed in July when it stopped being part of the app. The updater underneath kept working the whole time — it checks on schedule and it does find new versions — but it had been told that Ghost would display what it found, and after the removal Ghost had nowhere to display it. So an affected build checks, finds an update, and says nothing.
+
+What to do:
+
+- **If you enabled automatic updates**, you are already fine. Ghost downloads and installs new versions on its own, and the next one repairs this.
+- **If you did not**, you will never be prompted. Download the current build by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)**, which always serves the newest release. The GitHub releases page currently lags several versions behind it.
+
+The next release restores both surfaces: updates are presented again when one is found, and Settings carries a **Check for Updates** button beside the version number.
+
+<br/>
+
 ## One surface, eight providers, zero context switching.
 
 <sub><samp>⌥SPACE · ANYWHERE ON MACOS</samp></sub>
