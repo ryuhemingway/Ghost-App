@@ -2,7 +2,7 @@
 
 <a href="https://integratedagentics.com/ghost"><img src="docs/hero-einstein.png" alt="Ghost answering &quot;What was Albert Einsteins most important equation?&quot; in the notch surface, with inline citations and a numbered reference list" width="820" /></a>
 
-<samp>v2.0.4 · notarized · one-time purchase · macOS 14+</samp>
+<samp>v2.0.7 · notarized · one-time purchase · macOS 14+</samp>
 
 <video src="docs/demo-empire-state.mp4" controls muted loop width="800"></video>
 
@@ -36,20 +36,20 @@ By default, everything is off: web access, file tools, automation, messaging, sc
 
 <br/>
 
-## Known issue: builds from 2.0.1 onward stop telling you about updates.
+## Fixed: builds 2.0.1 – 2.0.5 stopped telling you about updates.
 
-<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN THE NEXT RELEASE</samp></sub>
+<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 2.0.7</samp></sub>
 
-If you are running Ghost 2.0.1 or later, **your copy will not tell you when a new version is out, and it has no button to ask with.** Nothing is broken on your Mac and nothing is at risk; Ghost simply went quiet about its own updates.
+**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 2.0.7, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
+
+If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 2.0.7 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
 
 What happened: the "Check for Updates" button and the "update available" notice both lived in an older window that was removed in July when it stopped being part of the app. The updater underneath kept working the whole time — it checks on schedule and it does find new versions — but it had been told that Ghost would display what it found, and after the removal Ghost had nowhere to display it. So an affected build checks, finds an update, and says nothing.
 
-What to do:
+What to do, if you are on 2.0.1 – 2.0.5:
 
-- **If you enabled automatic updates**, you are already fine. Ghost downloads and installs new versions on its own, and the next one repairs this.
-- **If you did not**, you will never be prompted. Download the current build by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)**, which always serves the newest release. The GitHub releases page currently lags several versions behind it.
-
-The next release restores both surfaces: updates are presented again when one is found, and Settings carries a **Check for Updates** button beside the version number.
+- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 2.0.7 will arrive on its own.
+- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 2.0.7 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
 
 <br/>
 
