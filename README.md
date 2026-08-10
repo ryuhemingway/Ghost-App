@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://integratedagentics.com/ghost"><img src="docs/hero-answer.png" alt="Ghost answering a question about the Mohs hardness scale in the notch surface, with provider, model and timing chips above the answer" width="820" /></a>
+<a href="https://integratedagentics.com/ghost"><img src="docs/hero-answer.jpg" alt="Ghost answering a question about the Mohs hardness scale in the notch surface, with provider, model and timing chips above the answer" width="820" /></a>
 
 <samp>v2.0.7 · notarized · one-time purchase · macOS 14+</samp>
 
@@ -57,15 +57,15 @@ What to do, if you are on 2.0.1 – 2.0.5:
 
 <sub><samp>⌥SPACE · ANYWHERE ON MACOS</samp></sub>
 
-![The Ghost composer at rest, hanging from the camera notch as a single input pill with the section bar above it](docs/screenshots/app/quick-ask.png)
+![The Ghost composer at rest, hanging from the camera notch as a single input pill with the section bar above it](docs/screenshots/app/quick-ask.jpg)
 
 Press ⌥Space anywhere on your Mac and a frosted-glass surface appears — dropping from the camera notch, or floating up as a text bar near the bottom of the screen, your choice. Chat, file creation, document search, memory, timers, Calendar, Reminders, Notes, screen OCR, and agent coding sessions all live in one place. The aurora background shifts hue with the tone of your conversation. On a notch Mac you can also reveal it by gliding your pointer to the top-center of the screen. Escape dismisses it, and ⌘K opens a command palette for everything else.
 
-![Ghost answering "Show me what the planet Saturn looks like" in the notch, with an embedded Cassini photograph and its source](docs/answer-saturn.png)
+![Ghost answering "Show me what the planet Saturn looks like" in the notch, with an embedded Cassini photograph and its source](docs/answer-saturn.jpg)
 
 Ghost routes every prompt through an intent classifier that detects what you're actually trying to do — Answer, Research, Files, Summarize, Screenshot, Clipboard, Create, Organize, Automation, Messages, Code, Debug, Review, Shell — then picks the right provider and model. Choose from eight providers — **LM Studio** and **Ollama** (fully local), **Claude**, **Gemini**, **DeepSeek**, **OpenCode Go**, **OpenCode Zen**, and any **OpenAI-compatible** server — or run chat on your own **Claude Code** or **Codex** subscription. Local models get probed on first launch for tool-calling capability and assigned the safest calling convention they can handle, so even models that can't do native function calls still get the harness.
 
-![Ghost answering a question about the James Webb Space Telescope with inline citation markers and a four-entry linked reference list](docs/answer-sourced-cost.png)
+![Ghost answering a question about the James Webb Space Telescope with inline citation markers and a four-entry linked reference list](docs/answer-sourced-cost.jpg)
 
 ![The Ghost provider picker open above the floating bar, listing LM Studio, Ollama, Claude, Gemini, DeepSeek, OpenCode Go, OpenCode Zen, OpenAI Compatible, and your own Claude Code or Codex subscription](docs/providers-picker.png)
 
@@ -101,7 +101,7 @@ Ghost indexes folders you approve into a local SQLite database with FTS5 full-te
 
 30+ formats: txt, md, html, pdf, docx, epub, csv, json, rtf, and every major programming language. Everything stays on your machine.
 
-![Ghost listing a repository's markdown files as rendered tables of file names and sizes, with the folders it read shown as references](docs/files-folder-listing.png)
+![Ghost listing a repository's markdown files as rendered tables of file names and sizes, with the folders it read shown as references](docs/files-folder-listing.jpg)
 
 <br/>
 
@@ -127,7 +127,7 @@ The capability harness is Ghost's action layer. The model requests an action; Gh
 
 Every tool is classified into four risk tiers — Low (read-only), Medium (writes/creates), High (patches/deletes/shell), and Blocked (unknown tools fail closed). An action journal records before-and-after state so you can roll back any run — a created file, note, reminder, or event is one tap of **Undo** away, right on the action card in the transcript. Six independent permission switches (web, files, automation, messaging, screen, terminal) are all off by default and toggle independently, with three approval modes — Ask, Safe, and Auto-run.
 
-![The Privacy and Access page with an independent switch for web, files, Mac automation, Messages, screen capture, and Terminal](docs/screenshots/app/privacy-access.png)
+![The Privacy and Access page with an independent switch for web, files, Mac automation, Messages, screen capture, and Terminal](docs/screenshots/app/privacy-access.jpg)
 
 <video src="docs/demo-moving-screenshots.mp4" controls muted loop width="800"></video>
 
@@ -173,11 +173,11 @@ Ghost reads recent iMessages, sends texts, and starts FaceTime calls — after y
 
 Ask for "a 25 minute focus timer" or "remind me to check the oven in 10 minutes" and Ghost starts a countdown right there — deterministic, local, no model inference. Anything that counts as focus time runs as a pomodoro phase: name the subject, and Ghost runs the cycle for you, starting the break itself and reaching for the long break every fourth session. Controls are pause, +5m, skip and stop; active timers take over the compact surface and finished ones reopen with a trackpad haptic.
 
-![A focus phase counting down on the subject "Algorithms", with cycle dots and pause, +5m, skip and stop controls](docs/timer-bar.png)
+![A focus phase counting down on the subject "Algorithms", with cycle dots and pause, +5m, skip and stop controls](docs/timer-bar.jpg)
 
 Every completed phase is written to a study log on disk, and the right half of the section is the record built from it — time studied today and this week, sessions completed, current streak, progress against a daily goal, a fifteen-week heatmap, and where the hours actually went by subject. The log never leaves the machine, and it is deliberately never handed to a model as context.
 
-![The Timer section showing the pomodoro card beside a study record with stat tiles, a daily goal bar, a fifteen-week heatmap, and per-subject totals](docs/pomodoro-study-record.png)
+![The Timer section showing the pomodoro card beside a study record with stat tiles, a daily goal bar, a fifteen-week heatmap, and per-subject totals](docs/pomodoro-study-record.jpg)
 
 <br/>
 
@@ -191,7 +191,9 @@ The result opens in the bar itself. **Replace** writes it back into the field yo
 
 Right-click → Services → Ghost still works everywhere too.
 
-![A note selected in Apple Notes with Ghost's Professional rewrite card below it, showing what changed and Reject / Accept buttons](docs/rewrite-anywhere.png)
+![Text selected in TextEdit with Ghost's action bar beside it, expanded to show Rewrite Professionally, Rewrite Casually, Humanize, Explain This and Translate](docs/rewrite-actions.jpg)
+
+![Ghost's Professional rewrite card over the selected draft, showing the rewritten text, a What changed note, and Copy and Replace buttons](docs/rewrite-anywhere.jpg)
 
 <br/>
 
@@ -201,9 +203,11 @@ Right-click → Services → Ghost still works everywhere too.
 
 A bar across the top of the Ghost window switches between sections in one click, and stays put as you move between them. Approval prompts deliberately get no tab — they're decisions to make, not places to go.
 
-![The Terminal section inside the Ghost surface, showing a shell prompt and the working directory](docs/screenshots/app/terminal.png)
+![The Terminal section inside the Ghost surface, showing a shell prompt and the working directory](docs/screenshots/app/terminal.jpg)
 
 **Terminal** runs shell commands in the window: arrow keys walk history, `clear` empties the scrollback, and `cd` carries to the next command. It runs one command at a time rather than emulating a terminal, so interactive programs like vim or an ssh password prompt aren't supported. It sits behind the same Terminal switch as Ghost's shell tool, off until you turn it on.
+
+![The General settings page inside the Ghost surface](docs/screenshots/app/settings.jpg)
 
 **Timer** is a full pomodoro: start a focus phase, name the subject, and Ghost runs the cycle and keeps the study record beside it. Plain countdowns live there too.
 
@@ -223,7 +227,7 @@ Ghost is local-first by design. Here's the machinery:
 6. **Actions ask first, and can be undone.** High-risk and irreversible actions always confirm, and file changes are journaled and reversible.
 7. **Everything starts off.** Web, files, automation, messaging, screen, and shell are all disabled on first launch. You opt in one switch at a time.
 
-![The AI settings page showing the selected model, the provider picker, and Auto / Always Agent / Always Direct routing with the route Ghost chose](docs/screenshots/app/model-routing.png)
+![The AI settings page showing the selected model, the provider picker, and Auto / Always Agent / Always Direct routing with the route Ghost chose](docs/screenshots/app/model-routing.jpg)
 
 <br/>
 
