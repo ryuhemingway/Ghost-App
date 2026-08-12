@@ -1,0 +1,18 @@
+.build/
+dist/
+.swiftpm/
+.codebase-memory/
+node_modules/
+**/.DS_Store
+releases/
+
+# Build / release artifacts (attach to GitHub Releases instead of committing)
+*.zip
+*.dmg
+*.app
+.codex/
+.claude/
+
+# Build and test output
+*.log
+test_output.log
