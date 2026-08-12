@@ -20,7 +20,7 @@ By default, everything is off: web access, file tools, automation, messaging, sc
 
 <br/>
 
-## New in 2.0.4
+## New in 2.0.8
 
 - **Ghost comes to your text.** Select anything in any app and a small bar appears beside it — Copy, Search, Summarize, Fix, plus rewrites, Explain and Translate. Replace writes the result straight back into the field you selected in, so that app's own undo still works.
 - **Sections across the top.** One bar switches the Ghost window between Chat, Timer, Terminal, and Settings.
