@@ -256,8 +256,8 @@
               >
             </div>
             <h1 class="hero-title reveal">
-              A premium AI workspace<br />
-              in a <em>notch</em> — or a <em>floating bar</em>.
+              A Premium AI workspace<br />
+              in your <em>Notch/Dynamic Bar</em>
             </h1>
             <p class="hero-lede reveal">
               Ghost routes prompts to local and hosted models, searches your
@@ -269,9 +269,7 @@
             <div class="hero-actions reveal">
               <a
                 class="btn btn-primary magnetic"
-                href="https://github.com/ryuhemingway/Ghost-App/releases/latest"
-                target="_blank"
-                rel="noopener"
+                href="https://integratedagentics.com/ghost/Ghost-latest.zip"
                 data-cursor="pointer"
               >
                 Download Ghost
@@ -342,12 +340,71 @@
             <span class="eyebrow">What's new</span>
             <h2>The latest <em>update.</em></h2>
             <p class="chapter-lede">
-              Ghost now comes to your text, and the window has sections — with
-              how to use each one.
+              2.1.0: Ghost introduces itself, shows you what it can do, and stops
+              taking your keyboard at launch.
             </p>
           </div>
 
           <div class="remember-body">
+            <div class="remember-feature reveal">
+              <span class="eyebrow">First run</span>
+              <h3>Ghost introduces itself now</h3>
+              <p>
+                A new install used to open an empty text field and leave you to
+                guess. There is a proper first run: where answers come from, one
+                honest page about permissions, and a first question you can click
+                to run. Ghost also no longer brings its window forward and takes
+                the keyboard every time it launches, including at login.
+              </p>
+            </div>
+
+            <div class="remember-feature reveal">
+              <span class="eyebrow">Discovery</span>
+              <h3>Type a slash to see everything</h3>
+              <p>
+                Around thirty commands were reachable only if you already knew to
+                type <code>/help</code>. Type a single <code>/</code> in the
+                composer and they are listed and filtered as you go. A blank chat
+                suggests a few questions too, picked from what your permission
+                switches actually allow, and they retire once you have used Ghost
+                a few times.
+              </p>
+            </div>
+
+            <div class="remember-feature reveal">
+              <span class="eyebrow">Conversations</span>
+              <h3>Search and name your threads</h3>
+              <p>
+                The saved list is searchable across titles <em>and</em> message
+                text, threads can be renamed, and they delete one at a time
+                instead of all at once. Answers also fill the window now, and the
+                window itself has a size setting.
+              </p>
+            </div>
+
+            <div class="remember-feature reveal">
+              <span class="eyebrow">Security</span>
+              <h3>A web fetch could leak your conversation</h3>
+              <p>
+                When you named a page for Ghost to read, it skipped its approval
+                prompt because you had chosen the destination yourself. That check
+                compared only the host and the path, so a web page could talk
+                Ghost into fetching the same address with your conversation
+                attached as a query string, and no approval appeared. The check
+                now covers the whole destination: query, fragment, port and
+                credentials. Fixed in 2.1.0.
+              </p>
+            </div>
+
+            <div class="remember-feature reveal">
+              <span class="eyebrow">Shortcuts</span>
+              <h3>Ask Ghost from Shortcuts and Spotlight</h3>
+              <p>
+                Ask Ghost, Start Focus Timer and Toggle Ghost are system actions
+                now, so they can be used in a Shortcut or launched from Spotlight.
+              </p>
+            </div>
+
             <div class="remember-feature reveal">
               <span class="eyebrow">Instant actions</span>
               <h3>Select text anywhere, act on it</h3>
@@ -1409,9 +1466,7 @@
           <div class="hero-actions">
             <a
               class="btn btn-primary magnetic"
-              href="https://github.com/ryuhemingway/Ghost-App/releases/latest"
-              target="_blank"
-              rel="noopener"
+              href="https://integratedagentics.com/ghost/Ghost-latest.zip"
               data-cursor="pointer"
             >
               Download Ghost
