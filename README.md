@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://integratedagentics.com/ghost"><img src="docs/hero-answer.jpg" alt="Ghost answering a question about the Mohs hardness scale in the notch surface, with provider, model and timing chips above the answer" width="820" /></a>
+<a href="https://integratedagentics.com/ghost"><img src="docs/Screenshot 2026-08-11 at 6.42.27 PM.png" alt="Ghost answering a question about the Mohs hardness scale in the notch surface, with provider, model and timing chips above the answer" width="820" /></a>
 
 <samp>v2.0.7 · notarized · one-time purchase · macOS 14+</samp>
 
@@ -30,7 +30,7 @@ By default, everything is off: web access, file tools, automation, messaging, sc
 - **Your private data stays on device.** Messages, Notes, Mail, and Contacts never leave your Mac for a cloud model — not for answers, memory, or tools. Use a local model to let AI touch them.
 - **Your day, handled.** A ranked daily brief, Reminders, Calendar, and Apple Notes — read and write, in plain language.
 - **Messages & FaceTime.** Read and send iMessages and start calls (on-device, opt-in, and confirmed before anything sends).
-- **Computer-use.** For a Mac task no built-in tool covers, Ghost writes an AppleScript and runs it *only* after you approve the exact script.
+- **Computer-use.** For a Mac task no built-in tool covers, Ghost writes an AppleScript and runs it _only_ after you approve the exact script.
 - **Bring your own subscription.** Run chat through your existing Claude Code or Codex CLI — your account, your plan, at no extra cost.
 - **Nearly eighty built-in tools**, including a full suite of on-device Mac controls — system report, brightness, audio, dark mode, window snapping, Homebrew, app uninstall, junk cleanup, media conversion, and more.
 
@@ -72,15 +72,6 @@ Ghost routes every prompt through an intent classifier that detects what you're 
 <video src="docs/media/ghost-showcase-main.mp4" controls muted loop width="100%"></video>
 
 <br/>
-
-## Or let it drop from the notch.
-
-<sub><samp>NOTCH-FIRST · TOP-CENTER · SAME SURFACE, SAME TOOLS</samp></sub>
-
-Prefer it up top? Ghost condenses out of the camera notch and expands only as far as the answer needs — inline imagery, citations, and the composer in one frosted panel, anchored where your eyes already are. Glide the pointer to the top-center of the screen to reveal it instead of reaching for the shortcut. Everything the floating bar does, the notch does — it's a single toggle in Settings, not a separate mode.
-
-![Ghost answering "What does the solar system look like?" from the camera notch, with an embedded true-color solar system image and numbered sources](docs/notch-solar-system.png)
-
 <br/>
 
 ## Ghost remembers you.
@@ -139,11 +130,11 @@ Every tool is classified into four risk tiers — Low (read-only), Medium (write
 
 <sub><samp>ON-DEVICE · DETERMINISTIC · APPROVAL-GATED WHEN IT MATTERS</samp></sub>
 
-Ask Ghost to actually *do* things on your Mac. A live **system report** covers CPU, memory, disk, battery health and cycles, chip temperatures, and top processes. Quick actions toggle Dark Mode, set brightness, switch audio devices, mute the mic, empty the Trash, keep the Mac awake, lock the screen, and reveal hidden files. It snaps and tiles windows, manages Homebrew, uninstalls apps completely (with their caches and preferences), scans and clears junk (dry-run first), converts and compresses media, picks a screen color, and runs any macOS Shortcut.
+Ask Ghost to actually _do_ things on your Mac. A live **system report** covers CPU, memory, disk, battery health and cycles, chip temperatures, and top processes. Quick actions toggle Dark Mode, set brightness, switch audio devices, mute the mic, empty the Trash, keep the Mac awake, lock the screen, and reveal hidden files. It snaps and tiles windows, manages Homebrew, uninstalls apps completely (with their caches and preferences), scans and clears junk (dry-run first), converts and compresses media, picks a screen color, and runs any macOS Shortcut.
 
-And for anything no built-in tool covers, **computer-use** kicks in: Ghost writes an AppleScript for the task and runs it *only* after you review and approve the exact script — nothing executes until you say yes.
+And for anything no built-in tool covers, **computer-use** kicks in: Ghost writes an AppleScript for the task and runs it _only_ after you review and approve the exact script — nothing executes until you say yes.
 
-![Ghost answering "What is my battery health?" with a live battery reading from the on-device system report](docs/mac-free-space.png)
+![Ghost answering "What is my battery health?" with a live battery reading from the on-device system report](docs/Battery Health Ghost.png)
 
 <br/>
 
@@ -163,7 +154,7 @@ Ask "what's on my plate?" and Ghost returns a ranked daily brief — overdue and
 
 Ghost reads recent iMessages, sends texts, and starts FaceTime calls — after you confirm the recipient and message. It searches your Apple Notes and can read your Contacts to match "Mom" to the right number. This is the most personal data on your Mac, so Ghost draws a hard line: **Messages, Notes, Mail, and Contacts are processed on-device only and are never sent to any cloud model** — not for answers, not for memory, not for tools. To use them with AI at all, pick a local model (LM Studio or Ollama). Messaging is off by default and reading iMessages requires Full Disk Access.
 
-![Ghost reading a recent iMessage thread on-device, showing the conversation inline with a reply field](docs/messages-katie.png)
+![Ghost reading a recent iMessage thread on-device, showing the conversation inline with a reply field](docs/Imessage Ghost.png)
 
 <br/>
 
@@ -221,7 +212,7 @@ Which of the two you get is decided deterministically, without asking a model, s
 
 Ghost is local-first by design. Here's the machinery:
 
-1. **Your personal data stays on your Mac.** Messages, Notes, Mail, and Contacts are on-device only. Ghost's own tools and memory refuse to send them to a cloud model — for answers, memory, or tools. The one exception is text *you* select and act on: Summarize can't work unless the model may read it, so the bar names the source app and the provider before you press anything. Use a local model to keep it on the machine.
+1. **Your personal data stays on your Mac.** Messages, Notes, Mail, and Contacts are on-device only. Ghost's own tools and memory refuse to send them to a cloud model — for answers, memory, or tools. The one exception is text _you_ select and act on: Summarize can't work unless the model may read it, so the bar names the source app and the provider before you press anything. Use a local model to keep it on the machine.
 2. **API keys live in the macOS Keychain.** Not `.env` files, not plaintext configs. Ghost only reads a key when calling that provider.
 3. **Local providers can't launch agent mode.** Ollama and LM Studio stay inside Ghost's managed Direct API tool loop. No escape hatch.
 4. **Web egress is guarded.** Localhost, private IPv4/IPv6, link-local, multicast, and reserved addresses are blocked. DNS resolution checks every address; redirects to private destinations are rejected.
@@ -239,7 +230,7 @@ Ghost is local-first by design. Here's the machinery:
 <summary><b>How is Ghost priced? What's the catch?</b></summary>
 <br/>
 
-Free 2-day trial, then a one-time $10 lifetime license. No subscriptions, no recurring charges, no hidden costs. Bring your own API keys for hosted models, run your existing Claude/ChatGPT plan through the CLI, or use Ollama and LM Studio for free forever.
+Free 24-hour trial, then a one-time $14.99 lifetime license. No subscriptions, no recurring charges, no hidden costs. Bring your own API keys for hosted models, run your existing Claude/ChatGPT plan through the CLI, or use Ollama and LM Studio for free forever.
 
 </details>
 
