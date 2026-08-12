@@ -24,7 +24,7 @@ By default, everything is off: web access, file tools, automation, messaging, sc
 
 - **Ghost comes to your text.** Select anything in any app and a small bar appears beside it — Copy, Search, Summarize, Fix, plus rewrites, Explain and Translate. Replace writes the result straight back into the field you selected in, so that app's own undo still works.
 - **Sections across the top.** One bar switches the Ghost window between Chat, Timer, Terminal, and Settings.
-- **A terminal inside Ghost.** Run shell commands without leaving the window, behind the same permission switch as its shell tool.
+- **A terminal inside Ghost.** Run shell commands without leaving the window — or say what you want changed and Ghost's coding agent does it, in the same folder. Behind the same permission switch as its shell tool.
 - **A cleaner surface.** The typing pill now sits flush just below the camera notch — nothing clipped, no matter how much you type. In floating-bar mode it's a genuine floating text field with a frosted, high-contrast background and no dark slab around it.
 - **Ghost remembers you.** An on-device knowledge base quietly grounds every chat, so Ghost knows your people, your preferences, and "the usual." It's plain Markdown you own.
 - **Your private data stays on device.** Messages, Notes, Mail, and Contacts never leave your Mac for a cloud model — not for answers, memory, or tools. Use a local model to let AI touch them.
@@ -63,11 +63,11 @@ Press ⌥Space anywhere on your Mac and a frosted-glass surface appears — drop
 
 ![Ghost answering "Show me what the planet Saturn looks like" in the notch, with an embedded Cassini photograph and its source](docs/answer-saturn.jpg)
 
-Ghost routes every prompt through an intent classifier that detects what you're actually trying to do — Answer, Research, Files, Summarize, Screenshot, Clipboard, Create, Organize, Automation, Messages, Code, Debug, Review, Shell — then picks the right provider and model. Choose from eight providers — **LM Studio** and **Ollama** (fully local), **Claude**, **Gemini**, **DeepSeek**, **OpenCode Go**, **OpenCode Zen**, and any **OpenAI-compatible** server — or run chat on your own **Claude Code** or **Codex** subscription. Local models get probed on first launch for tool-calling capability and assigned the safest calling convention they can handle, so even models that can't do native function calls still get the harness.
+Ghost routes every prompt through an intent classifier that detects what you're actually trying to do — Answer, Research, Files, Summarize, Screenshot, Clipboard, Create, Organize, Automation, Messages, Code, Debug, Review, Shell — then picks the right provider and model. Choose from eight providers — **LM Studio** and **Ollama** (fully local), **Claude**, **Gemini**, **DeepSeek**, **OpenCode Go**, **OpenCode Zen**, and any **OpenAI-compatible** server — or run chat on your own **Claude Code**, **Codex**, or **Antigravity** subscription. Local models get probed on first launch for tool-calling capability and assigned the safest calling convention they can handle, so even models that can't do native function calls still get the harness.
 
 ![Ghost answering a question about the James Webb Space Telescope with inline citation markers and a four-entry linked reference list](docs/answer-sourced-cost.jpg)
 
-![The Ghost provider picker open above the floating bar, listing LM Studio, Ollama, Claude, Gemini, DeepSeek, OpenCode Go, OpenCode Zen, OpenAI Compatible, and your own Claude Code or Codex subscription](docs/providers-picker.png)
+![The Ghost provider picker open beneath the notch composer, listing Claude, Gemini, DeepSeek v4, OpenCode Go, OpenCode Zen and OpenAI Compatible, above a subscription section offering Claude Code, Codex and Antigravity](docs/providers-picker.jpg)
 
 <video src="docs/media/ghost-showcase-main.mp4" controls muted loop width="100%"></video>
 
@@ -143,7 +143,7 @@ Ask Ghost to actually *do* things on your Mac. A live **system report** covers C
 
 And for anything no built-in tool covers, **computer-use** kicks in: Ghost writes an AppleScript for the task and runs it *only* after you review and approve the exact script — nothing executes until you say yes.
 
-![Ghost answering "How much free space do I have?" and "What is my battery health?" with live storage and battery readings from the on-device system report](docs/mac-free-space.png)
+![Ghost answering "What is my battery health?" with a live battery reading from the on-device system report](docs/mac-free-space.png)
 
 <br/>
 
@@ -203,9 +203,11 @@ Right-click → Services → Ghost still works everywhere too.
 
 A bar across the top of the Ghost window switches between sections in one click, and stays put as you move between them. Approval prompts deliberately get no tab — they're decisions to make, not places to go.
 
-![The Terminal section inside the Ghost surface, showing a shell prompt and the working directory](docs/screenshots/app/terminal.jpg)
+![The Terminal section answering "What is the last file I added to desktop?" in plain English, with the working directory, a Build chip and the Claude Code · Sonnet 5 route shown above the answer](docs/screenshots/app/terminal.jpg)
 
-**Terminal** runs shell commands in the window: arrow keys walk history, `clear` empties the scrollback, and `cd` carries to the next command. It runs one command at a time rather than emulating a terminal, so interactive programs like vim or an ssh password prompt aren't supported. It sits behind the same Terminal switch as Ghost's shell tool, off until you turn it on.
+**Terminal** takes both halves of the job. Type a command and it runs: arrow keys walk history, `clear` empties the scrollback, and `cd` carries to the next command. Type what you want changed instead — in plain English — and it goes to Ghost's coding agent, rooted at whatever directory you last `cd`'d to and running on the provider or subscription you already configured. Progress streams as it works, and the agent's own commands (`/plan`, `/build`, `/init`, `/files`) work at the same prompt.
+
+Which of the two you get is decided deterministically, without asking a model, so it can't quietly guess wrong — and you can force either one: prefix a line with `!` to run it as a command, or `>` (or `?`) to send it to the agent. It still runs one command at a time rather than emulating a terminal, so interactive programs like vim or an ssh password prompt aren't supported. It sits behind the same Terminal switch as Ghost's shell tool, off until you turn it on.
 
 ![The General settings page inside the Ghost surface](docs/screenshots/app/settings.jpg)
 
