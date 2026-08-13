@@ -2,11 +2,11 @@
 
 <a href="https://integratedagentics.com/ghost"><img src="docs/Screenshot 2026-08-11 at 6.42.27 PM.png" alt="Ghost answering a question about the Mohs hardness scale in the notch surface, with provider, model and timing chips above the answer" width="820" /></a>
 
-<samp>v2.1.0 · notarized · one-time purchase · macOS 14+</samp>
+<samp>v2.2.0 · notarized · one-time purchase · macOS 14+</samp>
 
-<video src="docs/demo-empire-state.mp4" controls muted loop width="800"></video>
+[![Ghost creating an interactive Milky Way visualisation from the floating bar, and the finished milky-way.html open in Safari](docs/media/poster-demo-milky-way.jpg)](docs/media/demo-milky-way.mp4)
 
-[▶ Watch: asking Ghost what the Empire State Building looks like, from the floating bar (MP4)](docs/demo-empire-state.mp4)
+[▶ Watch: one sentence to Ghost, and milky-way.html is on the Desktop and running in Safari (26s, MP4)](docs/media/demo-milky-way.mp4)
 
 </div>
 
@@ -17,6 +17,21 @@ Every AI tool today has the same problem: you're the one doing all the context s
 So you type a question, attach a file, dictate a note, or start a focus timer — and Ghost routes it to the right model (local or cloud, or your own Claude/ChatGPT plan), searches your indexed documents, remembers what matters about you, creates real files, runs verified Mac actions, and drops back out of sight. No Dock icon, no tab management, no full-screen takeover. Just the work, done.
 
 By default, everything is off: web access, file tools, automation, messaging, screen capture, shell. You opt in one switch at a time. API keys live in your Keychain; if Ghost finds one in `~/.ghost/.env` or the environment it moves it there and strips the file. Local models run entirely on your machine with the same tool harness the cloud models get. And your most personal data — Messages, Notes, Mail, Contacts — is processed **on device only**: Ghost never sends it to a cloud model on its own initiative, and when you deliberately act on a selection from one of those apps, it tells you where the text is going first.
+
+<br/>
+
+## New in 2.2.0
+
+This one came out of using Ghost for a day and writing down everything that went wrong.
+
+- **Ghost has stopped taking ⌘/ from your other apps.** ⌘/ opened Ghost's shortcut sheet, and it did so everywhere: the keystroke never reached the app you were actually in. In Xcode and VS Code that is comment-toggle, so Ghost had quietly broken it, with no preference to change it and no way to switch it off. Both utility shortcuts are optional now, and the sheet is off by default because the panel's More menu already opens it. Escape closes that sheet too, which it had never done despite saying so at the bottom.
+- **A menu bar icon, so you can tell Ghost is running.** No menu bar icon, no Dock icon and no window at rest left exactly one way in: a global shortcut. If another app already owned it, Ghost said nothing and simply could not be opened. Settings now also names any shortcut another app has taken, so a dead keystroke explains itself.
+- **Pressing Return no longer freezes the window.** With document search on, Ghost searched your index on the main thread before sending anything: a quarter of a second on a normal question, over a second when it fell back to a slower path, every time, before the request had even left. Off the main thread now, with the slow path bounded. Around twenty times faster.
+- **Answers arrive typeset instead of as raw markdown.** An answer used to appear as its own source first, asterisks and dashes and all, then reflow once it finished, so you read everything twice.
+- **Dialogs open in front of Ghost, not behind it.** Ghost's panel floats above ordinary windows, so its own update window, the usage dashboard and every confirmation opened underneath it. Clicks landed on the panel instead of the button, which is why a dialog would ignore the mouse but still answer Return, and the update window could leave you stuck.
+- **Approve a destination once instead of every time.** Ask mode prompted on every action, so the only comfortable setting was to switch approvals off. The third approval button now means what it looks like: allow this destination for the rest of the session. Scoped to that site or folder, forgotten on quit, and never covering sending a message, placing a call, uninstalling an app or emptying the Trash.
+- **The shortcut sheet only lists shortcuts that exist.** It advertised seventeen keystrokes nothing implemented, including a command palette that was never built, and ⌘, opened an empty grey window. ⌘1-⌘4 switch sections, ⌘N/⌘L/⌘R start, clear and regenerate, ⌘, opens the real settings, and the sheet is generated from the same list that registers them.
+- **Smaller things that were quietly wrong.** The composer suggests what Ghost can do instead of saying "ask anything" forever. The ✗ beside an empty composer used to discard your conversation without warning; it says New chat now. An empty Terminal is a third of its old height. Settings said the provider and model were not in use while leaving them clickable. Two controls were invisible in Light appearance, including the Copy buttons under every answer. The routing pane told subscription users their answer came from somewhere it did not.
 
 <br/>
 
@@ -67,7 +82,21 @@ Ghost routes every prompt through an intent classifier that detects what you're 
 
 ![The Ghost provider picker open beneath the notch composer, listing Claude, Gemini, DeepSeek v4, OpenCode Go, OpenCode Zen and OpenAI Compatible, above a subscription section offering Claude Code, Codex and Antigravity](docs/providers-picker.jpg)
 
-<video src="docs/media/ghost-showcase-main.mp4" controls muted loop width="100%"></video>
+Both of these ran on **gemma-4-e2b through LM Studio** — no API key, no network, the full tool harness:
+
+[![Ghost answering "What does a golden retriever look like?" on a local model, showing the LM Studio and gemma-4-e2b routing chips above the answer](docs/media/poster-demo-golden-retriever-local.jpg)](docs/media/demo-golden-retriever-local.mp4)
+
+[▶ Watch: a local model answering with no API key and no network (20s, MP4)](docs/media/demo-golden-retriever-local.mp4)
+
+[![Ghost answering "How do I write a for loop in java?" on a local model, with the answer typeset as it streams](docs/media/poster-demo-java-for-loop-local.jpg)](docs/media/demo-java-for-loop-local.mp4)
+
+[▶ Watch: the same local model on a coding question (26s, MP4)](docs/media/demo-java-for-loop-local.mp4)
+
+And the same surface on a subscription route, working a physics problem and then answering the follow-up:
+
+[![Ghost solving a kinematics problem step by step, then answering a follow-up about how to memorise the equations](docs/media/poster-demo-kinematic-equations.jpg)](docs/media/demo-kinematic-equations.mp4)
+
+[▶ Watch: kinematics worked step by step, then "how can I memorize them?" (47s, MP4)](docs/media/demo-kinematic-equations.mp4)
 
 <br/>
 <br/>
@@ -100,9 +129,7 @@ Ghost indexes folders you approve into a local SQLite database with FTS5 full-te
 
 Ask Ghost to create a file and it writes one — not a code block you copy-paste out of a chat window. Native macOS frameworks generate DOCX, PDF, PPTX, XLSX, Markdown, HTML, CSV, and JSON. Files land in your workspace, Ghost Outputs, Desktop, Downloads, or Documents, and every produced document is listed in Document Studio so you can find it again. Every write is verified; if a model claims a file was saved without a confirmed write, Ghost treats that as an error instead of silently trusting it.
 
-<video src="docs/demo-html-game.mp4" controls muted loop width="800"></video>
-
-[▶ Watch: an HTML game Ghost wrote, running as a real file from the Desktop (MP4)](docs/demo-html-game.mp4)
+The Milky Way visualisation at the top of this page is one of these: a single sentence, and `milky-way.html` is on the Desktop and opens in Safari.
 
 [View the generated solar system demo](docs/media/solar-system-demo.html)
 
@@ -117,10 +144,6 @@ The capability harness is Ghost's action layer. The model requests an action; Gh
 Every tool is classified into four risk tiers — Low (read-only), Medium (writes/creates), High (patches/deletes/shell), and Blocked (unknown tools fail closed). An action journal records before-and-after state so you can roll back what Ghost changed. A created or edited file, a folder, any generated document, an Apple Note, a reminder, a calendar event, and an app Ghost opened or quit are each one tap of **Undo** away, right on the action card in the transcript. Two actions are outside the journal on purpose: uninstalling an app and clearing junk both move things to the Trash rather than deleting them, so recovery is Finder's **Put Back**, and the card says so instead of offering an Undo it cannot honour. Six independent permission switches (web, files, automation, messaging, screen, terminal) are all off by default and toggle independently, with three approval modes — Ask, Safe, and Auto-run.
 
 ![The Privacy and Access page with an independent switch for web, files, Mac automation, Messages, screen capture, and Terminal](docs/screenshots/app/privacy-access.jpg)
-
-<video src="docs/demo-moving-screenshots.mp4" controls muted loop width="800"></video>
-
-[▶ Watch: Ghost moving screenshots into a folder as a verified, undoable file action (MP4)](docs/demo-moving-screenshots.mp4)
 
 <br/>
 
@@ -237,10 +260,6 @@ Free 24-hour trial, then a one-time $14.99 lifetime license. No subscriptions, n
 <br/>
 
 Local models (Ollama, LM Studio) run entirely on your machine and cost nothing. Hosted models (Claude, Gemini, DeepSeek, OpenCode Go, OpenCode Zen, any OpenAI-compatible server) need your own API keys — you pay those providers directly at their usage rates, not through Ghost. You can also point Ghost at your existing Claude Code or Codex subscription and run chat through it at no extra cost. Ghost itself is just the workspace.
-
-<video src="docs/demo-api-key.mp4" controls muted loop width="800"></video>
-
-[▶ Watch: adding a provider API key in Ghost Settings (MP4)](docs/demo-api-key.mp4)
 
 </details>
 
