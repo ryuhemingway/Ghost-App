@@ -35,37 +35,6 @@ This one came out of using Ghost for a day and writing down everything that went
 
 <br/>
 
-## New in 2.1.0
-
-- **Ghost introduces itself.** A new install used to open an empty text field and leave you to guess. There is a real first run now: where answers come from, one honest page about permissions, and a first question you can click to run.
-- **It also stops taking your keyboard.** Ghost brought its window forward and grabbed focus on *every* launch, including at login, because it treated every launch as a first one. Fixed.
-- **Type a slash to see everything it can do.** Around thirty commands were reachable only if you already knew to type `/help`. They are listed and filtered as you type now. A blank chat also suggests a few questions, picked from what your permission switches actually allow, and they retire once you have used Ghost a few times.
-- **Search and name your conversations.** The saved list is searchable across titles *and* message text, renameable, and threads delete one at a time instead of all at once.
-- **A web fetch could leak your conversation. It cannot now.** When you named a page for Ghost to read, it skipped the approval prompt because you had chosen the destination. That check compared only host and path, so a page could talk Ghost into re-fetching the same address with your conversation attached as a query string. The check now covers the whole destination: query, fragment, port and credentials.
-- **Undo reaches everything it can reverse.** Reminders and calendar events recorded an undo the interface never offered. Quitting an app is undoable too. Where Ghost genuinely cannot reverse something, the card tells you the change is in the Trash instead of showing a dead button.
-- **Shortcuts and Spotlight.** Ask Ghost, Start Focus Timer and Toggle Ghost are available as system actions.
-- **A selection bar that suits the app you are in.** Explain leads in a code editor, Fix grammar leads in Mail. Nothing is removed, only reordered.
-- **A calmer window.** Long answers are set to a comfortable reading width rather than the full 880pt. Three badges above an answer and a duplicate line below became one quiet line. Settings lost a layer of decoration and gained a window size preference. Every icon-only control now has a name for VoiceOver.
-
-<br/>
-
-## Also new since 2.0.4
-
-- **Ghost comes to your text.** Select anything in any app and a small bar appears beside it — Copy, Search, Summarize, Fix, plus rewrites, Explain and Translate. Replace writes the result straight back into the field you selected in, so that app's own undo still works.
-- **Sections across the top.** One bar switches the Ghost window between Chat, Timer, Terminal, and Settings.
-- **A terminal inside Ghost.** Run shell commands without leaving the window — or say what you want changed and Ghost's coding agent does it, in the same folder. Behind the same permission switch as its shell tool.
-- **A cleaner surface.** The typing pill now sits flush just below the camera notch — nothing clipped, no matter how much you type. In floating-bar mode it's a genuine floating text field with a frosted, high-contrast background and no dark slab around it.
-- **Ghost remembers you.** An on-device knowledge base quietly grounds every chat, so Ghost knows your people, your preferences, and "the usual." It's plain Markdown you own.
-- **Your private data stays on device.** Messages, Notes, Mail, and Contacts never leave your Mac for a cloud model — not for answers, memory, or tools. Use a local model to let AI touch them.
-- **Your day, handled.** A ranked daily brief, Reminders, Calendar, and Apple Notes — read and write, in plain language.
-- **Messages & FaceTime.** Read and send iMessages and start calls (on-device, opt-in, and confirmed before anything sends).
-- **Computer-use.** For a Mac task no built-in tool covers, Ghost writes an AppleScript and runs it _only_ after you approve the exact script.
-- **Bring your own subscription.** Run chat through your existing Claude Code or Codex CLI — your account, your plan, at no extra cost.
-- **A coding agent in the Terminal, and a pomodoro in the Timer.** <sub><samp>2.0.8</samp></sub> Type a command and it runs; say what you want changed and Ghost's agent does it, in the same folder, on the model you already set up. The Timer became a full pomodoro with a persistent study log: subjects, streaks, and a focus history.
-- **Nearly eighty built-in tools**, including a full suite of on-device Mac controls — system report, brightness, audio, dark mode, window snapping, Homebrew, app uninstall, junk cleanup, media conversion, and more.
-
-<br/>
-
 ## One surface, eight providers, zero context switching.
 
 <sub><samp>⌥SPACE · ANYWHERE ON MACOS</samp></sub>
