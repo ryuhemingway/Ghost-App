@@ -57,6 +57,14 @@
       </button>
       <button
         class="side-nav-btn"
+        data-target="showcase"
+        data-cursor="pointer"
+        aria-label="Jump to Watch it work"
+      >
+        <span class="side-dot"></span><span class="side-label">Watch</span>
+      </button>
+      <button
+        class="side-nav-btn"
         data-target="whats-new"
         data-cursor="pointer"
         aria-label="Jump to What's new"
@@ -330,6 +338,40 @@
               onboarding. Nothing is on by default. Nothing runs in the
               background without you asking.
             </p>
+          </div>
+        </section>
+
+        <!-- SHOWCASE -->
+        <section class="showcase" id="showcase">
+          <div class="showcase-inner reveal">
+            <span class="eyebrow">Watch it work</span>
+            <h2 class="showcase-title">
+              One sentence. A real file<br />on your <em>Desktop.</em>
+            </h2>
+            <p class="showcase-lede">
+              Ghost is asked for an interactive Milky Way. It writes
+              <code>milky-way.html</code>, saves it to the Desktop, and opens it
+              in Safari — a real file you can keep, not a code block to copy out
+              of a chat window.
+            </p>
+            <figure class="showcase-figure">
+              <video
+                class="showcase-video"
+                src="media/demo-milky-way.mp4"
+                poster="media/poster-demo-milky-way.jpg"
+                controls
+                muted
+                loop
+                playsinline
+                preload="none"
+                width="1280"
+                height="720"
+                aria-label="Ghost creating an interactive Milky Way visualisation from the floating bar, and the finished milky-way.html open in Safari"
+              ></video>
+              <figcaption class="showcase-caption">
+                Recorded on macOS, 26 seconds, no cuts.
+              </figcaption>
+            </figure>
           </div>
         </section>
 
