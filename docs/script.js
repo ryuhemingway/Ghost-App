@@ -9,15 +9,15 @@ gsap.registerPlugin(ScrollTrigger);
 const faqs = [
   {
     q: "What is Ghost?",
-    a: "Ghost is a notch-first local macOS AI workspace that lives in your menu bar. It routes prompts to local and hosted models, searches your private knowledge base with RAG, starts timers, and runs verified Mac actions — all from one native SwiftUI surface you summon with a keystroke.",
+    a: "Ghost is a local-first macOS AI workspace you summon with a keystroke. It routes prompts to local and hosted models, searches your private knowledge base with RAG, starts timers, and runs verified Mac actions — all from one native SwiftUI surface that appears as a top-center notch or a floating bar and vanishes when you dismiss it.",
   },
   {
     q: "How do I open Ghost?",
-    a: "Click the ghost icon in your menu bar, press Option+Space from anywhere on your Mac, or open the quick Ghost Bar with Option+Shift+Space. The top-center notch opens instantly, keeps your draft, and collapses when you dismiss it. You can also use the ghost://toggle deep link.",
+    a: "Press Option+Space from anywhere on your Mac. In Settings you choose where Ghost appears: dropping down from the top-center notch — where gliding your pointer to the top of the screen also reveals it — or floating as a Siri-style bar about an inch up from the bottom, growing upward as it fills. A second shortcut (Option+Shift+Space by default) opens the very same surface, and the ghost://toggle deep link works from any app or script. It keeps your draft and collapses when you dismiss it.",
   },
   {
     q: "Which model providers does Ghost support?",
-    a: "Seven providers: LM Studio and Ollama for local inference, plus Claude (Anthropic), Gemini (Google), DeepSeek, OpenCode Go, and OpenCode Zen for hosted models. You can switch providers from the model picker without changing apps.",
+    a: "Eight providers: LM Studio and Ollama for local inference; Claude (Anthropic), Gemini (Google), DeepSeek v4, OpenCode Go, and OpenCode Zen for hosted models; plus any OpenAI-compatible endpoint — OpenAI, vLLM, or any server speaking the /v1 chat-completions schema. Just set a base URL and model name; the API key is optional for local or keyless servers. You switch providers from the model picker without changing apps.",
   },
   {
     q: "How does routing work?",
@@ -211,11 +211,48 @@ gsap.from(".hero-ghost-watermark", {
   delay: 0.3,
 });
 
-/* ---------------- THREE.JS HERO PARTICLES ---------------- */
-let scene, camera, renderer, particles, particleGeo;
+/* ---------------- THREE.JS HERO — FLOATING GHOSTS ---------------- */
+/* A drifting 3D field of little Ghost logos. We use THREE.Sprite (screen-
+   facing quads) rather than GL points so the ghosts render crisp at any
+   size — points hit the hardware size cap and cull at the viewport edge. */
+let scene, camera, renderer, ghostGroup;
+const ghostSprites = [];
 let heroCanvas = document.getElementById("hero-canvas");
+const prefersReducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)",
+).matches;
+
+/* Draw the brand ghost silhouette (0..64 viewBox path) into a canvas so we
+   can hand it to Three.js as a texture. White fill, eyes punched out — the
+   sprite's color multiplies the white, tinting each ghost to the palette. */
+function makeGhostTexture() {
+  const S = 128;
+  const cvs = document.createElement("canvas");
+  cvs.width = S;
+  cvs.height = S;
+  const ctx = cvs.getContext("2d");
+  ctx.scale(S / 64, S / 64);
+  const body = new Path2D(
+    "M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z",
+  );
+  ctx.fillStyle = "#ffffff";
+  ctx.fill(body);
+  ctx.globalCompositeOperation = "destination-out";
+  ctx.beginPath();
+  ctx.arc(26, 29, 3, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(38, 29, 3, 0, Math.PI * 2);
+  ctx.fill();
+  const tex = new THREE.CanvasTexture(cvs);
+  tex.magFilter = THREE.LinearFilter;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.needsUpdate = true;
+  return tex;
+}
 
 function initThree() {
+  if (!heroCanvas || typeof THREE === "undefined") return;
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(
     75,
@@ -232,61 +269,47 @@ function initThree() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  function makeGhostTexture() {
-    const c = document.createElement("canvas");
-    c.width = 64;
-    c.height = 64;
-    const ctx = c.getContext("2d");
-    const grad = ctx.createLinearGradient(0, 0, 64, 64);
-    grad.addColorStop(0, "#00ff9d");
-    grad.addColorStop(0.5, "#d97757");
-    grad.addColorStop(1, "#a855f7");
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.moveTo(16, 49);
-    ctx.lineTo(16, 28);
-    ctx.quadraticCurveTo(16, 10, 32, 10);
-    ctx.quadraticCurveTo(48, 10, 48, 28);
-    ctx.lineTo(48, 49);
-    ctx.lineTo(43, 45);
-    ctx.lineTo(38, 49);
-    ctx.lineTo(32, 45);
-    ctx.lineTo(26, 49);
-    ctx.lineTo(21, 45);
-    ctx.lineTo(16, 49);
-    ctx.closePath();
-    ctx.fill();
-    ctx.fillStyle = "#050505";
-    ctx.beginPath();
-    ctx.arc(26, 29, 3, 0, Math.PI * 2);
-    ctx.arc(38, 29, 3, 0, Math.PI * 2);
-    ctx.fill();
-    const tex = new THREE.CanvasTexture(c);
-    tex.needsUpdate = true;
-    return tex;
-  }
-
   const ghostTex = makeGhostTexture();
-  const count = 250;
-  const positions = new Float32Array(count * 3);
+  // Brand palette — one shared material per hue keeps this cheap.
+  const palette = [0x00ff9d, 0xa855f7, 0xd97757, 0x4b8bf5];
+  const materials = palette.map(
+    (color) =>
+      new THREE.SpriteMaterial({
+        map: ghostTex,
+        color,
+        transparent: true,
+        opacity: 0.92,
+        depthWrite: false,
+        blending: THREE.NormalBlending, // reads on both dark + light themes
+      }),
+  );
+
+  ghostGroup = new THREE.Group();
+  const count = 64;
   for (let i = 0; i < count; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 120;
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 80;
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 60;
+    const sprite = new THREE.Sprite(materials[i % materials.length]);
+    const baseX = (Math.random() - 0.5) * 120;
+    const baseY = (Math.random() - 0.5) * 80;
+    const baseZ = (Math.random() - 0.5) * 60;
+    sprite.position.set(baseX, baseY, baseZ);
+    const size = 2.4 + Math.random() * 2.8; // world units
+    sprite.scale.set(size, size, 1);
+    sprite.userData = {
+      baseY,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.35 + Math.random() * 0.55,
+      bob: 1.4 + Math.random() * 2.2,
+    };
+    ghostGroup.add(sprite);
+    ghostSprites.push(sprite);
   }
-  particleGeo = new THREE.BufferGeometry();
-  particleGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-  const material = new THREE.PointsMaterial({
-    size: 3.5,
-    map: ghostTex,
-    transparent: true,
-    opacity: 0.6,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false,
-  });
-  particles = new THREE.Points(particleGeo, material);
-  scene.add(particles);
-  animateThree();
+  scene.add(ghostGroup);
+
+  if (prefersReducedMotion) {
+    renderer.render(scene, camera); // one static frame, no rAF loop
+  } else {
+    animateThree();
+  }
 }
 
 let scrollY = 0;
@@ -300,15 +323,15 @@ window.addEventListener(
 
 function animateThree() {
   requestAnimationFrame(animateThree);
-  if (!particles) return;
-  particles.rotation.y += 0.0008;
-  particles.rotation.x += 0.0003;
-  particles.position.y = scrollY * 0.005;
-  const positions = particleGeo.attributes.position.array;
-  for (let i = 0; i < positions.length; i += 3) {
-    positions[i + 1] += Math.sin(Date.now() * 0.0005 + i) * 0.008;
+  if (!renderer || !ghostGroup) return;
+  const t = Date.now() * 0.001;
+  ghostGroup.rotation.y += 0.0008;
+  ghostGroup.rotation.x += 0.0003;
+  ghostGroup.position.y = scrollY * 0.005;
+  for (const sprite of ghostSprites) {
+    const u = sprite.userData;
+    sprite.position.y = u.baseY + Math.sin(t * u.speed + u.phase) * u.bob;
   }
-  particleGeo.attributes.position.needsUpdate = true;
   renderer.render(scene, camera);
 }
 
@@ -317,6 +340,8 @@ window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  // With reduced motion there is no rAF loop, so repaint the resized frame.
+  if (prefersReducedMotion) renderer.render(scene, camera);
 });
 
 /* ---------------- INIT ---------------- */
