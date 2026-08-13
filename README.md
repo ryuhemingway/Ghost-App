@@ -4,11 +4,11 @@
 
 <samp>v2.2.0 · notarized · one-time purchase · macOS 14+</samp>
 
-[![Ghost creating an interactive Milky Way visualisation from the floating bar, and the finished milky-way.html open in Safari](docs/media/poster-demo-milky-way.jpg)](docs/media/demo-milky-way.mp4)
-
-[▶ Watch: one sentence to Ghost, and milky-way.html is on the Desktop and running in Safari (26s, MP4)](docs/media/demo-milky-way.mp4)
-
 </div>
+
+https://github.com/user-attachments/assets/ef881143-3b65-491d-b78b-1be007a04c9b
+
+<sub>One sentence to Ghost, and `milky-way.html` is written to the Desktop and opens in Safari. 26 seconds, no cuts. ([download](docs/media/demo-milky-way.mp4))</sub>
 
 <br/>
 
@@ -84,19 +84,19 @@ Ghost routes every prompt through an intent classifier that detects what you're 
 
 Both of these ran on **gemma-4-e2b through LM Studio** — no API key, no network, the full tool harness:
 
-[![Ghost answering "What does a golden retriever look like?" on a local model, showing the LM Studio and gemma-4-e2b routing chips above the answer](docs/media/poster-demo-golden-retriever-local.jpg)](docs/media/demo-golden-retriever-local.mp4)
+https://github.com/user-attachments/assets/9557b25e-e938-41a0-bf67-2d22c5fbf3eb
 
-[▶ Watch: a local model answering with no API key and no network (20s, MP4)](docs/media/demo-golden-retriever-local.mp4)
+<sub>A local model answering with no API key and no network. 20 seconds. ([download](docs/media/demo-golden-retriever-local.mp4))</sub>
 
-[![Ghost answering "How do I write a for loop in java?" on a local model, with the answer typeset as it streams](docs/media/poster-demo-java-for-loop-local.jpg)](docs/media/demo-java-for-loop-local.mp4)
+https://github.com/user-attachments/assets/15af610b-9b94-49ce-898e-ab093aa3b2bb
 
-[▶ Watch: the same local model on a coding question (26s, MP4)](docs/media/demo-java-for-loop-local.mp4)
+<sub>The same local model on a coding question. 26 seconds. ([download](docs/media/demo-java-for-loop-local.mp4))</sub>
 
 And the same surface on a subscription route, working a physics problem and then answering the follow-up:
 
-[![Ghost solving a kinematics problem step by step, then answering a follow-up about how to memorise the equations](docs/media/poster-demo-kinematic-equations.jpg)](docs/media/demo-kinematic-equations.mp4)
+https://github.com/user-attachments/assets/6ff1858e-2e97-47a3-84da-19be47c4111f
 
-[▶ Watch: kinematics worked step by step, then "how can I memorize them?" (47s, MP4)](docs/media/demo-kinematic-equations.mp4)
+<sub>Kinematics worked step by step, then the follow-up: "how can I memorize them?" 47 seconds. ([download](docs/media/demo-kinematic-equations.mp4))</sub>
 
 <br/>
 <br/>
