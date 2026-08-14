@@ -1,5 +1,15 @@
 <div align="center">
 
+<img src="docs/media/demo-hero-milky-way.gif" alt="Ghost summoned with ⌥Space, one sentence typed, and milky-way.html written to the Desktop" width="760" />
+
+<sub>⌥Space, one sentence, a real file. 15 seconds. ([full demo](docs/media/demo-milky-way.mp4))</sub>
+
+<br/>
+
+[![Download Ghost v2.2.0](https://img.shields.io/badge/Download_Ghost-v2.2.0-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
+
+<br/>
+
 <a href="https://integratedagentics.com/ghost"><img src="docs/Screenshot 2026-08-11 at 6.42.27 PM.png" alt="Ghost answering a question about the Mohs hardness scale in the notch surface, with provider, model and timing chips above the answer" width="820" /></a>
 
 <samp>v2.2.0 · notarized · one-time purchase · macOS 14+</samp>
@@ -8,7 +18,7 @@
 
 https://github.com/user-attachments/assets/ef881143-3b65-491d-b78b-1be007a04c9b
 
-<sub>One sentence to Ghost, and `milky-way.html` is written to the Desktop and opens in Safari. 26 seconds, no cuts. ([download](docs/media/demo-milky-way.mp4))</sub>
+<sub>The full recording: one sentence to Ghost, and `milky-way.html` is written to the Desktop and opens in Safari. 26 seconds, no cuts. ([download](docs/media/demo-milky-way.mp4))</sub>
 
 <br/>
 
@@ -34,6 +44,7 @@ This one came out of using Ghost for a day and writing down everything that went
 - **Smaller things that were quietly wrong.** The composer suggests what Ghost can do instead of saying "ask anything" forever. The ✗ beside an empty composer used to discard your conversation without warning; it says New chat now. An empty Terminal is a third of its old height. Settings said the provider and model were not in use while leaving them clickable. Two controls were invisible in Light appearance, including the Copy buttons under every answer. The routing pane told subscription users their answer came from somewhere it did not.
 
 <br/>
+
 
 ## One surface, eight providers, zero context switching.
 
@@ -268,18 +279,18 @@ Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (e
 
 ## Fixed: builds 2.0.1 – 2.0.5 stopped telling you about updates.
 
-<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 2.1.0</samp></sub>
+<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 2.2.0</samp></sub>
 
-**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 2.1.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
+**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 2.2.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
 
-If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 2.1.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
+If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 2.2.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
 
 What happened: the "Check for Updates" button and the "update available" notice both lived in an older window that was removed in July when it stopped being part of the app. The updater underneath kept working the whole time — it checks on schedule and it does find new versions — but it had been told that Ghost would display what it found, and after the removal Ghost had nowhere to display it. So an affected build checks, finds an update, and says nothing.
 
 What to do, if you are on 2.0.1 – 2.0.5:
 
-- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 2.1.0 will arrive on its own.
-- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 2.1.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
+- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 2.2.0 will arrive on its own.
+- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 2.2.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
 
 <br/>
 
