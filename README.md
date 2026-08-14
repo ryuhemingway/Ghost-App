@@ -45,7 +45,6 @@ This one came out of using Ghost for a day and writing down everything that went
 
 <br/>
 
-
 ## One surface, eight providers, zero context switching.
 
 <sub><samp>⌥SPACE · ANYWHERE ON MACOS</samp></sub>
