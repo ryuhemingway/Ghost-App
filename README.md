@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="docs/media/demo-hero-milky-way.gif" alt="Ghost summoned with ⌥Space, one sentence typed, and milky-way.html written to the Desktop" width="760" />
+https://github.com/user-attachments/assets/ef881143-3b65-491d-b78b-1be007a04c9b
 
-<sub>⌥Space, one sentence, a real file. 15 seconds. ([full demo](docs/media/demo-milky-way.mp4))</sub>
+<sub>One sentence to Ghost, and `milky-way.html` is written to the Desktop and opens in Safari. 26 seconds, no cuts. ([download](docs/media/demo-milky-way.mp4))</sub>
 
 <br/>
 
@@ -15,10 +15,6 @@
 <samp>v2.2.0 · notarized · one-time purchase · macOS 14+</samp>
 
 </div>
-
-https://github.com/user-attachments/assets/ef881143-3b65-491d-b78b-1be007a04c9b
-
-<sub>The full recording: one sentence to Ghost, and `milky-way.html` is written to the Desktop and opens in Safari. 26 seconds, no cuts. ([download](docs/media/demo-milky-way.mp4))</sub>
 
 <br/>
 
