@@ -6,13 +6,13 @@ https://github.com/user-attachments/assets/ef881143-3b65-491d-b78b-1be007a04c9b
 
 <br/>
 
-[![Download Ghost v2.2.0](https://img.shields.io/badge/Download_Ghost-v2.2.0-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
+[![Download Ghost v2.5.0](https://img.shields.io/badge/Download_Ghost-v2.5.0-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
 
 <br/>
 
 <a href="https://integratedagentics.com/ghost"><img src="docs/Screenshot 2026-08-11 at 6.42.27 PM.png" alt="Ghost answering a question about the Mohs hardness scale in the notch surface, with provider, model and timing chips above the answer" width="820" /></a>
 
-<samp>v2.2.0 · notarized · one-time purchase · macOS 14+</samp>
+<samp>v2.5.0 · notarized · one-time purchase · macOS 14+</samp>
 
 </div>
 
@@ -22,22 +22,18 @@ Every AI tool today has the same problem: you're the one doing all the context s
 
 So you type a question, attach a file, dictate a note, or start a focus timer — and Ghost routes it to the right model (local or cloud, or your own Claude/ChatGPT plan), searches your indexed documents, remembers what matters about you, creates real files, runs verified Mac actions, and drops back out of sight. No Dock icon, no tab management, no full-screen takeover. Just the work, done.
 
-By default, everything is off: web access, file tools, automation, messaging, screen capture, shell. You opt in one switch at a time. API keys live in your Keychain; if Ghost finds one in `~/.ghost/.env` or the environment it moves it there and strips the file. Local models run entirely on your machine with the same tool harness the cloud models get. And your most personal data — Messages, Notes, Mail, Contacts — is processed **on device only**: Ghost never sends it to a cloud model on its own initiative, and when you deliberately act on a selection from one of those apps, it tells you where the text is going first.
+By default, everything is off: web access, file tools, automation, messaging, screen capture, shell. You opt in one switch at a time. API keys live in your Keychain; if Ghost finds one in `~/.ghost/.env` or the environment it moves it there and strips the file. Local models run entirely on your machine with the same tool harness the cloud models get. And your most personal data — Messages, Notes, Mail, Contacts — is processed **on device only**: Ghost never sends it to a cloud model on its own initiative, and when you deliberately act on a selection from one of those apps, it tells you where the text is going first. It also reads the selection itself before a cloud action runs, and says so if it looks like you are about to send a card number, a Social Security number, or a passport number.
 
 <br/>
 
-## New in 2.2.0
+## New in 2.5.0
 
-This one came out of using Ghost for a day and writing down everything that went wrong.
+Ghost's privacy rule has always been about where text came from. This release adds a second question: what is actually in it.
 
-- **Ghost has stopped taking ⌘/ from your other apps.** ⌘/ opened Ghost's shortcut sheet, and it did so everywhere: the keystroke never reached the app you were actually in. In Xcode and VS Code that is comment-toggle, so Ghost had quietly broken it, with no preference to change it and no way to switch it off. Both utility shortcuts are optional now, and the sheet is off by default because the panel's More menu already opens it. Escape closes that sheet too, which it had never done despite saying so at the bottom.
-- **A menu bar icon, so you can tell Ghost is running.** No menu bar icon, no Dock icon and no window at rest left exactly one way in: a global shortcut. If another app already owned it, Ghost said nothing and simply could not be opened. Settings now also names any shortcut another app has taken, so a dead keystroke explains itself.
-- **Pressing Return no longer freezes the window.** With document search on, Ghost searched your index on the main thread before sending anything: a quarter of a second on a normal question, over a second when it fell back to a slower path, every time, before the request had even left. Off the main thread now, with the slow path bounded. Around twenty times faster.
-- **Answers arrive typeset instead of as raw markdown.** An answer used to appear as its own source first, asterisks and dashes and all, then reflow once it finished, so you read everything twice.
-- **Dialogs open in front of Ghost, not behind it.** Ghost's panel floats above ordinary windows, so its own update window, the usage dashboard and every confirmation opened underneath it. Clicks landed on the panel instead of the button, which is why a dialog would ignore the mouse but still answer Return, and the update window could leave you stuck.
-- **Approve a destination once instead of every time.** Ask mode prompted on every action, so the only comfortable setting was to switch approvals off. The third approval button now means what it looks like: allow this destination for the rest of the session. Scoped to that site or folder, forgotten on quit, and never covering sending a message, placing a call, uninstalling an app or emptying the Trash.
-- **The shortcut sheet only lists shortcuts that exist.** It advertised seventeen keystrokes nothing implemented, including a command palette that was never built, and ⌘, opened an empty grey window. ⌘1-⌘4 switch sections, ⌘N/⌘L/⌘R start, clear and regenerate, ⌘, opens the real settings, and the sheet is generated from the same list that registers them.
-- **Smaller things that were quietly wrong.** The composer suggests what Ghost can do instead of saying "ask anything" forever. The ✗ beside an empty composer used to discard your conversation without warning; it says New chat now. An empty Terminal is a third of its old height. Settings said the provider and model were not in use while leaving them clickable. Two controls were invisible in Light appearance, including the Copy buttons under every answer. The routing pane told subscription users their answer came from somewhere it did not.
+- **A card number in a selection gets called out before it goes anywhere.** Ghost treats Messages, Notes, Mail and Contacts as private and never hands them to a cloud model. That rule is exact about origin and blind to content, so a payment card number pasted into a plain text file was, as far as it was concerned, ordinary text from an ordinary app. Ghost now reads the selection first and names what it found — a payment card number, a US Social Security number, a passport number — in the same one-line notice that already named the source app and the provider. Card numbers are checked against the arithmetic every real card satisfies, so an order number of the same length does not set it off. It is still a disclosure and not a wall: the action runs if you want it to, because an action that reads your text is useless if the model may not read it.
+- **A Diagnostics page for the actions that did not work.** Ghost kept no record of its own failures, so "it said it moved my files and it didn't" left nothing behind to look at. Settings ▸ Advanced now lists actions that failed or that reported success without proving it, with the reason and when, and a Copy Report button for bug reports. It stays on your Mac and it never interrupts you.
+- **Ghost notices when one of its own readers goes quiet.** A permission withdrawn or a macOS update can leave a reader returning nothing at all, which arrives as an answer that simply says nothing rather than as an error. The few readers where an empty answer is impossible — the installed app list, the temperature sensors, your message history — are now watched, and if one stops answering it is written down and said once in the answer it affected.
+- **"Done" and "proved done" are no longer the same word.** Ghost verifies its own work: when it says it created a file, it goes and looks for the file. That check always ran, but the activity log called every action that did not outright fail "verified", including ones whose own receipt said otherwise. Asking Ghost to quit an app holding an unsaved document was the honest example — the app stays up behind its save dialog, Ghost knew, and the log said it had quit. There are three outcomes now, and the middle one says what it means.
 
 <br/>
 
@@ -114,7 +110,7 @@ The Milky Way visualisation at the top of this page is one of these: a single se
 
 <sub><samp>THE MODEL NEVER TOUCHES YOUR FILESYSTEM</samp></sub>
 
-The capability harness is Ghost's action layer. The model requests an action; Ghost normalizes the path, checks permissions, runs app-owned Swift code, and returns a machine-readable receipt. Around **78 tools** span file operations, document generation and conversion, web search and fetch, Calendar events, Reminders, Apple Notes, iMessage and FaceTime, screen capture with Vision OCR, on-device voice input, memory, and a full suite of Mac controls.
+The capability harness is Ghost's action layer. The model requests an action; Ghost normalizes the path, checks permissions, runs app-owned Swift code, and returns a machine-readable receipt. **79 tools** span file operations, document generation and conversion, web search and fetch, Calendar events, Reminders, Apple Notes, iMessage and FaceTime, screen capture with Vision OCR, on-device voice input, memory, and a full suite of Mac controls.
 
 Every tool is classified into four risk tiers — Low (read-only), Medium (writes/creates), High (patches/deletes/shell), and Blocked (unknown tools fail closed). An action journal records before-and-after state so you can roll back what Ghost changed. A created or edited file, a folder, any generated document, an Apple Note, a reminder, a calendar event, and an app Ghost opened or quit are each one tap of **Undo** away, right on the action card in the transcript. Two actions are outside the journal on purpose: uninstalling an app and clearing junk both move things to the Trash rather than deleting them, so recovery is Finder's **Put Back**, and the card says so instead of offering an Undo it cannot honour. Six independent permission switches (web, files, automation, messaging, screen, terminal) are all off by default and toggle independently, with three approval modes — Ask, Safe, and Auto-run.
 
@@ -172,7 +168,7 @@ Every completed phase is written to a study log on disk, and the right half of t
 
 <sub><samp>SELECT TEXT · THE BAR COMES TO YOU</samp></sub>
 
-Select text in any app and a small bar appears beside it: Copy, Search, Summarize, Fix, with Professional, Casual, Humanize, Explain and Translate one click away — and Ask Ghost or Write email to carry the selection into the main window.
+Select text in any app and a small bar appears beside it: Copy, Search, Answer, Summarize, Fix, with Professional, Casual, Humanize, Explain and Translate one click away — and Ask Ghost or Write email to carry the selection into the main window. The bar adapts to what you selected, so code, prose and email drafts each get the actions that suit them.
 
 The result opens in the bar itself. **Replace** writes it back into the field you selected in through the Accessibility API rather than the clipboard, so that app's own ⌘Z still undoes it. Replace only appears when the field is editable and the action actually produces replacement text — a summary is never pasteable over the paragraph it summarized. Press ⌃⌥Space to bring the bar back, Escape to dismiss it.
 
@@ -204,17 +200,18 @@ Which of the two you get is decided deterministically, without asking a model, s
 
 ## The privacy flex.
 
-<sub><samp>SEVEN GUARANTEES · BUILT SO WE DON'T GET A CHOICE</samp></sub>
+<sub><samp>EIGHT GUARANTEES · BUILT SO WE DON'T GET A CHOICE</samp></sub>
 
 Ghost is local-first by design. Here's the machinery:
 
 1. **Your personal data stays on your Mac.** Messages, Notes, Mail, and Contacts are on-device only. Ghost's own tools and memory refuse to send them to a cloud model — for answers, memory, or tools. The one exception is text _you_ select and act on: Summarize can't work unless the model may read it, so the bar names the source app and the provider before you press anything. Use a local model to keep it on the machine.
-2. **API keys live in the macOS Keychain.** Ghost will read one from `~/.ghost/.env` or the process environment if that is where you left it, but only to migrate it into the Keychain, chmod the file to `0600` and strip the value from it. It only reads a key when calling that provider.
-3. **Local providers can't launch agent mode.** Ollama and LM Studio stay inside Ghost's managed Direct API tool loop. No escape hatch.
-4. **Web egress is guarded.** Localhost, private IPv4/IPv6, link-local, multicast, and reserved addresses are blocked. DNS resolution checks every address; redirects to private destinations are rejected.
-5. **Sensitive paths require explicit consent.** Before touching `.ssh`, `.gnupg`, `.aws`, `login.keychain`, `.kube/config`, or `.env`, Ghost prompts: Allow Once, Always This Session, or Deny.
-6. **Actions ask first, and can be undone.** High-risk and irreversible actions always confirm, and file changes are journaled and reversible.
-7. **Everything starts off.** Web, files, automation, messaging, screen, and shell are all disabled on first launch. You opt in one switch at a time.
+2. **The selection itself is checked, not just where it came from.** Before an instant action runs on a cloud model, Ghost scans the selected text for a payment card number (validated against the checksum every real card satisfies), a US Social Security number, and a passport number, and folds anything it finds into that same notice. It checks those three and nothing else, so treat it as a backstop rather than a guarantee that everything private gets caught.
+3. **API keys live in the macOS Keychain.** Ghost will read one from `~/.ghost/.env` or the process environment if that is where you left it, but only to migrate it into the Keychain, chmod the file to `0600` and strip the value from it. It only reads a key when calling that provider.
+4. **Local providers can't launch agent mode.** Ollama and LM Studio stay inside Ghost's managed Direct API tool loop. No escape hatch.
+5. **Web egress is guarded.** Localhost, private IPv4/IPv6, link-local, multicast, and reserved addresses are blocked. DNS resolution checks every address; redirects to private destinations are rejected.
+6. **Sensitive paths require explicit consent.** Before touching `.ssh`, `.gnupg`, `.aws`, `login.keychain`, `.kube/config`, or `.env`, Ghost prompts: Allow Once, Always This Session, or Deny.
+7. **Actions ask first, and can be undone.** High-risk and irreversible actions always confirm, and file changes are journaled and reversible.
+8. **Everything starts off.** Web, files, automation, messaging, screen, and shell are all disabled on first launch. You opt in one switch at a time.
 
 ![The AI settings page showing the selected model, the provider picker, and Auto / Always Agent / Always Direct routing with the route Ghost chose](docs/screenshots/app/model-routing.jpg)
 
@@ -266,7 +263,7 @@ macOS 14 or later, Apple Silicon or Intel. Ghost is a native SwiftUI app notariz
 <summary><b>Can I use Ghost for coding?</b></summary>
 <br/>
 
-Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (edit files and run commands), Explore (read and map a codebase), and Review (inspect diffs and catch bugs). The in-app Agent Console shows an activity timeline with live streaming output, and you can drive it with your own Claude Code or Codex plan.
+Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (edit files and run commands), Explore (read and map a codebase), and Review (inspect diffs and catch bugs). Coding runs in Ghost's Terminal section, at full width, with the whole change shown the way an editor shows it: every added and removed line, coloured by language, with Undo and Reveal cards beside the code that made them. A live phase line says what the agent is doing while it does it, and you can drive the whole thing with your own Claude Code or Codex plan.
 
 </details>
 
@@ -274,18 +271,18 @@ Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (e
 
 ## Fixed: builds 2.0.1 – 2.0.5 stopped telling you about updates.
 
-<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 2.2.0</samp></sub>
+<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 2.5.0</samp></sub>
 
-**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 2.2.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
+**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 2.5.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
 
-If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 2.2.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
+If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 2.5.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
 
 What happened: the "Check for Updates" button and the "update available" notice both lived in an older window that was removed in July when it stopped being part of the app. The updater underneath kept working the whole time — it checks on schedule and it does find new versions — but it had been told that Ghost would display what it found, and after the removal Ghost had nowhere to display it. So an affected build checks, finds an update, and says nothing.
 
 What to do, if you are on 2.0.1 – 2.0.5:
 
-- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 2.2.0 will arrive on its own.
-- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 2.2.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
+- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 2.5.0 will arrive on its own.
+- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 2.5.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
 
 <br/>
 
@@ -302,9 +299,9 @@ Ghost is a native macOS app, not Electron, not a web wrapper.
 - **The model probe.** <samp>tests every local model for chat, JSON mode, native tool calls, and argument accuracy · assigns the safest calling convention</samp>
 - **Memory.** <samp>on-device Markdown knowledge base · remember / recall · ambient grounding · semantic recall · lives in ~/Ghost Outputs/Knowledge</samp>
 - **The RAG system.** <samp>SQLite + FTS5 · 3,500-char chunks · 500-char overlap · sentence-aware · page numbers from PDFs · FSEvents watcher · 30+ formats</samp>
-- **The harness.** <samp>~78 tools · 4 risk tiers · undo journal · path normalization · permission gating · verified writes · approval-gated computer-use</samp>
-- **Privacy engine.** <samp>on-device-only gate for Messages / Notes / Mail / Contacts · web egress guard · Keychain-stored keys · sensitive-path consent</samp>
-- **The experience details.** <samp>trackpad haptics on summon and answer · daily brief · proactive suggestions · latency sparkline · token & cost meter · ⌘K command palette · Prompt Library · right-click rewrite services</samp>
+- **The harness.** <samp>79 tools · 4 risk tiers · undo journal · path normalization · permission gating · verified writes · three-state outcomes · approval-gated computer-use</samp>
+- **Privacy engine.** <samp>on-device-only gate for Messages / Notes / Mail / Contacts · card / SSN / passport scan before cloud egress · web egress guard · Keychain-stored keys · sensitive-path consent</samp>
+- **The experience details.** <samp>trackpad haptics on summon and answer · daily brief · proactive suggestions · latency sparkline · token & cost meter · diagnostics log · Prompt Library · right-click rewrite services</samp>
 
 <br/>
 
