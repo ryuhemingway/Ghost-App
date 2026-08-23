@@ -6,13 +6,13 @@ https://github.com/user-attachments/assets/ef881143-3b65-491d-b78b-1be007a04c9b
 
 <br/>
 
-[![Download Ghost v2.5.0](https://img.shields.io/badge/Download_Ghost-v2.5.0-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
+[![Download Ghost v2.10.0](https://img.shields.io/badge/Download_Ghost-v2.10.0-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
 
 <br/>
 
 <a href="https://integratedagentics.com/ghost"><img src="docs/Screenshot 2026-08-11 at 6.42.27 PM.png" alt="Ghost answering a question about the Mohs hardness scale in the notch surface, with provider, model and timing chips above the answer" width="820" /></a>
 
-<samp>v2.5.0 · notarized · one-time purchase · macOS 14+</samp>
+<samp>v2.10.0 · notarized · one-time purchase · macOS 14+</samp>
 
 </div>
 
@@ -26,14 +26,14 @@ By default, everything is off: web access, file tools, automation, messaging, sc
 
 <br/>
 
-## New in 2.5.0
+## New in 2.10.0
 
-Ghost's privacy rule has always been about where text came from. This release adds a second question: what is actually in it.
+You should not have to attach the same file every time you ask about it, and a spreadsheet Ghost edits should come back with everything you set up still in it.
 
-- **A card number in a selection gets called out before it goes anywhere.** Ghost treats Messages, Notes, Mail and Contacts as private and never hands them to a cloud model. That rule is exact about origin and blind to content, so a payment card number pasted into a plain text file was, as far as it was concerned, ordinary text from an ordinary app. Ghost now reads the selection first and names what it found — a payment card number, a US Social Security number, a passport number — in the same one-line notice that already named the source app and the provider. Card numbers are checked against the arithmetic every real card satisfies, so an order number of the same length does not set it off. It is still a disclosure and not a wall: the action runs if you want it to, because an action that reads your text is useless if the model may not read it.
-- **A Diagnostics page for the actions that did not work.** Ghost kept no record of its own failures, so "it said it moved my files and it didn't" left nothing behind to look at. Settings ▸ Advanced now lists actions that failed or that reported success without proving it, with the reason and when, and a Copy Report button for bug reports. It stays on your Mac and it never interrupts you.
-- **Ghost notices when one of its own readers goes quiet.** A permission withdrawn or a macOS update can leave a reader returning nothing at all, which arrives as an answer that simply says nothing rather than as an error. The few readers where an empty answer is impossible — the installed app list, the temperature sensors, your message history — are now watched, and if one stops answering it is written down and said once in the answer it affected.
-- **"Done" and "proved done" are no longer the same word.** Ghost verifies its own work: when it says it created a file, it goes and looks for the file. That check always ran, but the activity log called every action that did not outright fail "verified", including ones whose own receipt said otherwise. Asking Ghost to quit an app holding an unsaved document was the honest example — the app stays up behind its save dialog, Ghost knew, and the log said it had quit. There are three outcomes now, and the middle one says what it means.
+- **Tell Ghost which file answers a question, once.** Say "when I ask what problems I have to do, reference this tracker" and the rule is written down as a Markdown file in Ghost Outputs / Knowledge that you own. From then on a matching question finds that document on your Mac, reads the part that answers it, and brings it into the reply — on every turn, including the ones that carry no tools. Matching is careful about which part: a whole date counts for far more than the words inside it, so asking about today surfaces today's row rather than every other Friday in a term. Two files with the same name stay two rules, and a rule you mark sensitive is read only by a model running on your machine.
+- **Spreadsheets can be changed, not just read.** Ask in words for a cell to change and Ghost rewrites one part of the workbook you already have rather than building a new one, so styles, column widths, tab colours and filters survive untouched. It addresses the row by what is in it instead of counting, and refuses outright when the description could mean more than one row rather than editing the first it finds. Formula cells are never overwritten, a batch that cannot fully apply changes nothing at all, and nothing is written until a copy has been opened again and checked to contain your change and no others. Undo puts the original file back byte for byte.
+- **"Not found" means not there.** Reads that have to be correct about a whole sheet — resolving which row you meant, verifying an edit changed nothing else, answering a question about the file — now read the whole sheet instead of the first few thousand rows, so a confident "nothing on this sheet has that" is a fact rather than an artefact of where Ghost stopped looking.
+- **Out of the menu bar's way on macOS 27.** The macOS 27 beta puts a new expand button in the menu bar beside the notch, which is where Ghost lives, and Ghost was taking the clicks meant for it — invisible when idle, so the button simply did nothing, and reaching for it opened the Ghost panel across the whole menu bar. Collapsed, Ghost now keeps the notch itself and hands the rest of the menu bar back to the system. Hovering the notch still opens it, and so does ⌥Space.
 
 <br/>
 
@@ -110,7 +110,7 @@ The Milky Way visualisation at the top of this page is one of these: a single se
 
 <sub><samp>THE MODEL NEVER TOUCHES YOUR FILESYSTEM</samp></sub>
 
-The capability harness is Ghost's action layer. The model requests an action; Ghost normalizes the path, checks permissions, runs app-owned Swift code, and returns a machine-readable receipt. **79 tools** span file operations, document generation and conversion, web search and fetch, Calendar events, Reminders, Apple Notes, iMessage and FaceTime, screen capture with Vision OCR, on-device voice input, memory, and a full suite of Mac controls.
+The capability harness is Ghost's action layer. The model requests an action; Ghost normalizes the path, checks permissions, runs app-owned Swift code, and returns a machine-readable receipt. **76 tools** span file operations, document generation and conversion, web search and fetch, Calendar events, Reminders, Apple Notes, iMessage and FaceTime, screen capture with Vision OCR, on-device voice input, memory, and a full suite of Mac controls.
 
 Every tool is classified into four risk tiers — Low (read-only), Medium (writes/creates), High (patches/deletes/shell), and Blocked (unknown tools fail closed). An action journal records before-and-after state so you can roll back what Ghost changed. A created or edited file, a folder, any generated document, an Apple Note, a reminder, a calendar event, and an app Ghost opened or quit are each one tap of **Undo** away, right on the action card in the transcript. Two actions are outside the journal on purpose: uninstalling an app and clearing junk both move things to the Trash rather than deleting them, so recovery is Finder's **Put Back**, and the card says so instead of offering an Undo it cannot honour. Six independent permission switches (web, files, automation, messaging, screen, terminal) are all off by default and toggle independently, with three approval modes — Ask, Safe, and Auto-run.
 
@@ -271,18 +271,18 @@ Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (e
 
 ## Fixed: builds 2.0.1 – 2.0.5 stopped telling you about updates.
 
-<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 2.5.0</samp></sub>
+<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 2.10.0</samp></sub>
 
-**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 2.5.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
+**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 2.10.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
 
-If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 2.5.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
+If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 2.10.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
 
 What happened: the "Check for Updates" button and the "update available" notice both lived in an older window that was removed in July when it stopped being part of the app. The updater underneath kept working the whole time — it checks on schedule and it does find new versions — but it had been told that Ghost would display what it found, and after the removal Ghost had nowhere to display it. So an affected build checks, finds an update, and says nothing.
 
 What to do, if you are on 2.0.1 – 2.0.5:
 
-- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 2.5.0 will arrive on its own.
-- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 2.5.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
+- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 2.10.0 will arrive on its own.
+- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 2.10.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
 
 <br/>
 
@@ -299,9 +299,30 @@ Ghost is a native macOS app, not Electron, not a web wrapper.
 - **The model probe.** <samp>tests every local model for chat, JSON mode, native tool calls, and argument accuracy · assigns the safest calling convention</samp>
 - **Memory.** <samp>on-device Markdown knowledge base · remember / recall · ambient grounding · semantic recall · lives in ~/Ghost Outputs/Knowledge</samp>
 - **The RAG system.** <samp>SQLite + FTS5 · 3,500-char chunks · 500-char overlap · sentence-aware · page numbers from PDFs · FSEvents watcher · 30+ formats</samp>
-- **The harness.** <samp>79 tools · 4 risk tiers · undo journal · path normalization · permission gating · verified writes · three-state outcomes · approval-gated computer-use</samp>
+- **The harness.** <samp>76 tools · 4 risk tiers · undo journal · path normalization · permission gating · verified writes · three-state outcomes · approval-gated computer-use</samp>
 - **Privacy engine.** <samp>on-device-only gate for Messages / Notes / Mail / Contacts · card / SSN / passport scan before cloud egress · web egress guard · Keychain-stored keys · sensitive-path consent</samp>
 - **The experience details.** <samp>trackpad haptics on summon and answer · daily brief · proactive suggestions · latency sparkline · token & cost meter · diagnostics log · Prompt Library · right-click rewrite services</samp>
+
+<br/>
+
+## Metrics, generated from the tree — not typed into the README.
+
+<sub><samp>SWIFT TESTING · LLVM-COV · REGENERATED BY CI ON EVERY PUSH</samp></sub>
+
+![tests](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fryuhemingway%2FGhost-Source%2Fghost-superset%2Fmetrics.json&query=tests&label=tests&color=brightgreen)
+![tools](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fryuhemingway%2FGhost-Source%2Fghost-superset%2Fmetrics.json&query=tools&label=capability%20tools&color=blue)
+![line coverage (non-UI)](<https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fryuhemingway%2FGhost-Source%2Fghost-superset%2Fmetrics.json&query=coverageNonUI&label=line%20coverage%20(non-UI)&color=yellowgreen>)
+![paid users](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fryuhemingway%2FGhost-Source%2Fghost-superset%2Fmetrics.json&query=paidUsers&label=paid%20users&color=purple)
+![CI](https://github.com/ryuhemingway/Ghost-Source/actions/workflows/ci.yml/badge.svg)
+
+Ghost ships a [METRICS.md](METRICS.md) that is generated, not written. `script/metrics.sh` counts the Swift files, the lines, the swift-testing tests, and the registered tools straight from the working tree, and `llvm-cov` produces the coverage numbers after a coverage-enabled test run. CI reruns the whole suite with coverage on every push and regenerates the file, so the numbers can't drift from the code they describe — each row in METRICS.md names the exact command that produced it, and anyone can rerun it:
+
+```sh
+swift test --enable-code-coverage   # 1,000+ tests, real pass/fail from the runner
+./script/metrics.sh --with-coverage # regenerates METRICS.md + metrics.json
+```
+
+And Ghost is not a demo: **20+ people have paid for lifetime licenses**, and their feedback ships. The update-notification fix (2.0.6), the diagnostics log, and the selection content scan (2.5.0) all came out of user reports. Those numbers can't be derived from source code, so they live in `metrics.manual.json` — the one hand-maintained file — and the generator merges it in so the dashboard stays whole.
 
 <br/>
 
