@@ -1,91 +1,103 @@
 /* ============================================
-   GHOST — Modelverse-inspired flowing redesign
-   Void black · Space Grotesk + Fraunces · Neon
+   GHOST — Editorial monochrome
+   Pure ground · Instrument Serif + Geist · one
+   spectral halo, reserved for the two CTAs
    ============================================ */
 
 :root {
-  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Fraunces", Georgia, "New York", serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --radius: 16px;
+  --font-sans:
+    "Geist", ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui,
+    sans-serif;
+  --font-serif: "Instrument Serif", "New York", Georgia, serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
+  --radius: 14px;
   --radius-sm: 10px;
-  --radius-lg: 24px;
+  --radius-lg: 20px;
   --maxw: 1140px;
+  /* Multi-column grids get --maxw. Single-column stacks of prose get
+     --measure, or the text hugs the left edge of a very wide card. */
+  --measure: 820px;
   --maxw-wide: 1280px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* The one piece of colour on the page. Rotated, blurred and parked
+     behind the download buttons, never used as a text or border colour.
+     These are the four stops of `RainbowProcessing.iridescence` in the app,
+     so the site glows the same gold the composer does. */
+  --halo: conic-gradient(
+    from var(--glow-angle),
+    #c78c2e,
+    #f7cc61,
+    #fff0c2,
+    #e0a852,
+    #c78c2e,
+    #f7cc61,
+    #fff0c2,
+    #c78c2e
+  );
 }
 
-/* DARK (default) — void */
+/* The conic angle only interpolates if the browser knows it is an angle. */
+@property --glow-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* DARK (default) — pure ground */
 [data-theme="dark"] {
-  --bg: #050505;
+  --bg: #000000;
   --bg-2: #0a0a0a;
-  --surface: rgba(255, 255, 255, 0.04);
-  --surface-2: rgba(255, 255, 255, 0.07);
-  --surface-3: rgba(255, 255, 255, 0.1);
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-2: rgba(255, 255, 255, 0.06);
+  --surface-3: rgba(255, 255, 255, 0.09);
   --line: rgba(255, 255, 255, 0.1);
-  --line-strong: rgba(255, 255, 255, 0.18);
+  --line-strong: rgba(255, 255, 255, 0.16);
   --text: #ffffff;
   --text-muted: rgba(255, 255, 255, 0.6);
-  --text-quiet: rgba(255, 255, 255, 0.38);
-  --accent: #00ff9d;
-  --accent-2: #7dffc8;
-  --accent-soft: rgba(0, 255, 157, 0.12);
-  --purple: #a855f7;
-  --purple-soft: rgba(168, 85, 247, 0.14);
-  --orange: #d97757;
-  --orange-soft: rgba(217, 119, 87, 0.14);
-  --blue: #4b8bf5;
-  --blue-soft: rgba(75, 139, 245, 0.12);
-  --shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
-  --glow: 0 0 60px rgba(0, 255, 157, 0.12);
-  --hero-grad:
-    radial-gradient(
-      60rem 40rem at 15% -5%,
-      rgba(0, 255, 157, 0.1),
-      transparent 60%
-    ),
-    radial-gradient(
-      50rem 36rem at 85% 5%,
-      rgba(168, 85, 247, 0.1),
-      transparent 60%
-    );
+  --text-quiet: rgba(255, 255, 255, 0.35);
+  /* "accent" is now the ink itself — emphasis comes from italics and
+     weight, not from hue. The old neon is gone. */
+  --accent: #ffffff;
+  --accent-2: rgba(255, 255, 255, 0.7);
+  --accent-soft: rgba(255, 255, 255, 0.08);
+  --purple: rgba(255, 255, 255, 0.55);
+  --purple-soft: rgba(255, 255, 255, 0.07);
+  --orange: rgba(255, 255, 255, 0.55);
+  --orange-soft: rgba(255, 255, 255, 0.07);
+  --blue: rgba(255, 255, 255, 0.55);
+  --blue-soft: rgba(255, 255, 255, 0.07);
+  --on-accent: #000000;
+  --shadow: 0 40px 120px rgba(0, 0, 0, 0.7);
+  --glow: 0 0 60px rgba(255, 255, 255, 0.06);
+  --hero-grad: none;
 }
 
-/* LIGHT */
+/* LIGHT — warm paper, same type, same halo */
 [data-theme="light"] {
-  --bg: #f7f5f0;
-  --bg-2: #efece4;
-  --surface: rgba(0, 0, 0, 0.03);
-  --surface-2: rgba(0, 0, 0, 0.06);
-  --surface-3: rgba(0, 0, 0, 0.09);
+  --bg: #faf8f5;
+  --bg-2: #f2efe9;
+  --surface: rgba(0, 0, 0, 0.025);
+  --surface-2: rgba(0, 0, 0, 0.05);
+  --surface-3: rgba(0, 0, 0, 0.08);
   --line: rgba(0, 0, 0, 0.1);
-  --line-strong: rgba(0, 0, 0, 0.18);
-  --text: #1a1a1a;
-  --text-muted: rgba(26, 26, 26, 0.62);
-  --text-quiet: rgba(26, 26, 26, 0.4);
-  --accent: #00b36b;
-  --accent-2: #00ff9d;
-  --accent-soft: rgba(0, 179, 107, 0.1);
-  --purple: #8b5cf6;
-  --purple-soft: rgba(139, 92, 246, 0.1);
-  --orange: #c2633d;
-  --orange-soft: rgba(194, 99, 61, 0.1);
-  --blue: #4b8bf5;
-  --blue-soft: rgba(75, 139, 245, 0.1);
-  --shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
-  --glow: 0 0 60px rgba(0, 179, 107, 0.1);
-  --hero-grad:
-    radial-gradient(
-      60rem 40rem at 15% -5%,
-      rgba(0, 179, 107, 0.08),
-      transparent 60%
-    ),
-    radial-gradient(
-      50rem 36rem at 85% 5%,
-      rgba(139, 92, 246, 0.06),
-      transparent 60%
-    );
+  --line-strong: rgba(0, 0, 0, 0.16);
+  --text: #0d0d0d;
+  --text-muted: rgba(13, 13, 13, 0.62);
+  --text-quiet: rgba(13, 13, 13, 0.4);
+  --accent: #0d0d0d;
+  --accent-2: rgba(13, 13, 13, 0.7);
+  --accent-soft: rgba(0, 0, 0, 0.06);
+  --purple: rgba(13, 13, 13, 0.55);
+  --purple-soft: rgba(0, 0, 0, 0.05);
+  --orange: rgba(13, 13, 13, 0.55);
+  --orange-soft: rgba(0, 0, 0, 0.05);
+  --blue: rgba(13, 13, 13, 0.55);
+  --blue-soft: rgba(0, 0, 0, 0.05);
+  --on-accent: #faf8f5;
+  --shadow: 0 30px 80px rgba(0, 0, 0, 0.1);
+  --glow: 0 0 60px rgba(0, 0, 0, 0.05);
+  --hero-grad: none;
 }
 
 * {
@@ -132,36 +144,38 @@ code {
   border-radius: 4px;
 }
 
+/* Display type is the serif. Headings are set at 400 — the face carries
+   the authority, so weight is not the lever. */
 h1,
-h2,
+h2 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  font-size: clamp(2.4rem, 5.5vw, 4rem);
+  text-wrap: balance;
+}
 h3,
 h4 {
   font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.02;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
 }
-h1,
-h2 {
-  font-size: clamp(2.2rem, 5.5vw, 4rem);
-  line-height: 1.04;
-}
+/* The italic alone is the emphasis. No colour change — that is what
+   separates an editorial page from a marketing one. */
 h1 em,
-h2 em {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 400;
-  color: var(--accent);
-}
+h2 em,
 h3 em,
 h4 em {
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 400;
+  color: inherit;
 }
 
 ::selection {
-  background: rgba(0, 255, 157, 0.35);
-  color: #fff;
+  background: var(--surface-3);
+  color: var(--text);
 }
 
 ::-webkit-scrollbar {
@@ -171,234 +185,116 @@ h4 em {
   background: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(var(--accent), var(--purple));
+  background: var(--surface-3);
   border-radius: 99px;
   border: 2px solid var(--bg);
 }
-
-/* NOISE + GRID OVERLAYS */
-.noise-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  pointer-events: none;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 180px 180px;
-  mix-blend-mode: overlay;
-}
-.grid-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.5;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 72px 72px;
-  -webkit-mask-image: radial-gradient(
-    ellipse at center,
-    black 30%,
-    transparent 78%
-  );
-  mask-image: radial-gradient(ellipse at center, black 30%, transparent 78%);
-}
-[data-theme="light"] .grid-overlay {
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-}
-[data-theme="light"] .noise-overlay {
-  mix-blend-mode: multiply;
-  opacity: 0.04;
+::-webkit-scrollbar-thumb:hover {
+  background: var(--line-strong);
 }
 
 .mono-label {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.3em;
+  letter-spacing: 3px;
+  color: var(--text-quiet);
 }
 
-/* CUSTOM CURSOR */
-.cursor {
+/* One heavily blurred gold band easing back and forth behind the whole
+   page: the same device as the sheen that drifts near the composer caret
+   in the app, at a fraction of the opacity because it has to sit under
+   body text for the length of a scroll rather than under one line.
+   Transform-animated so it composites, and the blur is baked into the
+   layer once rather than recomputed per frame. */
+body::before {
+  content: "";
   position: fixed;
-  width: 32px;
-  height: 32px;
-  border: 1.5px solid var(--accent);
-  border-radius: 50%;
+  inset: -25% -35%;
+  z-index: 0;
   pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition:
-    width 0.2s var(--ease),
-    height 0.2s var(--ease),
-    background 0.2s var(--ease),
-    border-color 0.2s var(--ease);
-  mix-blend-mode: difference;
+  background: linear-gradient(
+    102deg,
+    transparent 34%,
+    rgba(199, 140, 46, 0.14) 43%,
+    rgba(247, 204, 97, 0.26) 50%,
+    rgba(255, 240, 194, 0.18) 57%,
+    transparent 66%
+  );
+  filter: blur(90px);
+  will-change: transform;
+  animation: sheen-drift 28s var(--ease) infinite alternate;
 }
-.cursor-dot {
-  position: fixed;
-  width: 5px;
-  height: 5px;
-  background: var(--accent);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 10px var(--accent);
+/* Gold over white goes muddy long before it goes subtle. */
+[data-theme="light"] body::before {
+  opacity: 0.5;
 }
-.cursor.is-hover {
-  width: 56px;
-  height: 56px;
-  background: var(--accent-soft);
-  border-color: transparent;
-}
-@media (hover: none) {
-  .cursor,
-  .cursor-dot {
-    display: none;
+@keyframes sheen-drift {
+  from {
+    transform: translate3d(-9%, -3%, 0) rotate(-1deg);
+  }
+  to {
+    transform: translate3d(9%, 3%, 0) rotate(1deg);
   }
 }
 
-/* HERO CANVAS */
-.hero-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.5;
-}
 .page-wrap {
   position: relative;
   z-index: 2;
 }
 
-/* SIDE NAV */
-.side-nav {
-  position: fixed;
-  left: 24px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 90;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.side-nav-btn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-.side-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
-  transition: all 0.3s var(--ease);
-  flex: none;
-}
-.side-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.25em;
-  color: var(--text-quiet);
-  opacity: 0;
-  transform: translateX(-6px);
-  transition: all 0.3s var(--ease);
-  white-space: nowrap;
-}
-.side-nav-btn:hover .side-label,
-.side-nav-btn.is-active .side-label {
-  opacity: 1;
-  transform: none;
-}
-.side-nav-btn.is-active .side-dot {
-  background: var(--accent);
-  box-shadow:
-    0 0 12px var(--accent),
-    0 0 24px var(--accent-soft);
-  transform: scale(1.4);
-}
-.side-nav-btn:hover .side-dot {
-  background: var(--accent);
-}
-@media (max-width: 900px) {
-  .side-nav {
-    display: none;
-  }
-}
-
-/* NAV */
 .nav {
-  position: sticky;
+  position: fixed;
+  inset-inline: 0;
   top: 0;
   z-index: 100;
   display: flex;
   align-items: center;
   gap: 24px;
-  padding: 14px clamp(16px, 4vw, 40px);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  height: 64px;
+  padding: 0 clamp(16px, 4vw, 32px);
+  background: transparent;
   border-bottom: 1px solid transparent;
   transition:
     border-color 0.3s var(--ease),
+    backdrop-filter 0.3s var(--ease),
     background 0.3s var(--ease);
 }
 .nav.is-scrolled {
   border-bottom-color: var(--line);
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
 .nav-brand {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   letter-spacing: -0.02em;
   color: var(--text);
 }
+/* The mark carries no halo of its own. Colour appears once on this page,
+   at the closing download, and nowhere else. */
 .nav-ghost {
-  color: var(--accent);
-  filter: drop-shadow(0 0 8px var(--accent-soft));
+  color: var(--text);
 }
+/* Right-aligned against the actions rather than floated dead centre, so
+   the centre of the bar stays empty and the wordmark reads alone. */
 .nav-links {
   display: flex;
-  gap: 28px;
-  margin: 0 auto;
-  font-size: 0.9rem;
-  font-weight: 500;
+  gap: 22px;
+  margin-left: auto;
+  font-size: 0.875rem;
+  font-weight: 400;
   color: var(--text-muted);
 }
 .nav-links a {
   transition: color 0.2s var(--ease);
-  position: relative;
-}
-.nav-links a::after {
-  content: "";
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 0;
-  height: 1.5px;
-  background: var(--accent);
-  transition: width 0.3s var(--ease);
 }
 .nav-links a:hover {
   color: var(--text);
-}
-.nav-links a:hover::after {
-  width: 100%;
 }
 .nav-actions {
   display: flex;
@@ -406,21 +302,19 @@ h4 em {
   gap: 10px;
 }
 .theme-toggle {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--text-muted);
-  transition: all 0.2s var(--ease);
+  border: none;
+  background: none;
+  color: var(--text-quiet);
+  transition: color 0.2s var(--ease);
 }
 .theme-toggle:hover {
-  background: var(--surface-2);
   color: var(--text);
-  transform: rotate(15deg);
 }
 .theme-toggle .icon-sun {
   display: none;
@@ -434,22 +328,84 @@ h4 em {
 [data-theme="light"] .theme-toggle .icon-moon {
   display: none;
 }
+/* A quiet icon-only link — the repo, not a pitch. */
+.nav-icon-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--text-quiet);
+  transition: color 0.2s var(--ease);
+}
+.nav-icon-link:hover {
+  color: var(--text);
+}
+/* Glass and outlined, not a solid pill: the bar should read as chrome,
+   and the one filled button on the screen belongs in the hero. */
 .nav-cta {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 9px 16px;
-  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--line-strong);
-  background: var(--surface);
-  transition: all 0.2s var(--ease);
+  background: var(--surface-2);
+  color: var(--text);
+  transition:
+    background 0.2s var(--ease),
+    border-color 0.2s var(--ease);
 }
 .nav-cta:hover {
+  background: var(--surface-3);
+  border-color: var(--text-quiet);
+}
+.nav-cta:active {
   background: var(--surface-2);
-  border-color: var(--accent);
-  box-shadow: 0 0 20px var(--accent-soft);
+}
+
+/* ---- THE HALO ----------------------------------------------------
+   A blurred, slowly rotating conic spectrum sitting behind a filled
+   button. It is the only colour on the page and it lives on the two
+   downloads that sit IN the page — the hero and the closing band. The
+   fixed nav used to carry it as well, which put the same glowing pill
+   in the top-right corner of every screen the whole way down. -------- */
+.halo-wrap {
+  position: relative;
+  display: inline-flex;
+  isolation: isolate;
+}
+.halo-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -14%;
+  z-index: -1;
+  border-radius: 999px;
+  background: var(--halo);
+  filter: blur(24px);
+  opacity: 0.8;
+  animation: halo-spin 6s linear infinite;
+  pointer-events: none;
+}
+.halo-wrap--lg::before {
+  inset: -18%;
+  filter: blur(26px);
+  opacity: 0.7;
+}
+@keyframes halo-spin {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
+  .halo-wrap::before {
+    animation: none;
+  }
 }
 
 /* BUTTONS */
@@ -458,233 +414,244 @@ h4 em {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 14px 24px;
-  border-radius: 999px;
-  font-size: 0.95rem;
-  font-weight: 600;
+  padding: 15px 28px;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 500;
   transition:
     transform 0.3s var(--ease),
-    box-shadow 0.3s var(--ease),
+    color 0.3s var(--ease),
     background 0.3s var(--ease);
   will-change: transform;
 }
 .btn-primary {
-  background: var(--accent);
-  color: #050505;
-  box-shadow: 0 0 30px rgba(0, 255, 157, 0.25);
-}
-[data-theme="light"] .btn-primary {
-  color: #fff;
+  background: var(--text);
+  color: var(--bg);
 }
 .btn-primary:hover {
-  box-shadow: 0 0 50px rgba(0, 255, 157, 0.45);
+  transform: scale(1.02);
 }
+.btn-primary:active {
+  transform: scale(0.98);
+}
+/* Secondary is a text link, not a second button: two filled buttons of
+   equal weight give the eye nothing to follow. */
 .btn-ghost {
-  border: 1px solid var(--line-strong);
-  background: var(--surface);
-  color: var(--text);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  padding: 14px 8px;
+  font-weight: 400;
 }
 .btn-ghost:hover {
-  background: var(--surface-2);
-  border-color: var(--accent);
+  color: var(--text);
 }
 
 /* EYEBROW */
 .eyebrow {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.3em;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--text-quiet);
 }
 
-/* HERO */
+/* HERO — an editorial split: the claim reads down the left column, the
+   product sits right and runs off the edge of the page. `overflow:
+   hidden` on the section is what turns that overhang into a crop
+   instead of a horizontal scrollbar. */
 .hero {
   position: relative;
-  min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: clamp(80px, 12vh, 140px) clamp(16px, 4vw, 40px)
-    clamp(60px, 10vh, 100px);
-  background: var(--hero-grad);
+  text-align: left;
+  padding: clamp(104px, 14vh, 150px) clamp(16px, 4vw, 40px)
+    clamp(48px, 8vh, 88px);
   overflow: hidden;
-}
-.hero-aura {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 60rem;
-  height: 60rem;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(0, 255, 157, 0.1), transparent 65%);
-  filter: blur(40px);
-  pointer-events: none;
-  z-index: 0;
-  animation: aura 18s ease-in-out infinite;
-}
-@keyframes aura {
-  0%,
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translate(-48%, -52%) scale(1.15);
-    opacity: 1;
-  }
-}
-.hero-ghost-watermark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: min(60vw, 38rem);
-  height: auto;
-  transform: translate(-50%, -50%);
-  color: rgba(0, 255, 157, 0.04);
-  pointer-events: none;
-  z-index: 0;
-  animation: ghostfloat 12s ease-in-out infinite;
-}
-@keyframes ghostfloat {
-  0%,
-  100% {
-    transform: translate(-50%, -50%) translateY(0);
-  }
-  50% {
-    transform: translate(-50%, -52%) translateY(-12px);
-  }
 }
 .hero-content {
   position: relative;
   z-index: 2;
-  max-width: 820px;
+  width: 100%;
+  max-width: 1420px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  align-items: center;
+  column-gap: clamp(28px, 4.5vw, 76px);
+}
+.hero-copy {
+  position: relative;
+  z-index: 2;
 }
 .hero-badge {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 18px;
-  border-radius: 999px;
-  border: 1px solid var(--line-strong);
-  background: var(--surface);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  color: var(--text-muted);
-  margin-bottom: 32px;
+  margin-bottom: 26px;
+  color: var(--text-quiet);
 }
 .pulse-dot {
-  width: 7px;
-  height: 7px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 10px var(--accent);
-  animation: pulse-glow 2.2s ease-in-out infinite;
+  background: var(--text-quiet);
+  animation: pulse-glow 2.4s ease-in-out infinite;
 }
 @keyframes pulse-glow {
   0%,
   100% {
-    opacity: 0.6;
-    transform: scale(1);
+    opacity: 0.4;
   }
   50% {
     opacity: 1;
-    transform: scale(1.35);
   }
 }
 .hero-title {
-  font-size: clamp(2.6rem, 7vw, 5.2rem);
-  line-height: 1.02;
-  letter-spacing: -0.03em;
-  margin-bottom: 28px;
-  text-shadow: 0 0 60px rgba(0, 255, 157, 0.08);
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(2.8rem, 6.4vw, 5rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  margin-bottom: 0;
+  text-wrap: balance;
+}
+/* A short rule under the claim, in place of the centred lede that used to
+   do the spacing. */
+.hero-title::after {
+  content: "";
+  display: block;
+  width: 88px;
+  height: 2px;
+  margin: clamp(20px, 2.4vw, 30px) 0 clamp(20px, 2.2vw, 26px);
+  background: linear-gradient(90deg, var(--text), transparent);
 }
 .hero-lede {
-  max-width: 60ch;
-  margin: 0 auto 40px;
+  max-width: 48ch;
+  margin: 0 0 34px;
   color: var(--text-muted);
-  font-size: clamp(1rem, 1.4vw, 1.18rem);
-  line-height: 1.7;
+  font-size: clamp(1rem, 1.2vw, 1.1rem);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+.hero-lede strong {
+  color: var(--text);
+  font-weight: 500;
 }
 .hero-actions {
   display: flex;
-  gap: 14px;
+  gap: 10px;
+  align-items: center;
   justify-content: center;
   flex-wrap: wrap;
 }
+/* Hero only. The closing band shares this class and stays centred. */
+.hero .hero-actions {
+  justify-content: flex-start;
+  gap: 14px;
+}
 
-.scroll-cue {
-  position: absolute;
-  bottom: 32px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  color: var(--text-quiet);
-}
-.scroll-line {
-  width: 1px;
-  height: 40px;
-  background: linear-gradient(var(--accent), transparent);
+/* MacBook-style frame for the product shot. Pure CSS: a rounded lid,
+   a hairline bezel, and a tapered base slab under it. */
+.device {
   position: relative;
-  overflow: hidden;
+  width: min(100%, 740px);
+  margin: clamp(40px, 6vh, 64px) auto 0;
 }
-.scroll-line::after {
+/* Oversized on purpose: it overruns its grid column and is cropped by the
+   section, so the shot reads as a window onto something larger rather
+   than a specimen centred on a slide. */
+.device--hero {
+  width: min(128%, 1020px);
+  margin: 0;
+  justify-self: start;
+}
+.device-lid {
+  position: relative;
+  border-radius: 14px;
+  padding: 10px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--text) 14%, transparent),
+    color-mix(in srgb, var(--text) 6%, transparent)
+  );
+  box-shadow: var(--shadow);
+}
+.device-lid::after {
+  /* the notch */
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 12px;
-  background: var(--accent);
-  animation: scrolldrip 1.8s ease-in-out infinite;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 96px;
+  height: 14px;
+  border-radius: 0 0 8px 8px;
+  background: #000;
+  z-index: 2;
 }
-@keyframes scrolldrip {
-  0% {
-    transform: translateY(-12px);
-    opacity: 0;
-  }
-  40% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(40px);
-    opacity: 0;
-  }
+/* height:auto is load-bearing — the img carries width/height attributes
+   for CLS, and without it the attribute height wins over the box. */
+.device-screen {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  background: #000;
+}
+.device-base {
+  height: 12px;
+  width: 106%;
+  margin-left: -3%;
+  border-radius: 0 0 12px 12px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--text) 16%, transparent),
+    color-mix(in srgb, var(--text) 5%, transparent)
+  );
+}
+.device-base::after {
+  content: "";
+  display: block;
+  width: 14%;
+  height: 4px;
+  margin: 0 auto;
+  border-radius: 0 0 6px 6px;
+  background: color-mix(in srgb, var(--bg) 60%, transparent);
 }
 
-/* MANIFESTO */
+/* MANIFESTO — the thesis. Serif heading, then quiet prose set narrow
+   and left-ragged, the way a statement reads rather than a pitch. */
 .manifesto {
-  padding: clamp(80px, 14vh, 140px) clamp(16px, 4vw, 40px);
+  padding: clamp(120px, 20vh, 200px) clamp(16px, 4vw, 40px);
   text-align: center;
 }
 .manifesto-inner {
-  max-width: 760px;
+  max-width: 620px;
   margin: 0 auto;
 }
 .manifesto-inner .eyebrow {
-  margin-bottom: 28px;
+  margin-bottom: 20px;
 }
 .manifesto-line {
-  font-family: var(--font-serif);
-  font-weight: 300;
-  font-size: clamp(1.4rem, 3vw, 2.1rem);
-  line-height: 1.4;
-  letter-spacing: -0.01em;
-  color: var(--text);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  letter-spacing: 0;
+  color: var(--text-muted);
+  text-align: left;
   margin-bottom: 22px;
+  text-wrap: pretty;
 }
 .manifesto-line em {
+  font-family: var(--font-serif);
   font-style: italic;
-  color: var(--accent);
-  font-weight: 400;
+  font-size: 1.15em;
+  color: var(--text);
 }
 .manifesto-line:last-child {
   margin-bottom: 0;
@@ -693,34 +660,68 @@ h4 em {
 /* CHAPTER */
 .chapter {
   position: relative;
-  padding: clamp(80px, 14vh, 140px) clamp(16px, 4vw, 40px);
+  padding: clamp(110px, 18vh, 180px) clamp(16px, 4vw, 40px);
   border-top: 1px solid var(--line);
 }
+/* The nav is fixed, so anchored sections have to hold their hairline
+   clear of it. */
+section[id] {
+  scroll-margin-top: 80px;
+}
+/* Nine sections used to open with the same centred stack — number,
+   label, serif line, lede — which is most of what made the page read as
+   one long column. Now the number and label sit on a ruled row and the
+   claim and the lede face each other across it. `align-self: end` on
+   both row-one items is what keeps the two rules on one line when the
+   serif number is taller than the mono label. */
 .chapter-head {
-  max-width: 760px;
-  margin: 0 auto 64px;
-  text-align: center;
+  /* The widest container any section below uses. Centred heads hid the
+     fact that the body grids run at two different widths; a left-aligned
+     ruled head does not, and a head narrower than the cards under it
+     reads as a misalignment rather than a choice. */
+  max-width: var(--maxw-wide);
+  margin: 0 auto 72px;
+  text-align: left;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  column-gap: clamp(28px, 5vw, 84px);
+  row-gap: clamp(18px, 2.4vw, 30px);
+  align-items: start;
 }
 .chapter-num {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: end;
   display: block;
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 400;
-  font-size: 1.1rem;
-  color: var(--accent);
-  margin-bottom: 14px;
-  text-shadow: 0 0 20px var(--accent-soft);
+  font-size: 1rem;
+  color: var(--text-quiet);
+  margin-bottom: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
 }
 .chapter-head .eyebrow {
-  margin-bottom: 14px;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
+  display: block;
+  margin-bottom: 0;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--line);
 }
 .chapter-head h2 {
-  margin-bottom: 20px;
+  grid-column: 1;
+  grid-row: 2;
+  margin-bottom: 0;
 }
 .chapter-lede {
+  grid-column: 2;
+  grid-row: 2;
   color: var(--text-muted);
-  max-width: 60ch;
-  margin: 0 auto;
+  max-width: 48ch;
+  margin: 0;
   font-size: clamp(1rem, 1.3vw, 1.12rem);
   line-height: 1.7;
 }
@@ -746,14 +747,13 @@ h4 em {
     box-shadow 0.3s var(--ease);
 }
 .summon-card:hover {
-  border-color: var(--accent);
+  border-color: var(--line-strong);
   transform: translateY(-4px);
-  box-shadow: 0 0 40px rgba(0, 255, 157, 0.08);
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.04);
 }
 .summon-icon {
-  color: var(--accent);
+  color: var(--text-muted);
   margin-bottom: 18px;
-  filter: drop-shadow(0 0 8px var(--accent-soft));
 }
 .summon-key {
   display: flex;
@@ -810,7 +810,7 @@ h4 em {
   background: linear-gradient(90deg, var(--accent), transparent);
 }
 .route-step:nth-child(3)::before {
-  background: linear-gradient(90deg, transparent, var(--purple));
+  background: linear-gradient(90deg, transparent, var(--accent));
 }
 .route-step-num {
   font-family: var(--font-serif);
@@ -820,9 +820,6 @@ h4 em {
   color: var(--accent);
   display: block;
   margin-bottom: 14px;
-}
-.route-step:nth-child(3) .route-step-num {
-  color: var(--purple);
 }
 .route-step h3 {
   font-size: 1.4rem;
@@ -904,20 +901,22 @@ h4 em {
 .prov-tag.local {
   color: var(--accent);
   background: var(--accent-soft);
-  border: 1px solid rgba(0, 255, 157, 0.25);
+  border: 1px solid var(--line-strong);
 }
+/* Local is filled, cloud is quieter, custom is an open outline — the
+   three tags have to stay apart from each other without a hue. */
 .prov-tag.cloud {
-  color: var(--orange);
-  background: var(--orange-soft);
-  border: 1px solid rgba(217, 119, 87, 0.25);
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
 }
 .prov-tag.custom {
-  color: var(--purple);
-  background: var(--purple-soft);
-  border: 1px solid rgba(168, 85, 247, 0.25);
+  color: var(--text-quiet);
+  background: transparent;
+  border: 1px dashed var(--line-strong);
 }
 .provider-pill.custom:hover {
-  border-color: var(--purple);
+  border-color: var(--line-strong);
 }
 
 /* EFFORT + APPROVAL */
@@ -994,7 +993,7 @@ h4 em {
 
 /* REMEMBER */
 .remember-body {
-  max-width: var(--maxw);
+  max-width: var(--measure);
   margin: 0 auto;
   display: grid;
   gap: 20px;
@@ -1022,7 +1021,6 @@ h4 em {
   color: var(--text-muted);
   font-size: 0.98rem;
   line-height: 1.7;
-  max-width: 64ch;
 }
 .format-cloud {
   display: flex;
@@ -1041,7 +1039,7 @@ h4 em {
 }
 .format-cloud span:hover {
   color: var(--accent);
-  border-color: var(--accent);
+  border-color: var(--line-strong);
 }
 
 /* ACT */
@@ -1081,7 +1079,7 @@ h4 em {
 }
 
 .act-body {
-  max-width: var(--maxw);
+  max-width: var(--measure);
   margin: 0 auto;
   display: grid;
   gap: 20px;
@@ -1127,21 +1125,21 @@ h4 em {
   border-radius: 50%;
   margin-bottom: 10px;
 }
+/* The tiers ascend as ink — hollow, half, solid — so the ladder reads
+   without colour. Only "block" is allowed a hue, and it is the one
+   alert on the page. */
 .risk-tier.low .risk-dot {
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--text-quiet);
 }
 .risk-tier.med .risk-dot {
-  background: var(--blue);
-  box-shadow: 0 0 8px var(--blue);
+  background: var(--text-muted);
 }
 .risk-tier.high .risk-dot {
-  background: var(--orange);
-  box-shadow: 0 0 8px var(--orange);
+  background: var(--text);
 }
 .risk-tier.block .risk-dot {
   background: #ff5f57;
-  box-shadow: 0 0 8px #ff5f57;
 }
 .risk-tier h4 {
   font-size: 0.95rem;
@@ -1155,7 +1153,7 @@ h4 em {
 
 /* NATIVE */
 .native-list {
-  max-width: var(--maxw);
+  max-width: var(--measure);
   margin: 0 auto;
   display: grid;
   gap: 14px;
@@ -1175,7 +1173,7 @@ h4 em {
     transform 0.3s var(--ease);
 }
 .native-row:hover {
-  border-color: var(--accent);
+  border-color: var(--line-strong);
   transform: translateX(6px);
 }
 .native-glyph {
@@ -1221,7 +1219,7 @@ h4 em {
     transform 0.3s var(--ease);
 }
 .build-card:hover {
-  border-color: var(--purple);
+  border-color: var(--line-strong);
   transform: translateY(-4px);
 }
 .build-card .eyebrow {
@@ -1287,7 +1285,7 @@ h4 em {
     transform 0.3s var(--ease);
 }
 .protect-card:hover {
-  border-color: var(--accent);
+  border-color: var(--line-strong);
   transform: translateY(-4px);
 }
 .protect-card .eyebrow {
@@ -1326,7 +1324,7 @@ h4 em {
   background:
     radial-gradient(
       circle at 30% 30%,
-      rgba(75, 139, 245, 0.35),
+      rgba(102, 184, 255, 0.35),
       transparent 70%
     ),
     var(--bg-2);
@@ -1335,7 +1333,7 @@ h4 em {
   background:
     radial-gradient(
       circle at 30% 30%,
-      rgba(168, 85, 247, 0.35),
+      rgba(226, 232, 240, 0.22),
       transparent 70%
     ),
     var(--bg-2);
@@ -1344,7 +1342,7 @@ h4 em {
   background:
     radial-gradient(
       circle at 30% 30%,
-      rgba(217, 119, 87, 0.35),
+      rgba(247, 204, 97, 0.35),
       transparent 70%
     ),
     var(--bg-2);
@@ -1353,7 +1351,7 @@ h4 em {
   background:
     radial-gradient(
       circle at 30% 30%,
-      rgba(199, 132, 254, 0.35),
+      rgba(224, 168, 82, 0.35),
       transparent 70%
     ),
     var(--bg-2);
@@ -1373,7 +1371,7 @@ h4 em {
 }
 
 .feel-list {
-  max-width: var(--maxw);
+  max-width: var(--measure);
   margin: 0 auto;
   display: grid;
   gap: 14px;
@@ -1403,13 +1401,13 @@ h4 em {
 
 /* FAQ */
 .faq {
-  padding: clamp(80px, 14vh, 140px) clamp(16px, 4vw, 40px);
+  padding: clamp(110px, 18vh, 180px) clamp(16px, 4vw, 40px);
   border-top: 1px solid var(--line);
 }
 .faq .section-head {
   text-align: center;
   max-width: 720px;
-  margin: 0 auto 56px;
+  margin: 0 auto 64px;
 }
 .faq .section-head h2 {
   margin: 16px 0 0;
@@ -1422,47 +1420,48 @@ h4 em {
   border-bottom: 1px solid var(--line);
   overflow: hidden;
 }
+/* Questions are set in the display serif — sentient's FAQ reads like a
+   contents page, not a support widget. */
 .faq-question {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 24px;
   width: 100%;
-  padding: 22px 0;
-  font-size: 1.05rem;
-  font-weight: 500;
-  color: var(--text);
+  padding: 26px 0;
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--text-muted);
   text-align: left;
   transition: color 0.2s var(--ease);
 }
-.faq-question:hover {
-  color: var(--accent);
+.faq-question:hover,
+.faq-item.is-open .faq-question {
+  color: var(--text);
 }
 .faq-icon {
   flex: none;
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  font-size: 1.1rem;
-  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: var(--text-quiet);
   transition:
     transform 0.3s var(--ease),
-    background 0.2s var(--ease),
     color 0.2s var(--ease);
+}
+.faq-question:hover .faq-icon {
+  color: var(--text);
 }
 .faq-item.is-open .faq-icon {
   transform: rotate(45deg);
-  background: var(--accent);
-  color: #050505;
-  border-color: transparent;
-  box-shadow: 0 0 16px var(--accent-soft);
-}
-[data-theme="light"] .faq-item.is-open .faq-icon {
-  color: #fff;
+  color: var(--text);
 }
 .faq-answer {
   max-height: 0;
@@ -1476,79 +1475,85 @@ h4 em {
   line-height: 1.65;
 }
 
-/* CTA */
+/* CTA — the closing ask. One pill, one halo, one install line. */
 .cta-band {
   position: relative;
   text-align: center;
-  padding: clamp(80px, 14vh, 140px) clamp(16px, 4vw, 40px);
-  overflow: hidden;
+  padding: clamp(120px, 20vh, 200px) clamp(16px, 4vw, 40px);
   border-top: 1px solid var(--line);
-}
-.cta-aura {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 50rem;
-  height: 50rem;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(0, 255, 157, 0.1), transparent 60%);
-  filter: blur(50px);
-  pointer-events: none;
-}
-.cta-ghost {
-  position: relative;
-  width: 64px;
-  height: 64px;
-  color: var(--accent);
-  margin: 0 auto 24px;
-  filter: drop-shadow(0 0 20px var(--accent-soft));
-  animation: ghostfloat 8s ease-in-out infinite;
 }
 .cta-band .eyebrow {
   position: relative;
 }
 .cta-band h2 {
-  margin: 16px 0 18px;
+  margin: 16px 0 20px;
   position: relative;
 }
 .cta-band p {
   color: var(--text-muted);
-  margin-bottom: 36px;
+  max-width: 52ch;
+  margin: 0 auto 40px;
   position: relative;
 }
 .cta-band .hero-actions {
   position: relative;
 }
+.cta-meta {
+  margin-top: 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.cta-repo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  transition: color 0.2s var(--ease);
+}
+.cta-repo:hover {
+  color: var(--text);
+}
 
-/* FOOTER */
+/* FOOTER — a hairline bar: utility left, a line of voice centre,
+   contact right. */
 .footer {
   border-top: 1px solid var(--line);
-  padding: 44px clamp(16px, 4vw, 40px);
+  padding: 26px clamp(16px, 4vw, 40px);
 }
 .footer-inner {
-  max-width: var(--maxw);
+  max-width: var(--maxw-wide);
   margin: 0 auto;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 16px;
-  flex-wrap: wrap;
+}
+.footer-inner > :last-child {
+  justify-self: end;
 }
 .footer-brand {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-weight: 700;
-  color: var(--accent);
-  filter: drop-shadow(0 0 8px var(--accent-soft));
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: color 0.2s var(--ease);
+}
+.footer-brand:hover {
+  color: var(--text);
 }
 .footer-note {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.05rem;
   color: var(--text-muted);
-  font-size: 0.9rem;
 }
 .footer-copy {
   color: var(--text-quiet);
-  font-size: 0.82rem;
-  margin-left: auto;
+  font-size: 0.8rem;
 }
 
 /* REVEAL */
@@ -1559,6 +1564,38 @@ h4 em {
 
 /* RESPONSIVE */
 @media (max-width: 900px) {
+  /* The split collapses before the overhang can reach a scrollbar. */
+  .hero-content {
+    grid-template-columns: 1fr;
+    row-gap: clamp(36px, 6vh, 56px);
+  }
+  .device--hero {
+    width: min(100%, 740px);
+    justify-self: center;
+  }
+  .chapter-head {
+    grid-template-columns: 1fr;
+    row-gap: 14px;
+  }
+  .chapter-num {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .chapter-head .eyebrow {
+    grid-column: 1;
+    grid-row: 2;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .chapter-head h2 {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .chapter-lede {
+    grid-column: 1;
+    grid-row: 4;
+    max-width: 60ch;
+  }
   .summon-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1598,6 +1635,34 @@ h4 em {
   .nav-links {
     display: none;
   }
+  /* The pill has to stay one line or it doubles the nav height. */
+  .nav-cta {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+  /* 3px tracking on a long string is wider than a phone. */
+  .hero-badge .mono-label {
+    letter-spacing: 1.6px;
+    font-size: 9px;
+  }
+  .hero-actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+  /* Column flex hands the horizontal axis to align-items, so the hero's
+     justify-content override stops applying and the buttons would centre
+     under left-aligned copy. */
+  .hero .hero-actions {
+    align-items: flex-start;
+  }
+  .manifesto-line {
+    font-size: 1rem;
+  }
+  .faq-question {
+    font-size: 1.1rem;
+    gap: 16px;
+  }
   .summon-grid {
     grid-template-columns: 1fr;
   }
@@ -1620,9 +1685,14 @@ h4 em {
     flex-direction: column;
     gap: 16px;
   }
-  .footer-copy {
-    margin-left: 0;
-    width: 100%;
+  .footer-inner {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+  .footer-inner > :last-child {
+    justify-self: center;
   }
 }
 
@@ -1702,5 +1772,305 @@ h4 em {
 @media (max-width: 640px) {
   .showcase-video {
     border-radius: var(--radius);
+  }
+}
+
+/* ============================================
+   WHAT'S NEW — one shipping release, then a rail
+   The changelog used to be twenty stacked cards.
+   The current release keeps the card treatment;
+   everything older collapses into a timeline that
+   draws itself as you scroll past it.
+   ============================================ */
+.release-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.release-now {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.release-card {
+  padding: 36px 32px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  transition:
+    border-color 0.3s var(--ease),
+    transform 0.4s var(--ease);
+}
+.release-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-3px);
+}
+.release-card .eyebrow {
+  margin-bottom: 14px;
+}
+.release-card h3 {
+  font-size: 1.4rem;
+  margin-bottom: 14px;
+}
+.release-card p {
+  color: var(--text-muted);
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+/* ---- the rail ---- */
+.release-history {
+  max-width: var(--measure);
+  margin: 76px auto 0;
+}
+.release-history-head {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.release-history-note {
+  margin-top: 10px;
+  color: var(--text-quiet);
+  font-size: 0.9rem;
+}
+
+/* The lit line is a sibling of the list rather than a child of it, because
+   an <ol> may only contain <li>. */
+.release-rail-wrap {
+  position: relative;
+}
+.release-rail {
+  position: relative;
+  list-style: none;
+  padding-left: 30px;
+}
+/* The unlit track. The lit line is a sibling that JS scrubs over it, so
+   reduced-motion users keep a fully drawn rail: the default is scaleY(1)
+   and only the scrubbed version ever starts at zero. */
+.release-rail::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background: var(--line);
+}
+.release-progress {
+  position: absolute;
+  left: 3px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    var(--text-muted),
+    var(--text-quiet)
+  );
+  transform-origin: top center;
+}
+
+.release-row {
+  position: relative;
+  border-bottom: 1px solid var(--line);
+}
+.release-row:last-child {
+  border-bottom: 0;
+}
+.release-dot {
+  position: absolute;
+  left: -30px;
+  top: 27px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  transition:
+    background 0.35s var(--ease),
+    border-color 0.35s var(--ease),
+    box-shadow 0.35s var(--ease);
+}
+.release-row.is-lit .release-dot {
+  background: var(--text);
+  border-color: var(--text);
+  box-shadow: 0 0 0 4px var(--surface-2);
+}
+
+.release-head {
+  display: grid;
+  grid-template-columns: 54px 1fr 20px;
+  align-items: baseline;
+  gap: 20px;
+  width: 100%;
+  padding: 20px 0;
+  text-align: left;
+  color: var(--text-muted);
+  transition: color 0.2s var(--ease);
+}
+.release-head:hover,
+.release-row.is-open .release-head {
+  color: var(--text);
+}
+.release-version {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  color: var(--text-quiet);
+  transition: color 0.2s var(--ease);
+}
+.release-head:hover .release-version,
+.release-row.is-open .release-version {
+  color: var(--text);
+}
+.release-headline {
+  font-family: var(--font-serif);
+  font-size: 1.16rem;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+.release-icon {
+  justify-self: end;
+  font-size: 1.1rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--text-quiet);
+  transition:
+    transform 0.3s var(--ease),
+    color 0.2s var(--ease);
+}
+.release-row.is-open .release-icon {
+  transform: rotate(45deg);
+  color: var(--text);
+}
+
+.release-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.45s var(--ease);
+}
+.release-body-inner {
+  padding: 0 34px 26px 74px;
+  max-width: 66ch;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+
+.release-foot {
+  margin-top: 40px;
+  text-align: center;
+  color: var(--text-quiet);
+  font-size: 0.88rem;
+}
+
+/* ---- scroll progress, hairline under the nav ---- */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  z-index: 60;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.25),
+    var(--text)
+  );
+  pointer-events: none;
+}
+[data-theme="light"] .scroll-progress {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.2), var(--text));
+}
+
+@media (max-width: 860px) {
+  .release-now {
+    grid-template-columns: 1fr;
+  }
+  .release-head {
+    grid-template-columns: 46px 1fr 18px;
+    gap: 14px;
+  }
+  .release-headline {
+    font-size: 1.02rem;
+  }
+  .release-body-inner {
+    padding: 0 0 24px 60px;
+  }
+}
+@media (max-width: 560px) {
+  .release-head {
+    grid-template-columns: 1fr 18px;
+    gap: 8px 12px;
+  }
+  .release-version {
+    grid-column: 1 / -1;
+  }
+  .release-body-inner {
+    padding: 0 0 22px;
+  }
+  .release-dot {
+    top: 22px;
+  }
+}
+
+/* ============================================
+   MEDIA IN CARDS — demo stills and clips that
+   sit inside an existing card or feature block.
+   Cards are padded, so a shot spans the text
+   column rather than bleeding to the card edge.
+   ============================================ */
+.card-shot,
+.feature-shot,
+.route-shot {
+  margin: 22px 0 0;
+}
+.card-shot img,
+.card-shot video,
+.feature-shot img,
+.feature-shot video,
+.route-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: #000;
+}
+/* A second shot in the same card stacks under the first. */
+.card-shot + .card-shot,
+.feature-shot + .feature-shot {
+  margin-top: 14px;
+}
+/* Videos carry controls, so they get the firmer edge the showcase uses —
+   without it the control bar floats against the card background. */
+.card-shot video,
+.feature-shot video {
+  border-color: var(--line-strong);
+}
+
+/* The provider shot is full-bleed against the rail above it, not inside a
+   card, so it takes the page measure and the larger card radius. */
+.route-shot {
+  max-width: var(--maxw);
+  margin: 0 auto 56px;
+}
+.route-shot img {
+  border-radius: var(--radius);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 640px) {
+  .card-shot,
+  .feature-shot {
+    margin-top: 18px;
   }
 }
