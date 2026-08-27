@@ -6,13 +6,13 @@ https://github.com/user-attachments/assets/ef881143-3b65-491d-b78b-1be007a04c9b
 
 <br/>
 
-[![Download Ghost v2.10.0](https://img.shields.io/badge/Download_Ghost-v2.10.0-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
+[![Download Ghost v3.0.0](https://img.shields.io/badge/Download_Ghost-v3.0.0-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
 
 <br/>
 
 <a href="https://integratedagentics.com/ghost"><img src="docs/Screenshot 2026-08-11 at 6.42.27 PM.png" alt="Ghost answering a question about the Mohs hardness scale in the notch surface, with provider, model and timing chips above the answer" width="820" /></a>
 
-<samp>v2.10.0 · notarized · one-time purchase · macOS 14+</samp>
+<samp>v3.0.0 · notarized · one-time purchase · macOS 14+</samp>
 
 </div>
 
@@ -26,14 +26,14 @@ By default, everything is off: web access, file tools, automation, messaging, sc
 
 <br/>
 
-## New in 2.10.0
+## New in 3.0.0
 
-You should not have to attach the same file every time you ask about it, and a spreadsheet Ghost edits should come back with everything you set up still in it.
+Ghost could always read text off your screen, and it could never look at a picture you handed it. Both of those changed.
 
-- **Tell Ghost which file answers a question, once.** Say "when I ask what problems I have to do, reference this tracker" and the rule is written down as a Markdown file in Ghost Outputs / Knowledge that you own. From then on a matching question finds that document on your Mac, reads the part that answers it, and brings it into the reply — on every turn, including the ones that carry no tools. Matching is careful about which part: a whole date counts for far more than the words inside it, so asking about today surfaces today's row rather than every other Friday in a term. Two files with the same name stay two rules, and a rule you mark sensitive is read only by a model running on your machine.
-- **Spreadsheets can be changed, not just read.** Ask in words for a cell to change and Ghost rewrites one part of the workbook you already have rather than building a new one, so styles, column widths, tab colours and filters survive untouched. It addresses the row by what is in it instead of counting, and refuses outright when the description could mean more than one row rather than editing the first it finds. Formula cells are never overwritten, a batch that cannot fully apply changes nothing at all, and nothing is written until a copy has been opened again and checked to contain your change and no others. Undo puts the original file back byte for byte.
-- **"Not found" means not there.** Reads that have to be correct about a whole sheet — resolving which row you meant, verifying an edit changed nothing else, answering a question about the file — now read the whole sheet instead of the first few thousand rows, so a confident "nothing on this sheet has that" is a fact rather than an artefact of where Ghost stopped looking.
-- **Out of the menu bar's way on macOS 27.** The macOS 27 beta puts a new expand button in the menu bar beside the notch, which is where Ghost lives, and Ghost was taking the clicks meant for it — invisible when idle, so the button simply did nothing, and reaching for it opened the Ghost panel across the whole menu bar. Collapsed, Ghost now keeps the notch itself and hands the rest of the menu bar back to the system. Hovering the notch still opens it, and so does ⌥Space.
+- **⌘V a screenshot straight into the chat bar.** Take a screenshot, press ⌘V in Ghost, ask your question. The image rides along with the message and Ghost answers about what is in it, in the notch and in the floating bar alike. Pasting an image used to do nothing at all, silently, while pasting text worked perfectly — a hard thing to report as a bug and an easy one to assume was never a feature. Ordinary text paste behaves exactly as before.
+- **Your subscription can look at images too.** On a Claude or ChatGPT subscription Ghost used to refuse an attached image and tell you to switch to an API key and a vision model. That advice was wrong: the model at the other end of your subscription reads images perfectly well. Ghost now hands the picture over in a way that route can accept, and gives it the means to open it, so you get a real answer instead of a redirect.
+- **Reading your screen no longer takes a minute.** The first screen read after a macOS update could take the better part of a minute, even for two words, and every one after it was instant. That was macOS loading its text recognizer rather than Ghost thinking: about 55 seconds the first time and about a tenth of a second every time after, whatever the words say. Ghost now wakes the recognizer quietly when it starts, so nobody waits for it. A screen read also finishes the moment the words are on screen rather than holding on for an optional cleanup pass, and a short blurry read no longer spends a network round trip to be handed its own guess back.
+- **Asking for your screen is the same as pressing the button.** Typing "read my screen" used to be sent off to a model that had to decide to go and look, which is a round trip for something your Mac does on its own. It now runs the same instant capture the button does. Only for asking flatly for the screen: a question that needs an answer as well as the words, like why an error is happening, still goes to the model where it belongs.
 
 <br/>
 
@@ -271,18 +271,18 @@ Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (e
 
 ## Fixed: builds 2.0.1 – 2.0.5 stopped telling you about updates.
 
-<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 2.10.0</samp></sub>
+<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 3.0.0</samp></sub>
 
-**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 2.10.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
+**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 3.0.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
 
-If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 2.10.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
+If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 3.0.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
 
 What happened: the "Check for Updates" button and the "update available" notice both lived in an older window that was removed in July when it stopped being part of the app. The updater underneath kept working the whole time — it checks on schedule and it does find new versions — but it had been told that Ghost would display what it found, and after the removal Ghost had nowhere to display it. So an affected build checks, finds an update, and says nothing.
 
 What to do, if you are on 2.0.1 – 2.0.5:
 
-- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 2.10.0 will arrive on its own.
-- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 2.10.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
+- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 3.0.0 will arrive on its own.
+- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 3.0.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
 
 <br/>
 
