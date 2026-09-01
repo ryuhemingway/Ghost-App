@@ -255,7 +255,7 @@ Both. On a notch Mac, Ghost drops from the camera notch and the typing pill sits
 <summary><b>What Macs does it run on?</b></summary>
 <br/>
 
-macOS 14 or later, Apple Silicon or Intel. Ghost is a native SwiftUI app notarized by Apple. Local model inference performance depends on your hardware; LM Studio and Ollama manage their own resource usage independently of Ghost.
+macOS 14 or later, Apple Silicon. Ghost ships as an Apple Silicon build and does not run on an Intel Mac. It is a native SwiftUI app notarized by Apple. Local model inference performance depends on your hardware; LM Studio and Ollama manage their own resource usage independently of Ghost.
 
 </details>
 
