@@ -29,14 +29,34 @@
       body {
         background: #000;
       }
+      html[data-theme="light"],
+      html[data-theme="light"] body {
+        background: #faf8f5;
+      }
     </style>
+    <script>
+      /* A saved theme has to be applied before first paint or someone who
+         chose light gets a black flash on every load. Inline, synchronous,
+         and ahead of the stylesheet on purpose. The default stays dark
+         rather than following prefers-color-scheme: every product shot and
+         video on this page is dark macOS chrome, so light is a choice to
+         opt into, not one to hand out on a system setting. */
+      (function () {
+        try {
+          var saved = localStorage.getItem("ghost-theme");
+          if (saved === "light" || saved === "dark") {
+            document.documentElement.dataset.theme = saved;
+          }
+        } catch (e) {}
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=3.1.1" />
   </head>
   <body>
     <div class="page-wrap">
@@ -148,7 +168,7 @@
             <div class="hero-badge reveal">
               <span class="pulse-dot"></span>
               <span class="mono-label"
-                >Ghost 2.10 · macOS 14+ · Local-first</span
+                >Ghost 3.1.1 · macOS 14+ · Apple silicon</span
               >
             </div>
             <h1 class="hero-title reveal">
@@ -204,15 +224,15 @@
               surface, placed as a top-center notch or a floating bar.
             </p>
             <p class="manifesto-line">
-              It runs as an <em>accessory</em>, with no Dock icon and no
-              full-screen takeover. It appears with a keystroke, does the work, and steps
-              back. Your Mac stays your Mac.
+              It runs as an <em>accessory</em>. It keeps clear of the Dock, leaves
+              the full screen to whatever you were doing, appears with a keystroke,
+              does the work, and steps back. Your Mac stays your Mac.
             </p>
             <p class="manifesto-line">
               Every capability starts <em>off</em>. You opt into each one (web, files,
               automation, messaging, screen, shell) in a
-              three-step first run. Nothing is on by default. Nothing runs in
-              the background without you asking.
+              three-step first run. Everything Ghost can do, it does because you
+              switched it on and asked.
             </p>
           </div>
         </section>
@@ -257,43 +277,56 @@
             <span class="eyebrow">What's new</span>
             <h2>The latest <em>update.</em></h2>
             <p class="chapter-lede">
-              Take a screenshot, press &#8984;V in Ghost and ask about it, on whatever
-              model you are using including your Claude subscription. And reading text
-              off your screen, which could take the better part of a minute the first
-              time, now answers in about a tenth of a second.
+              Paste a snippet into Ghost and the answer comes back with the code in
+              its own coloured block, at reading size, set clearly apart from the
+              sentences explaining it. Ghost asks where you want that answer before it
+              starts. And Open at Login, which was greyed out on every install Ghost
+              has ever shipped, works.
             </p>
             <span class="release-stamp">
               <span class="pulse-dot"></span>
-              <span class="mono-label">Version 3.0.0 · shipping now</span>
+              <span class="mono-label">Version 3.1.1 · shipping now</span>
             </span>
           </div>
 
           <div class="release-now" data-reveal-stagger>
             <article class="release-card reveal">
-              <span class="eyebrow">Images</span>
-              <h3>&#8984;V a screenshot into the chat bar</h3>
+              <span class="eyebrow">Code</span>
+              <h3>Code in an answer looks like code</h3>
               <p>
-                Take a screenshot, press &#8984;V in Ghost, ask your question. The
-                image rides along with the message and Ghost answers about what is in
-                it, in the notch and in the floating bar alike. Pasting an image used
-                to do nothing at all, silently, while pasting text worked perfectly.
-                A Claude or ChatGPT subscription used to be told to go and find an API
-                key and a vision model; that advice was wrong, and the model at the
-                other end of your subscription reads the picture now.
+                Every snippet now sits in its own block with a background you can
+                see, a language label, a copy button, and syntax colour for keywords,
+                strings, numbers and comments. It is set a size larger than before,
+                so it stops reading as a footnote beside the sentences explaining it.
+                Your own pasted code gets the same treatment in the transcript, and
+                names with underscores in them, like <code>a_file.py</code>, print
+                exactly as you wrote them.
               </p>
             </article>
 
             <article class="release-card reveal">
-              <span class="eyebrow">Screen reading</span>
-              <h3>A tenth of a second, not a minute</h3>
+              <span class="eyebrow">Routing</span>
+              <h3>Ghost asks where the answer should go</h3>
               <p>
-                The first screen read after a macOS update could take the better part
-                of a minute, even for two words, and every one after it was instant.
-                That was macOS loading its text recognizer rather than Ghost thinking.
-                Ghost now wakes it quietly at launch, so nobody waits for it. Asking
-                flatly to read your screen runs that same instant capture instead of
-                a model round trip, while a question that needs an answer as well as
-                the words still goes where it belongs.
+                Paste code into the chat bar and a small row appears under it: Chat,
+                or Terminal. Pick one and that is where the answer opens. Ghost used
+                to decide on its own from the wording of your message, which is fine
+                until it guesses wrong and you go hunting on the surface the answer
+                is not on. Ignore the question and it still decides for you. The
+                Terminal also typesets its replies as prose now.
+              </p>
+            </article>
+
+            <article class="release-card reveal">
+              <span class="eyebrow">Fixed</span>
+              <h3>Open at Login actually works</h3>
+              <p>
+                The switch was dead on every fresh install, and the note under it
+                blamed where the app was living. Both were wrong. macOS reports an app
+                it has never registered the same way it reports one that cannot be
+                registered, and Ghost treated the two as the same thing. Turn it on
+                once now and it stays on, including through the updates that used to
+                quietly lose it.
               </p>
             </article>
           </div>
@@ -302,13 +335,63 @@
             <div class="release-history-head reveal">
               <span class="eyebrow">Before that</span>
               <p class="release-history-note">
-                Sixteen releases, newest first. Open one to read what changed.
+                Eighteen releases, newest first. Open one to read what changed.
               </p>
             </div>
 
             <div class="release-rail-wrap">
               <span class="release-progress" aria-hidden="true"></span>
               <ol class="release-rail" id="release-rail" data-reveal-stagger>
+
+              <li class="release-row reveal">
+                <span class="release-dot" aria-hidden="true"></span>
+                <button class="release-head" data-cursor="pointer" aria-expanded="false">
+                  <span class="release-version">3.1.0</span>
+                  <span class="release-headline">
+                    Code in an answer looks like code now.
+                  </span>
+                  <span class="release-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="release-body">
+                  <p class="release-body-inner">
+                    Paste a snippet into Ghost and two things used to go wrong. The
+                    answer came back with the code set in small grey type that ran
+                    straight into the explanation, so the hardest part of reading it
+                    was working out which half was which. And the answer landed
+                    wherever Ghost decided, which was sometimes the Terminal and
+                    sometimes the chat. Code is now set in a proper block, coloured,
+                    at reading size, and Ghost asks you where the answer should go
+                    before it starts. The Terminal typesets its replies as prose
+                    rather than raw markdown, the chat bar grows to eight lines so a
+                    long paste is visible, and the countdown plate sits in the notch
+                    on every display.
+                  </p>
+                </div>
+              </li>
+
+              <li class="release-row reveal">
+                <span class="release-dot" aria-hidden="true"></span>
+                <button class="release-head" data-cursor="pointer" aria-expanded="false">
+                  <span class="release-version">3.0.0</span>
+                  <span class="release-headline">
+                    Paste a screenshot into the box and ask about it.
+                  </span>
+                  <span class="release-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="release-body">
+                  <p class="release-body-inner">
+                    Ghost could always read text off your screen, and it could never
+                    look at a picture you handed it. Both of those changed. Press
+                    &#8984;V with a screenshot on the clipboard and it goes into the
+                    message like a file, whatever model you are on, including your
+                    Claude subscription, which used to be told to go and find an API
+                    key and a vision model instead. And the screen reader that used to
+                    sit there for the better part of a minute over two words now
+                    answers in about a tenth of a second: that was macOS loading its
+                    text recognizer, and Ghost wakes it quietly at launch.
+                  </p>
+                </div>
+              </li>
 
               <li class="release-row reveal">
                 <span class="release-dot" aria-hidden="true"></span>
@@ -692,7 +775,8 @@
             <span class="eyebrow">Summon</span>
             <h2>Call it from <em>anywhere.</em></h2>
             <p class="chapter-lede">
-              No Dock icon, no window to manage. Ghost answers to global
+              Ghost lives in the background and comes forward on a keystroke. It
+              answers to global
               shortcuts that work across every app on your Mac, and you decide
               whether it drops from the top-center notch or floats like Siri
               near the bottom of the screen. No Accessibility permission
@@ -759,9 +843,9 @@
               <h3>Hover to reveal</h3>
               <p>
                 In notch placement, glide your pointer to the top center of the
-                screen and Ghost reveals itself. No click, no shortcut. The
-                floating bar stays inert until you summon it, so it never traps
-                a stray hover.
+                screen and Ghost reveals itself. The pointer alone is enough. The
+                floating bar stays inert until you summon it, so a stray hover
+                passes it by.
               </p>
             </article>
 
@@ -799,8 +883,9 @@
               <h3>Deep link</h3>
               <p>
                 <code>ghost://toggle</code> opens Ghost from any app or script.
-                No file paths or user content accepted. The link only ever
-                opens, never exfiltrates.
+                Opening is the whole of what it does: the link takes no
+                arguments, so there is nothing in it to name a file or carry
+                content outward.
               </p>
             </article>
 
@@ -946,9 +1031,13 @@
             </div>
             <p class="effort-note">
               Four effort levels cap how many turns a run may take, from a
-              one-shot answer to a ninety-turn deep-work session. Token budgets
-              and mode names scale by provider; the figures above are Claude's
-              ceilings, and local models run leaner.
+              one-shot answer to a ninety-turn deep-work session, and how many
+              tool rounds the Direct API path may spend: 6, 10, 14, then 20.
+              Token budgets and mode names scale by provider. The figures above
+              are Claude's ceilings; a local model gets a far larger one, up to
+              its context window, because a reasoning model bills its whole
+              thinking phase against the same budget and a tight cap returns an
+              empty answer.
             </p>
           </div>
 
@@ -1014,15 +1103,18 @@
             </div>
 
             <div class="remember-feature reveal">
-              <span class="eyebrow">30 file formats</span>
+              <span class="eyebrow">32 file formats</span>
               <div class="format-cloud">
-                <span>txt</span><span>md</span><span>html</span><span>pdf</span
-                ><span>docx</span><span>epub</span><span>csv</span
-                ><span>json</span><span>rtf</span><span>swift</span
-                ><span>py</span><span>js</span><span>ts</span><span>tsx</span
-                ><span>jsx</span><span>java</span><span>cpp</span><span>c</span
-                ><span>h</span><span>m</span><span>sql</span><span>xml</span
-                ><span>yaml</span><span>toml</span><span>log</span>
+                <span>txt</span><span>md</span><span>markdown</span
+                ><span>html</span><span>htm</span><span>pdf</span
+                ><span>docx</span><span>epub</span><span>xlsx</span
+                ><span>csv</span><span>tsv</span><span>json</span
+                ><span>rtf</span><span>swift</span><span>py</span
+                ><span>js</span><span>ts</span><span>tsx</span><span>jsx</span
+                ><span>java</span><span>cpp</span><span>hpp</span
+                ><span>c</span><span>h</span><span>m</span><span>mm</span
+                ><span>sql</span><span>xml</span><span>yaml</span
+                ><span>yml</span><span>toml</span><span>log</span>
               </div>
             </div>
 
@@ -1044,8 +1136,8 @@
               <p>
                 RAG queries return chunk metadata and source paths. Ghost can
                 open the cited file at the right spot, or reveal it in Finder.
-                Ten RAG tools: ingest, sync, query, search, open, status,
-                remove, reindex, clear.
+                Ten RAG tools: ingest a file, ingest a folder, sync, query,
+                search, open, status, remove, reindex, clear.
               </p>
               <figure class="feature-shot">
                 <img
@@ -1088,7 +1180,7 @@
 
           <div class="act-stats reveal">
             <div class="act-stat">
-              <span class="act-num">76</span>
+              <span class="act-num">78</span>
               <span class="act-label">built-in capabilities</span>
             </div>
             <div class="act-stat">
@@ -1209,7 +1301,7 @@
                 <div class="risk-tier block">
                   <span class="risk-dot"></span>
                   <h4>Blocked</h4>
-                  <p>Unknown future tools fail closed, never silently run.</p>
+                  <p>Unknown future tools fail closed and say so.</p>
                 </div>
               </div>
             </div>
@@ -1270,10 +1362,10 @@
             <span class="eyebrow">Native</span>
             <h2>It speaks <em>macOS</em><br />fluently.</h2>
             <p class="chapter-lede">
-              Ghost doesn't shell out to scripts when it doesn't have to. It
-              talks to Calendar, Reminders, Notes, Shortcuts, Vision OCR, and
-              Speech Recognition through the same native APIs your other apps
-              do.
+              Ghost talks to Calendar, Reminders, Notes, Shortcuts, Vision OCR,
+              and Speech Recognition through the same native APIs your other
+              apps do, and reaches for a script only where macOS leaves it no
+              other way in.
             </p>
           </div>
 
@@ -1436,6 +1528,34 @@
                   stroke-linejoin="round"
                   aria-hidden="true"
                 >
+                  <rect x="3" y="4" width="18" height="15" rx="2" />
+                  <circle cx="8.5" cy="9.5" r="1.5" />
+                  <path d="M21 15l-5-5L5 19" />
+                </svg>
+              </div>
+              <div class="native-text">
+                <h3>Paste an image</h3>
+                <p>
+                  Take a screenshot, press <code>&#8984;V</code> in the notch or
+                  the floating bar, and ask your question. The picture rides
+                  along with the message on whatever model you are using,
+                  including a Claude or ChatGPT subscription.
+                </p>
+              </div>
+            </div>
+            <div class="native-row reveal">
+              <div class="native-glyph">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
                   <path
                     d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"
                   />
@@ -1473,9 +1593,12 @@
               <div class="native-text">
                 <h3>Screen capture &amp; OCR</h3>
                 <p>
-                  Capture a region and extract text with Apple Vision OCR in fast
-                  or accurate mode. Ghost hides during capture and restores
-                  afterward.
+                  Drag over a region and the words are there in about a tenth of
+                  a second, read by Apple Vision on your Mac. Ghost wakes the
+                  recognizer at launch so the first read of the day is as fast as
+                  the hundredth, hides itself during the capture, and restores
+                  afterward. Asking flatly to read your screen runs the same
+                  instant capture the button does, with no model round trip.
                 </p>
                 <figure class="feature-shot">
                   <img
@@ -1650,7 +1773,7 @@
           <div class="chapter-head reveal">
             <span class="chapter-num">07</span>
             <span class="eyebrow">Protect</span>
-            <h2>Compatible with small local<br />models like <em>Gemma 4 e4b.</em></h2>
+            <h2>Your data follows<br />a <em>route you choose.</em></h2>
             <p class="chapter-lede">
               Privacy is the architecture here, settled before anything runs. Ghost
               separates local providers, local indexes, and hosted key paths, so
@@ -1717,12 +1840,50 @@
             </article>
 
             <article class="protect-card reveal">
+              <span class="eyebrow">On-device only</span>
+              <h3>Messages, Notes, Mail, Contacts</h3>
+              <p>
+                Anything read out of those four stays on your Mac at every step
+                of a run: the answer, any summary of it, and the tool results
+                folded back into the next turn. A local model or a deterministic
+                reader does the work, and where Ghost cannot do it that way it
+                declines the request and says why.
+              </p>
+            </article>
+
+            <article class="protect-card reveal">
+              <span class="eyebrow">Content scan</span>
+              <h3>Ghost reads the selection itself</h3>
+              <p>
+                The origin rule is exact about which app text came from and blind
+                to what it says, so a card number in a plain text file is just
+                ordinary text. Ghost reads the selection itself before anything
+                leaves, tells you what it found, and lets you decide with that in
+                front of you.
+              </p>
+            </article>
+
+            <article class="protect-card reveal">
+              <span class="eyebrow">Boundaries</span>
+              <h3>Rules that hold across every run</h3>
+              <p>
+                An approval prompt answers one question at a time and expires with
+                it. Write a boundary once, in your own words, and Ghost checks it
+                before anything else runs: a rule can put a folder off limits, or
+                keep Ghost out of Messages entirely. The action log is the other
+                half, recording what Ghost attempted, including the refusals and
+                the reads that worked. Both live on your Mac.
+              </p>
+            </article>
+
+            <article class="protect-card reveal">
               <span class="eyebrow">Deep link security</span>
               <h3>Only <code>ghost://toggle</code></h3>
               <p>
-                The only deep link Ghost accepts is one that opens Ghost. No
-                file paths, no user content, no exfiltration vectors. Older deep
-                link patterns are blocked.
+                The only deep link Ghost accepts is one that opens Ghost. It
+                takes no arguments at all, so there is nothing in it that could
+                name a file or carry your content outward. Older deep link
+                patterns are blocked.
               </p>
             </article>
           </div>
@@ -1888,7 +2049,7 @@
               <span class="mono-label">ryuhemingway/Ghost-App</span>
             </a>
             <span class="mono-label"
-              >One-time purchase · macOS 14+ · Apple silicon &amp; Intel</span
+              >One-time purchase · macOS 14+ · Apple silicon</span
             >
           </div>
         </section>
@@ -1929,6 +2090,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js?v=3.1.1"></script>
   </body>
 </html>

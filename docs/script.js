@@ -3,13 +3,34 @@
    GSAP reveals · FAQ · theme · copy-to-clipboard
    ============================================ */
 
-gsap.registerPlugin(ScrollTrigger);
+/* GSAP comes off a CDN, and a blocked or slow cdnjs used to take the whole
+   file down with it: the FAQ is rendered by this script, so one failed
+   request left an empty section on the page. Everything animated is now
+   behind this flag, and everything structural runs either way. */
+const hasGSAP = typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined";
+if (hasGSAP) gsap.registerPlugin(ScrollTrigger);
+
+/* ---------------- MOTION PREFERENCE ---------------- */
+/* Everything scroll-linked below is opt-in on this flag. The CSS block at
+   the bottom of styles.css already rescues .reveal and kills transitions,
+   but GSAP never consults a stylesheet, and a scrubbed tween would happily
+   hold an element at scaleY(0) for someone who asked for no motion. So the
+   resting state in CSS is always the finished one, and JS only ever
+   animates *towards* it. */
+const reduceMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)",
+).matches;
+const animate = hasGSAP && !reduceMotion;
 
 /* ---------------- FAQ DATA ---------------- */
 const faqs = [
   {
     q: "What is Ghost?",
     a: "Ghost is a local-first macOS AI workspace you summon with a keystroke. It routes prompts to local and hosted models, searches your private knowledge base with RAG, starts timers, and runs verified Mac actions, all from one native SwiftUI surface that appears as a top-center notch or a floating bar and vanishes when you dismiss it.",
+  },
+  {
+    q: "What do I need to run Ghost?",
+    a: "A Mac with Apple silicon (M1 or later) running macOS 14 Sonoma or newer. Ghost is a native SwiftUI app notarized by Apple, and it ships as an Apple silicon build only, so it does not run on an Intel Mac. Nothing else is required to start: a provider key, a local model server, and every individual capability are all optional and all switched off until you turn them on.",
   },
   {
     q: "How do I open Ghost?",
@@ -25,7 +46,7 @@ const faqs = [
   },
   {
     q: "What is RAG memory?",
-    a: "Ghost indexes the folders you approve into a local SQLite database with FTS5 full-text search. It supports 30 file formats, including PDF, DOCX, EPUB, Markdown, and source code. When a prompt needs context, Ghost retrieves cited, source-backed chunks you can open at the right spot.",
+    a: "Ghost indexes the folders you approve into a local SQLite database with FTS5 full-text search. It supports 32 file formats, including PDF, DOCX, XLSX, EPUB, Markdown, and source code. When a prompt needs context, Ghost retrieves cited, source-backed chunks you can open at the right spot.",
   },
   {
     q: "What is the capability harness?",
@@ -47,9 +68,9 @@ faqs.forEach((faq) => {
   const item = document.createElement("div");
   item.className = "faq-item reveal";
   item.innerHTML = `
-    <button class="faq-question" data-cursor="pointer">
+    <button class="faq-question" data-cursor="pointer" aria-expanded="false">
       <span>${faq.q}</span>
-      <span class="faq-icon">+</span>
+      <span class="faq-icon" aria-hidden="true">+</span>
     </button>
     <div class="faq-answer"><div class="faq-answer-inner">${faq.a}</div></div>
   `;
@@ -60,26 +81,58 @@ faqs.forEach((faq) => {
     document.querySelectorAll(".faq-item").forEach((f) => {
       f.classList.remove("is-open");
       f.querySelector(".faq-answer").style.maxHeight = "0";
+      f.querySelector(".faq-question").setAttribute("aria-expanded", "false");
     });
     if (!isOpen) {
       item.classList.add("is-open");
       answer.style.maxHeight = answer.scrollHeight + "px";
+      question.setAttribute("aria-expanded", "true");
     }
   });
   faqList.appendChild(item);
 });
 
+/* max-height is a pixel measurement taken at one width, so an answer left
+   open through a rotate or a window resize reflows taller than the number we
+   stored and the last lines get clipped. Same bug the release rail already
+   guards against. */
+window.addEventListener("resize", () => {
+  const open = faqList.querySelector(".faq-item.is-open .faq-answer");
+  if (open) open.style.maxHeight = open.scrollHeight + "px";
+});
+
 /* ---------------- THEME TOGGLE ---------------- */
+/* The initial theme is resolved by the inline boot script in <head>, before
+   first paint. This only has to handle the click, and remember it: the
+   toggle used to be forgotten on reload, so choosing light was a decision
+   you had to make again on every page load. */
 const themeToggle = document.getElementById("theme-toggle");
-themeToggle.addEventListener("click", () => {
-  const current = document.documentElement.dataset.theme;
-  const next = current === "dark" ? "light" : "dark";
-  document.documentElement.dataset.theme = next;
-  gsap.fromTo(
-    "body",
-    { opacity: 0.8 },
-    { opacity: 1, duration: 0.3, ease: "power2.out" },
+const syncThemeToggle = () => {
+  const isLight = document.documentElement.dataset.theme === "light";
+  themeToggle.setAttribute("aria-pressed", String(isLight));
+  themeToggle.setAttribute(
+    "aria-label",
+    isLight ? "Switch to dark theme" : "Switch to light theme",
   );
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", isLight ? "#faf8f5" : "#000000");
+};
+syncThemeToggle();
+themeToggle.addEventListener("click", () => {
+  const next =
+    document.documentElement.dataset.theme === "light" ? "dark" : "light";
+  document.documentElement.dataset.theme = next;
+  try {
+    localStorage.setItem("ghost-theme", next);
+  } catch (e) {}
+  syncThemeToggle();
+  if (animate) {
+    gsap.fromTo(
+      "body",
+      { opacity: 0.8 },
+      { opacity: 1, duration: 0.3, ease: "power2.out" },
+    );
+  }
 });
 
 /* ---------------- NAV SCROLL ---------------- */
@@ -92,17 +145,6 @@ window.addEventListener(
   { passive: true },
 );
 
-/* ---------------- MOTION PREFERENCE ---------------- */
-/* Everything scroll-linked below is opt-in on this flag. The CSS block at
-   the bottom of styles.css already rescues .reveal and kills transitions,
-   but GSAP never consults a stylesheet, and a scrubbed tween would happily
-   hold an element at scaleY(0) for someone who asked for no motion. So the
-   resting state in CSS is always the finished one, and JS only ever
-   animates *towards* it. */
-const reduceMotion = window.matchMedia(
-  "(prefers-reduced-motion: reduce)",
-).matches;
-
 /* ---------------- RELEASE RAIL ---------------- */
 /* Older releases are one line each until you open them. The rail draws
    itself as you scroll and each version lights its dot on arrival. */
@@ -110,7 +152,7 @@ function initReleaseRail() {
   const rail = document.getElementById("release-rail");
   if (!rail) return;
 
-  const rows = gsap.utils.toArray(rail.querySelectorAll(".release-row"));
+  const rows = Array.from(rail.querySelectorAll(".release-row"));
 
   rows.forEach((row) => {
     const head = row.querySelector(".release-head");
@@ -131,7 +173,7 @@ function initReleaseRail() {
       }
       // The rail just changed height, so the scrubbed line has to remeasure
       // or it ends up drawn against the old geometry.
-      ScrollTrigger.refresh();
+      if (hasGSAP) ScrollTrigger.refresh();
     });
   });
 
@@ -143,7 +185,7 @@ function initReleaseRail() {
     if (openBody) openBody.style.maxHeight = openBody.scrollHeight + "px";
   });
 
-  if (reduceMotion) {
+  if (!animate) {
     rows.forEach((row) => row.classList.add("is-lit"));
     return;
   }
@@ -236,37 +278,57 @@ function initReveals() {
 }
 
 /* ---------------- HERO ENTRANCE ---------------- */
-gsap.fromTo(
-  ".hero-badge",
-  { opacity: 0, y: 20 },
-  { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", delay: 0.1 },
-);
-gsap.fromTo(
-  ".hero-title",
-  { opacity: 0, y: 30 },
-  { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", delay: 0.2 },
-);
-gsap.fromTo(
-  ".hero-lede",
-  { opacity: 0, y: 20 },
-  { opacity: 1, y: 0, duration: 0.7, ease: "power3.out", delay: 0.4 },
-);
-gsap.fromTo(
-  "#hero .hero-actions",
-  { opacity: 0, y: 20 },
-  { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", delay: 0.6 },
-);
-/* The product shot carries .reveal, and initReveals deliberately skips
-   anything inside #hero, so it has to be raised here or it never shows. */
-gsap.fromTo(
-  ".device",
-  { opacity: 0, y: 40 },
-  { opacity: 1, y: 0, duration: 1, ease: "power3.out", delay: 0.75 },
-);
+/* These are fromTo, so they set opacity: 0 inline before they run. That
+   beats the CSS reduced-motion rescue, which is a stylesheet and cannot
+   undo an inline style, so the hero used to fade and slide for someone who
+   had asked for no motion at all. Guarded now, like everything else. */
+function initHero() {
+  gsap.fromTo(
+    ".hero-badge",
+    { opacity: 0, y: 20 },
+    { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", delay: 0.1 },
+  );
+  gsap.fromTo(
+    ".hero-title",
+    { opacity: 0, y: 30 },
+    { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", delay: 0.2 },
+  );
+  gsap.fromTo(
+    ".hero-lede",
+    { opacity: 0, y: 20 },
+    { opacity: 1, y: 0, duration: 0.7, ease: "power3.out", delay: 0.4 },
+  );
+  gsap.fromTo(
+    "#hero .hero-actions",
+    { opacity: 0, y: 20 },
+    { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", delay: 0.6 },
+  );
+  /* The product shot carries .reveal, and initReveals deliberately skips
+     anything inside #hero, so it has to be raised here or it never shows. */
+  gsap.fromTo(
+    ".device",
+    { opacity: 0, y: 40 },
+    { opacity: 1, y: 0, duration: 1, ease: "power3.out", delay: 0.75 },
+  );
+}
+
+/* .reveal rests at opacity 0 and is raised by a tween. With no GSAP there is
+   nothing to raise it, and the page would render as a blank column. */
+function showEverything() {
+  document.querySelectorAll(".reveal").forEach((el) => {
+    el.style.opacity = "1";
+    el.style.transform = "none";
+  });
+}
 
 /* ---------------- INIT ---------------- */
-initStaggeredReveals();
-initReveals();
+if (animate) {
+  initStaggeredReveals();
+  initReveals();
+  initHero();
+} else {
+  showEverything();
+}
 initReleaseRail();
 initScrollProgress();
 document.getElementById("year").textContent = new Date().getFullYear();
