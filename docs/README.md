@@ -60,3 +60,29 @@ docs/
 ## Notes
 
 This is a secondary gallery surface for the Ghost macOS app, not the app itself. The native app lives in `Sources/Ghost/`.
+
+## Where the assets live
+
+**Everything under `docs/` is published. Nothing internal lives here.** That is
+the whole rule, and it is structural rather than a list of `--exclude` flags to
+remember: `ARCHITECTURE.md` and the internal security audit sit at the
+repository root, not in this directory, so a wholesale sync of `docs/` cannot
+leak them. If you add something here, assume the world can read it.
+
+Two asset directories, split by which document loads them:
+
+| Directory | Loaded by | Contents |
+| --- | --- | --- |
+| `media/` | `index.html` — this site | Site imagery and the `demo-*.mp4` clips, kebab-case, already encoded for the web |
+| `readme/` | `../README.md` — the GitHub front page | App screenshots and answer examples. See `readme/CAPTURES.md` |
+
+Nothing is shared between them, which is deliberate: a file in `media/` can be
+renamed or recropped for the site without silently changing what the README
+shows, and vice versa. It also means "is this used?" is answerable by grepping
+one file rather than guessing.
+
+**Encode before committing.** Raw captures off a Retina display run 8–10 MB
+each, and the README's were doing exactly that — the front page cost 25 MB in
+three images. `sips -s format jpeg -s formatOptions 82 -Z 2400 in.png --out
+out.jpg` cut the same three to 1.1 MB with no visible loss. The raw masters are
+not in this repository at all; see `readme/CAPTURES.md`.
