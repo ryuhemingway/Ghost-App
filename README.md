@@ -6,13 +6,13 @@ https://github.com/user-attachments/assets/ef881143-3b65-491d-b78b-1be007a04c9b
 
 <br/>
 
-[![Download Ghost v3.0.0](https://img.shields.io/badge/Download_Ghost-v3.0.0-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
+[![Download Ghost v3.2.0](https://img.shields.io/badge/Download_Ghost-v3.2.0-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
 
 <br/>
 
 <a href="https://integratedagentics.com/ghost"><img src="docs/Screenshot 2026-08-11 at 6.42.27 PM.png" alt="Ghost answering a question about the Mohs hardness scale in the notch surface, with provider, model and timing chips above the answer" width="820" /></a>
 
-<samp>v3.0.0 · notarized · one-time purchase · macOS 14+</samp>
+<samp>v3.2.0 · notarized · one-time purchase · macOS 14+</samp>
 
 </div>
 
@@ -26,14 +26,14 @@ By default, everything is off: web access, file tools, automation, messaging, sc
 
 <br/>
 
-## New in 3.0.0
+## New in 3.2.0
 
-Ghost could always read text off your screen, and it could never look at a picture you handed it. Both of those changed.
+DeepSeek learned to look at pictures, and Ghost learned how to look like less.
 
-- **⌘V a screenshot straight into the chat bar.** Take a screenshot, press ⌘V in Ghost, ask your question. The image rides along with the message and Ghost answers about what is in it, in the notch and in the floating bar alike. Pasting an image used to do nothing at all, silently, while pasting text worked perfectly — a hard thing to report as a bug and an easy one to assume was never a feature. Ordinary text paste behaves exactly as before.
-- **Your subscription can look at images too.** On a Claude or ChatGPT subscription Ghost used to refuse an attached image and tell you to switch to an API key and a vision model. That advice was wrong: the model at the other end of your subscription reads images perfectly well. Ghost now hands the picture over in a way that route can accept, and gives it the means to open it, so you get a real answer instead of a redirect.
-- **Reading your screen no longer takes a minute.** The first screen read after a macOS update could take the better part of a minute, even for two words, and every one after it was instant. That was macOS loading its text recognizer rather than Ghost thinking: about 55 seconds the first time and about a tenth of a second every time after, whatever the words say. Ghost now wakes the recognizer quietly when it starts, so nobody waits for it. A screen read also finishes the moment the words are on screen rather than holding on for an optional cleanup pass, and a short blurry read no longer spends a network round trip to be handed its own guess back.
-- **Asking for your screen is the same as pressing the button.** Typing "read my screen" used to be sent off to a model that had to decide to go and look, which is a round trip for something your Mac does on its own. It now runs the same instant capture the button does. Only for asking flatly for the screen: a question that needs an answer as well as the words, like why an error is happening, still goes to the model where it belongs.
+- **DeepSeek reads images.** DeepSeek shipped a vision model, and Ghost sends it images the way it always has for Claude and Gemini: the picture travels with your question rather than being described to the model second-hand. It is the only DeepSeek model that accepts images, so Ghost offers it as its own entry in the model picker rather than quietly changing what Flash means — and if you attach a picture while Flash or Pro is selected, Ghost names the model to switch to instead of sending a request DeepSeek would refuse outright. Pick it at **Settings ▸ AI ▸ DeepSeek model ▸ Flash Vision**. Text-heavy screenshots still read faster and more accurately through Read Screen Selection, which uses your Mac's own text recognition and never sends the picture anywhere.
+- **Minimal, for when Ghost should hold still.** Everything the standard theme draws, minus everything it draws for effect: no halo around the rim, no sheen drifting behind the caret, and a plain grey hairline where the gold was. Nothing on the surface moves unless Ghost is actually doing something, which is what makes the working light legible again. Your accent colour still applies.
+- **Glass, rimmed in frost rather than gold.** The sheerest surface the material will give, so Ghost sits lightly over whatever is behind it. It is the one theme that sets the glass level itself rather than leaving it to the slider, because the look only holds together at the sheer end. Both are at **Settings ▸ General ▸ Theme**.
+- **Also since 3.0.0**, which this README skipped: code in an answer is set as code — its own coloured block, at reading size, with a copy button — Ghost asks where an answer should land instead of guessing, and Open at Login works. That switch was greyed out on every install Ghost had ever shipped, and the note under it blamed where the app was living; both were wrong.
 
 <br/>
 
@@ -271,18 +271,18 @@ Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (e
 
 ## Fixed: builds 2.0.1 – 2.0.5 stopped telling you about updates.
 
-<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 3.0.0</samp></sub>
+<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 3.2.0</samp></sub>
 
-**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 3.0.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
+**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 3.2.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
 
-If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 3.0.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
+If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 3.2.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
 
 What happened: the "Check for Updates" button and the "update available" notice both lived in an older window that was removed in July when it stopped being part of the app. The updater underneath kept working the whole time — it checks on schedule and it does find new versions — but it had been told that Ghost would display what it found, and after the removal Ghost had nowhere to display it. So an affected build checks, finds an update, and says nothing.
 
 What to do, if you are on 2.0.1 – 2.0.5:
 
-- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 3.0.0 will arrive on its own.
-- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 3.0.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
+- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 3.2.0 will arrive on its own.
+- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 3.2.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
 
 <br/>
 

@@ -56,7 +56,7 @@
       href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=3.1.1" />
+    <link rel="stylesheet" href="styles.css?v=3.2.0" />
   </head>
   <body>
     <div class="page-wrap">
@@ -168,7 +168,7 @@
             <div class="hero-badge reveal">
               <span class="pulse-dot"></span>
               <span class="mono-label"
-                >Ghost 3.1.1 · macOS 14+ · Apple silicon</span
+                >Ghost 3.2.0 · macOS 14+ · Apple silicon</span
               >
             </div>
             <h1 class="hero-title reveal">
@@ -277,56 +277,54 @@
             <span class="eyebrow">What's new</span>
             <h2>The latest <em>update.</em></h2>
             <p class="chapter-lede">
-              Paste a snippet into Ghost and the answer comes back with the code in
-              its own coloured block, at reading size, set clearly apart from the
-              sentences explaining it. Ghost asks where you want that answer before it
-              starts. And Open at Login, which was greyed out on every install Ghost
-              has ever shipped, works.
+              DeepSeek can look at a picture now. Hand Ghost a screenshot, a chart
+              or a photo and ask about it, on DeepSeek the way you already could on
+              Claude and Gemini. And the theme picker has two new entries at the
+              quiet end: Minimal, where nothing moves unless Ghost is working, and
+              Glass, the sheerest surface Ghost has ever drawn.
             </p>
             <span class="release-stamp">
               <span class="pulse-dot"></span>
-              <span class="mono-label">Version 3.1.1 · shipping now</span>
+              <span class="mono-label">Version 3.2.0 · shipping now</span>
             </span>
           </div>
 
           <div class="release-now" data-reveal-stagger>
             <article class="release-card reveal">
-              <span class="eyebrow">Code</span>
-              <h3>Code in an answer looks like code</h3>
+              <span class="eyebrow">Vision</span>
+              <h3>DeepSeek can read a picture</h3>
               <p>
-                Every snippet now sits in its own block with a background you can
-                see, a language label, a copy button, and syntax colour for keywords,
-                strings, numbers and comments. It is set a size larger than before,
-                so it stops reading as a footnote beside the sentences explaining it.
-                Your own pasted code gets the same treatment in the transcript, and
-                names with underscores in them, like <code>a_file.py</code>, print
-                exactly as you wrote them.
+                DeepSeek shipped a vision model, and it is wired in. Attach a
+                screenshot, a chart or a photo and ask about it: the picture travels
+                with your question rather than being described to the model
+                second-hand, which is how images have always worked on Claude and
+                Gemini. It is the one DeepSeek model that accepts them, so it sits in
+                the model picker as its own entry instead of quietly changing what
+                Flash means.
               </p>
             </article>
 
             <article class="release-card reveal">
-              <span class="eyebrow">Routing</span>
-              <h3>Ghost asks where the answer should go</h3>
+              <span class="eyebrow">Minimal</span>
+              <h3>For when Ghost should hold still</h3>
               <p>
-                Paste code into the chat bar and a small row appears under it: Chat,
-                or Terminal. Pick one and that is where the answer opens. Ghost used
-                to decide on its own from the wording of your message, which is fine
-                until it guesses wrong and you go hunting on the surface the answer
-                is not on. Ignore the question and it still decides for you. The
-                Terminal also typesets its replies as prose now.
+                Everything the standard theme draws, minus everything it draws for
+                effect: no halo around the rim, no sheen drifting behind the caret, a
+                plain grey hairline where the gold was. Nothing on the surface moves
+                unless Ghost is actually doing something, which is what makes the
+                working light mean something again. Your accent colour still applies.
               </p>
             </article>
 
             <article class="release-card reveal">
-              <span class="eyebrow">Fixed</span>
-              <h3>Open at Login actually works</h3>
+              <span class="eyebrow">Glass</span>
+              <h3>Rimmed in frost rather than gold</h3>
               <p>
-                The switch was dead on every fresh install, and the note under it
-                blamed where the app was living. Both were wrong. macOS reports an app
-                it has never registered the same way it reports one that cannot be
-                registered, and Ghost treated the two as the same thing. Turn it on
-                once now and it stays on, including through the updates that used to
-                quietly lose it.
+                The sheerest surface the material will give, so Ghost sits lightly
+                over whatever is behind it. It is the one theme that sets the glass
+                level itself rather than leaving it to the slider, because the look
+                only holds together at the sheer end. Your accent colour still
+                applies here too.
               </p>
             </article>
           </div>
@@ -335,13 +333,37 @@
             <div class="release-history-head reveal">
               <span class="eyebrow">Before that</span>
               <p class="release-history-note">
-                Eighteen releases, newest first. Open one to read what changed.
+                Nineteen releases, newest first. Open one to read what changed.
               </p>
             </div>
 
             <div class="release-rail-wrap">
               <span class="release-progress" aria-hidden="true"></span>
               <ol class="release-rail" id="release-rail" data-reveal-stagger>
+
+              <li class="release-row reveal">
+                <span class="release-dot" aria-hidden="true"></span>
+                <button class="release-head" data-cursor="pointer" aria-expanded="false">
+                  <span class="release-version">3.1.1</span>
+                  <span class="release-headline">
+                    Open at Login works. It never did.
+                  </span>
+                  <span class="release-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="release-body">
+                  <p class="release-body-inner">
+                    If you ever went looking for Open at Login and found it greyed
+                    out, that was not your Mac. Ghost was reading a perfectly normal
+                    signal from macOS, "this app has never been set to open at
+                    login", as "this build cannot do it", and then telling you to
+                    move Ghost into your Applications folder, which is where it
+                    already was. Every install had it switched off with no way to
+                    switch it on. It works now, and because replacing the app is how
+                    an update works, Ghost also puts the registration back when
+                    macOS loses it.
+                  </p>
+                </div>
+              </li>
 
               <li class="release-row reveal">
                 <span class="release-dot" aria-hidden="true"></span>
@@ -2090,6 +2112,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="script.js?v=3.1.1"></script>
+    <script src="script.js?v=3.2.0"></script>
   </body>
 </html>
