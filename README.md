@@ -12,13 +12,13 @@ https://github.com/user-attachments/assets/ef881143-3b65-491d-b78b-1be007a04c9b
 
 <br/>
 
-[![Download Ghost v3.2.0](https://img.shields.io/badge/Download_Ghost-v3.2.0-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
+[![Download Ghost v4.0.0](https://img.shields.io/badge/Download_Ghost-v4.0.0-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
 
 <br/>
 
 <a href="https://integratedagentics.com/ghost"><img src="docs/readme/hero-notch-answer.jpg" alt="Ghost answering a question about the Mohs hardness scale in the notch surface, with provider, model and timing chips above the answer" width="820" /></a>
 
-<samp>v3.2.0 · notarized · one-time purchase · macOS 14+</samp>
+<samp>v4.0.0 · notarized · one-time purchase · macOS 14+</samp>
 
 </div>
 
@@ -32,14 +32,16 @@ By default, everything is off: web access, file tools, automation, messaging, sc
 
 <br/>
 
-## New in 3.2.0
+## New in 4.0
 
-DeepSeek learned to look at pictures, and Ghost learned how to look like less.
+Your coding agents moved into the notch, and the subagents they hand work to now show their receipts.
 
-- **DeepSeek reads images.** DeepSeek shipped a vision model, and Ghost sends it images the way it always has for Claude and Gemini: the picture travels with your question rather than being described to the model second-hand. It is the only DeepSeek model that accepts images, so Ghost offers it as its own entry in the model picker rather than quietly changing what Flash means — and if you attach a picture while Flash or Pro is selected, Ghost names the model to switch to instead of sending a request DeepSeek would refuse outright. Pick it at **Settings ▸ AI ▸ DeepSeek model ▸ Flash Vision**. Text-heavy screenshots still read faster and more accurately through Read Screen Selection, which uses your Mac's own text recognition and never sends the picture anywhere.
-- **Minimal, for when Ghost should hold still.** Everything the standard theme draws, minus everything it draws for effect: no halo around the rim, no sheen drifting behind the caret, and a plain grey hairline where the gold was. Nothing on the surface moves unless Ghost is actually doing something, which is what makes the working light legible again. Your accent colour still applies.
-- **Glass, rimmed in frost rather than gold.** The sheerest surface the material will give, so Ghost sits lightly over whatever is behind it. It is the one theme that sets the glass level itself rather than leaving it to the slider, because the look only holds together at the sheer end. Both are at **Settings ▸ General ▸ Theme**.
-- **Also since 3.0.0**, which this README skipped: code in an answer is set as code — its own coloured block, at reading size, with a copy button — Ghost asks where an answer should land instead of guessing, and Open at Login works. That switch was greyed out on every install Ghost had ever shipped, and the note under it blamed where the app was living; both were wrong.
+- **The Agents tab.** Every Claude Code, Codex, opencode and DeepSeek Harness session on this Mac, from any terminal, in one list: what each is doing, its checklist and its last reply. When one needs permission or asks a question, the card comes to the notch, and the collapsed notch says when an agent is working. Monitors can watch a command, a page or a feed and hand an alert to Claude. Press **⌘4** in Ghost, and turn on watching at **Settings ▸ Agents**.
+- **Chat with Claude, Codex and opencode.** Start a chat with any of the three from the Agents tab. Each works in your working folder with its own tools and your own permission settings, on the model and effort you pick, including any model you have connected to opencode. Chats are kept between launches: minimize one while it keeps working, and delete it when you are done.
+- **Subagents that show their work.** A Claude chat can have a subagent on another model, such as Sonnet 5.5 or DeepSeek through opencode. Every task the lead hands it becomes a card with the lead's reason, how long it ran, its tokens and cost, and the files it changed with lines added and removed, counting only edits that actually landed. Subagents also reply as they work now, instead of arriving minutes late.
+- **Real terminals for `claude` and `opencode`.** Type either at the Terminal prompt and it runs in a live terminal inside the section. Before the agent runs a shell command, edits a file or fetches a page, the notch shows an Allow or Deny card, and when it stops to ask you something, its options arrive as buttons.
+- **Ghost on your phone.** Switch on the browser console and Ghost serves a page your phone can open on the same Wi-Fi. Scan the code in **Settings ▸ Privacy & Access** and you have Chat and the Terminal in your hand, with Allow and Deny buttons when something needs permission. It is off until you turn it on.
+- **Also since 3.2.0:** Catch up and Countdowns (both below), a screenshot of your screen you can ask about, events that land on the calendar you named, including a Google one, and a notch that grows out of the camera like a bubble.
 
 <br/>
 
@@ -49,7 +51,7 @@ DeepSeek learned to look at pictures, and Ghost learned how to look like less.
 
 ![The Ghost composer at rest, hanging from the camera notch as a single input pill with the section bar above it](docs/readme/quick-ask.jpg)
 
-Press ⌥Space anywhere on your Mac and a frosted-glass surface appears — dropping from the camera notch, or floating up as a text bar near the bottom of the screen, your choice. Chat, file creation, document search, memory, timers, Calendar, Reminders, Notes, screen OCR, and agent coding sessions all live in one place. The aurora background shifts hue with the tone of your conversation. On a notch Mac you can also reveal it by gliding your pointer to the top-center of the screen. Escape dismisses it, and typing a single `/` lists every command Ghost understands.
+Press ⌥Space anywhere on your Mac and a frosted-glass surface appears — dropping from the camera notch, or floating up as a text bar near the bottom of the screen, your choice. Chat, file creation, document search, memory, timers, Calendar, Reminders, Notes, screen OCR, whole-screen screenshots you can then ask about, countdowns, and agent coding sessions all live in one place. On a notch Mac you can also reveal it by gliding your pointer to the top-center of the screen. Escape dismisses it, and typing a single `/` lists every command Ghost understands.
 
 ![Ghost answering "Show me what the planet Saturn looks like" in the notch, with an embedded Cassini photograph and its source](docs/readme/answer-saturn.jpg)
 
@@ -112,11 +114,11 @@ The Milky Way visualisation at the top of this page is one of these: a single se
 
 <br/>
 
-## Nearly eighty tools, four risk tiers, one undo journal.
+## Eighty tools, four risk tiers, one undo journal.
 
 <sub><samp>THE MODEL NEVER TOUCHES YOUR FILESYSTEM</samp></sub>
 
-The capability harness is Ghost's action layer. The model requests an action; Ghost normalizes the path, checks permissions, runs app-owned Swift code, and returns a machine-readable receipt. **76 tools** span file operations, document generation and conversion, web search and fetch, Calendar events, Reminders, Apple Notes, iMessage and FaceTime, screen capture with Vision OCR, on-device voice input, memory, and a full suite of Mac controls.
+The capability harness is Ghost's action layer. The model requests an action; Ghost normalizes the path, checks permissions, runs app-owned Swift code, and returns a machine-readable receipt. **80 tools** span file operations, document generation and conversion, web search and fetch, Calendar events, Reminders, Apple Notes, iMessage and FaceTime, screen capture with Vision OCR, on-device voice input, memory, and a full suite of Mac controls.
 
 Every tool is classified into four risk tiers — Low (read-only), Medium (writes/creates), High (patches/deletes/shell), and Blocked (unknown tools fail closed). An action journal records before-and-after state so you can roll back what Ghost changed. A created or edited file, a folder, any generated document, an Apple Note, a reminder, a calendar event, and an app Ghost opened or quit are each one tap of **Undo** away, right on the action card in the transcript. Two actions are outside the journal on purpose: uninstalling an app and clearing junk both move things to the Trash rather than deleting them, so recovery is Finder's **Put Back**, and the card says so instead of offering an Undo it cannot honour. Six independent permission switches (web, files, automation, messaging, screen, terminal) are all off by default and toggle independently, with three approval modes — Ask, Safe, and Auto-run.
 
@@ -174,7 +176,7 @@ Every completed phase is written to a study log on disk, and the right half of t
 
 <sub><samp>SELECT TEXT · THE BAR COMES TO YOU</samp></sub>
 
-Select text in any app and a small bar appears beside it: Copy, Search, Answer, Summarize, Fix, with Professional, Casual, Humanize, Explain and Translate one click away — and Ask Ghost or Write email to carry the selection into the main window. The bar adapts to what you selected, so code, prose and email drafts each get the actions that suit them.
+Drag to highlight text in any app and a small bar appears beside it: Copy, Search, Answer, Summarize, Fix, with Professional, Casual, Humanize, Explain and Translate one click away — and Ask Ghost or Write email to carry the selection into the main window. The bar adapts to what you selected, so code, prose and email drafts each get the actions that suit them. It follows a drag-select only, so a plain click or a double-click on a word never summons it, and it takes itself away after two seconds if you do not reach for it. Hovering it holds it open, and ⌃⌥Space raises it over any selection, including one made with the keyboard.
 
 The result opens in the bar itself. **Replace** writes it back into the field you selected in through the Accessibility API rather than the clipboard, so that app's own ⌘Z still undoes it. Replace only appears when the field is editable and the action actually produces replacement text — a summary is never pasteable over the paragraph it summarized. Press ⌃⌥Space to bring the bar back, Escape to dismiss it.
 
@@ -188,7 +190,7 @@ Right-click → Services → Ghost still works everywhere too.
 
 ## Sections, and a terminal.
 
-<sub><samp>CHAT · TIMER · TERMINAL · SETTINGS</samp></sub>
+<sub><samp>CHAT · TIMER · TERMINAL · AGENTS · COUNTDOWNS · CATCH UP · SETTINGS</samp></sub>
 
 A bar across the top of the Ghost window switches between sections in one click, and stays put as you move between them. Approval prompts deliberately get no tab — they're decisions to make, not places to go.
 
@@ -196,11 +198,25 @@ A bar across the top of the Ghost window switches between sections in one click,
 
 **Terminal** takes both halves of the job. Type a command and it runs: arrow keys walk history, `clear` empties the scrollback, and `cd` carries to the next command. Type what you want changed instead — in plain English — and it goes to Ghost's coding agent, rooted at whatever directory you last `cd`'d to and running on the provider or subscription you already configured. Progress streams as it works, and the agent's own commands (`/plan`, `/build`, `/init`, `/files`) work at the same prompt.
 
-Which of the two you get is decided deterministically, without asking a model, so it can't quietly guess wrong — and you can force either one: prefix a line with `!` to run it as a command, or `>` (or `?`) to send it to the agent. It still runs one command at a time rather than emulating a terminal, so interactive programs like vim or an ssh password prompt aren't supported. It sits behind the same Terminal switch as Ghost's shell tool, off until you turn it on.
+Which of the two you get is decided deterministically, without asking a model, so it can't quietly guess wrong — and you can force either one: prefix a line with `!` to run it as a command, or `>` (or `?`) to send it to the agent. Interactive programs get a real terminal: `claude`, `opencode`, vim, ssh and top open in a live session inside the section, and exiting one leaves you back at the prompt. It sits behind the same Terminal switch as Ghost's shell tool, off until you turn it on.
 
 ![The General settings page inside the Ghost surface](docs/readme/settings.jpg)
 
+**Agents** lists every coding agent running on this Mac and holds your chats with Claude Code, Codex and opencode, subagents included. See [New in 4.0](#new-in-40) above.
+
 **Timer** is a full pomodoro: start a focus phase, name the subject, and Ghost runs the cycle and keeps the study record beside it. Plain countdowns live there too.
+
+**Countdowns** answers the other half of that question: not how long this phase has left, but how long until the things that are actually coming. It reads dated events from Calendar and dated reminders from Reminders — nothing to retype, and nothing leaves the Mac — and merges them with countdowns you add yourself for the ones no app knows about. Soonest first, in days, hours or minutes depending on which is the useful answer. Calendar and Reminders are separate macOS permissions, so denying one still leaves the other working, and the section says which is missing rather than going blank.
+
+**Catch up** is the first thing to open after a few hours away, and it starts in an offline-only mode. It reads Calendar, Reminders, Mail and Messages on this Mac and shows what came due, what arrived unread and what started while you weren't looking, then what's coming in the next two days. The window runs from the last time you looked at the section, capped at a day, because a digest covering three weeks is an archive rather than a catch-up. Nothing is asked of a model and nothing touches the network, so it works on a plane. Mail is read a moment after the rest and folded in when it answers, because querying an inbox over AppleScript takes several seconds and the fast sources shouldn't wait behind it.
+
+Switch on the world briefing and it picks up the weather and the last 48 hours on up to three topics you choose — Tech, Health, Finance, Crypto, Sports, Science, World, Entertainment, Top stories, or what's being reported where you are. That part is fetched directly rather than recalled by a model, from Google News's curated section per subject, and every story is checked against its own publication date so nothing older than two days gets in. Name subjects you follow and they're pulled to the top of their topic; mute the ones you don't and they're dropped before anything is ranked or sent.
+
+Then a model reads those stories and writes the briefing itself: each story keeps the publisher's own headline, with one line underneath saying why it matters. The headline is the reporting and opens the article; the line below it is Ghost talking about it, and they're set differently so you can always tell which is which. A story the model skips still shows its headline, and a topic it ignores says so rather than vanishing. You choose which model does this — a cloud one or an on-device one, each with its own provider and model — because turning a dozen headlines into six short lines is work a cheap fast model does well, and it runs every fifteen minutes whether or not you're looking.
+
+Stories already written up are skipped for two days, unless skipping would leave a topic empty. Mornings lead with what landed overnight and evenings with what moved today. And the on-device recap can connect a story to your actual day — a flight on Thursday, the city you're in — which the cloud recap cannot, because that needs your calendar: the material it's handed is a type that cannot hold anything from the first column, and your day reaches a prompt only through a function no cloud route can call. Your calendar, mail and messages are structurally unable to reach a provider, not merely unlikely to.
+
+Tell it where you are and the weather and the local news are both about your town. Settings ▸ Catch up takes a five-digit US ZIP code or a city name; empty keeps the old behaviour of using whatever location the network reports, which a VPN gets wrong. A bare ZIP can't just be passed to the weather service: `02115` geocodes to Vilnius and `10001` to Cáceres, because five digits are a postcode almost everywhere. So a ZIP is qualified with the country before it's sent, and separately resolved to the town the post office assigns it to — the weather service answers a ZIP with a *neighbourhood*, and "Back Bay news" returns thirty-three stories where "Boston news" returns a hundred. The town is what the panel shows and what the news is searched for. The lookup happens once, when you type it, and is cached in your settings, so a briefing never waits on it and a failed lookup costs you nothing but the old behaviour.
 
 <br/>
 
@@ -229,7 +245,7 @@ Ghost is local-first by design. Here's the machinery:
 <summary><b>How is Ghost priced? What's the catch?</b></summary>
 <br/>
 
-Free 24-hour trial, then a one-time $14.99 lifetime license. No subscriptions, no recurring charges, no hidden costs. Bring your own API keys for hosted models, run your existing Claude/ChatGPT plan through the CLI, or use Ollama and LM Studio for free forever.
+A one-time $19.99 lifetime license. No subscriptions, no recurring charges, no hidden costs. Bring your own API keys for hosted models, run your existing Claude/ChatGPT plan through the CLI, or run local models through Ollama and LM Studio at no extra cost.
 
 </details>
 
@@ -269,7 +285,7 @@ macOS 14 or later, Apple Silicon. Ghost ships as an Apple Silicon build and does
 <summary><b>Can I use Ghost for coding?</b></summary>
 <br/>
 
-Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (edit files and run commands), Explore (read and map a codebase), and Review (inspect diffs and catch bugs). Coding runs in Ghost's Terminal section, at full width, with the whole change shown the way an editor shows it: every added and removed line, coloured by language, with Undo and Reveal cards beside the code that made them. A live phase line says what the agent is doing while it does it, and you can drive the whole thing with your own Claude Code or Codex plan.
+Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (edit files and run commands), Explore (read and map a codebase), and Review (inspect diffs and catch bugs). Coding runs in Ghost's Terminal section, at full width, with the whole change shown the way an editor shows it: every added and removed line, coloured by language, with Undo and Reveal cards beside the code that made them. A live phase line says what the agent is doing while it does it, and you can drive the whole thing with your own Claude Code or Codex plan. The Agents tab goes further: chat with Claude Code, Codex or opencode directly, and give a Claude lead a subagent on another model.
 
 </details>
 
@@ -277,18 +293,18 @@ Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (e
 
 ## Fixed: builds 2.0.1 – 2.0.5 stopped telling you about updates.
 
-<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 3.2.0</samp></sub>
+<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 4.0.0</samp></sub>
 
-**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 3.2.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
+**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 4.0.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
 
-If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 3.2.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
+If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 4.0.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
 
 What happened: the "Check for Updates" button and the "update available" notice both lived in an older window that was removed in July when it stopped being part of the app. The updater underneath kept working the whole time — it checks on schedule and it does find new versions — but it had been told that Ghost would display what it found, and after the removal Ghost had nowhere to display it. So an affected build checks, finds an update, and says nothing.
 
 What to do, if you are on 2.0.1 – 2.0.5:
 
-- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 3.2.0 will arrive on its own.
-- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 3.2.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
+- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 4.0.0 will arrive on its own.
+- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 4.0.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
 
 <br/>
 
@@ -300,12 +316,12 @@ What to do, if you are on 2.0.1 – 2.0.5:
 
 Ghost is a native macOS app, not Electron, not a web wrapper.
 
-- **The interface.** <samp>NSVisualEffectView glass · notch or floating bar · reactive aurora background · HK Grotesk + Source Serif Pro · spring animations</samp>
+- **The interface.** <samp>NSVisualEffectView glass · notch or floating bar · four themes · HK Grotesk + Source Serif Pro · spring animations</samp>
 - **The routing engine.** <samp>14 intent kinds · eight providers plus BYO Claude/ChatGPT plan · 4 effort levels · 3 approval modes · auto agent-vs-direct routing</samp>
 - **The model probe.** <samp>tests every local model for chat, JSON mode, native tool calls, and argument accuracy · assigns the safest calling convention</samp>
 - **Memory.** <samp>on-device Markdown knowledge base · remember / recall · ambient grounding · semantic recall · lives in ~/Ghost Outputs/Knowledge</samp>
 - **The RAG system.** <samp>SQLite + FTS5 · 3,500-char chunks · 500-char overlap · sentence-aware · page numbers from PDFs · FSEvents watcher · 30+ formats</samp>
-- **The harness.** <samp>76 tools · 4 risk tiers · undo journal · path normalization · permission gating · verified writes · three-state outcomes · approval-gated computer-use</samp>
+- **The harness.** <samp>80 tools · 4 risk tiers · undo journal · path normalization · permission gating · verified writes · three-state outcomes · approval-gated computer-use</samp>
 - **Privacy engine.** <samp>on-device-only gate for Messages / Notes / Mail / Contacts · card / SSN / passport scan before cloud egress · web egress guard · Keychain-stored keys · sensitive-path consent</samp>
 - **The experience details.** <samp>trackpad haptics on summon and answer · daily brief · proactive suggestions · latency sparkline · token & cost meter · diagnostics log · Prompt Library · right-click rewrite services</samp>
 
@@ -318,7 +334,7 @@ Ghost is a native macOS app, not Electron, not a web wrapper.
 Ghost ships a `METRICS.md` in the source tree that is generated, not written. `script/metrics.sh` counts the Swift files, the lines, the swift-testing tests, and the registered tools straight from the working tree, and `llvm-cov` produces the coverage numbers after a coverage-enabled test run. Every row in METRICS.md names the exact command that produced it, so nothing there is a claim you have to take on trust — rerun it yourself:
 
 ```sh
-bash script/test.sh                  # 1,400+ tests, real pass/fail from the runner
+bash script/test.sh                  # 2,300+ tests, real pass/fail from the runner
 ./script/metrics.sh --with-coverage  # regenerates METRICS.md + metrics.json
 ```
 
