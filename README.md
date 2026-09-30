@@ -1,5 +1,11 @@
 <div align="center">
 
+<a href="docs/media/demo-ad-30s.mp4"><img src="docs/media/poster-demo-ad-30s.jpg" alt="Ghost in 30 seconds. Click to watch the video." width="100%"></a>
+
+<sub>▶ <a href="docs/media/demo-ad-30s.mp4"><b>Watch Ghost in 30 seconds</b></a>, with sound.</sub>
+
+<br/>
+
 https://github.com/user-attachments/assets/ef881143-3b65-491d-b78b-1be007a04c9b
 
 <sub>One sentence to Ghost, and `milky-way.html` is written to the Desktop and opens in Safari. 26 seconds, no cuts. ([download](docs/media/demo-milky-way.mp4))</sub>
