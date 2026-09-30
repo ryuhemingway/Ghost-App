@@ -3,20 +3,18 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>
-      Ghost: A local-first macOS AI workspace you summon with a keystroke
-    </title>
+    <title>Ghost: an AI assistant that lives in your Mac's notch</title>
     <meta
       name="description"
-      content="Ghost is a local-first macOS AI workspace you summon with a keystroke, as a top-center notch or a floating bar. Route prompts to local and hosted models, search your private knowledge base, start timers, and run verified Mac actions from one native interface."
+      content="Press Option+Space and Ghost drops out of your Mac's notch. It answers on the model you choose, then does the work: documents, calendar events, reminders, texts and your coding agents, with Undo on the changes it makes."
     />
     <meta
       property="og:title"
-      content="Ghost: A local-first macOS AI workspace you summon with a keystroke"
+      content="Ghost: an AI assistant that lives in your Mac's notch"
     />
     <meta
       property="og:description"
-      content="Route models, retrieve local documents, start timers, and run verified Mac actions from one private surface: a top-center notch or a floating bar you summon with a keystroke."
+      content="Press Option+Space and Ghost drops out of your Mac's notch. It answers on the model you choose, then does the work, with Undo on the changes it makes."
     />
     <meta property="og:image" content="assets/ghost-hero.png" />
     <meta name="theme-color" content="#000000" />
@@ -56,7 +54,7 @@
       href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=3.2.0" />
+    <link rel="stylesheet" href="styles.css?v=4.0.2" />
   </head>
   <body>
     <div class="page-wrap">
@@ -85,12 +83,8 @@
           <span>Ghost</span>
         </a>
         <nav class="nav-links" aria-label="Primary">
-          <a href="#whats-new" data-cursor="pointer">What's new</a>
-          <a href="#summon" data-cursor="pointer">Summon</a>
-          <a href="#route" data-cursor="pointer">Route</a>
-          <a href="#remember" data-cursor="pointer">Remember</a>
-          <a href="#act" data-cursor="pointer">Act</a>
-          <a href="#protect" data-cursor="pointer">Privacy</a>
+          <a href="#features" data-cursor="pointer">Features</a>
+          <a href="#privacy" data-cursor="pointer">Privacy</a>
           <a href="#faq" data-cursor="pointer">FAQ</a>
         </nav>
         <div class="nav-actions">
@@ -168,17 +162,17 @@
             <div class="hero-badge reveal">
               <span class="pulse-dot"></span>
               <span class="mono-label"
-                >Ghost 3.2.0 · macOS 14+ · Apple silicon</span
+                >Ghost 4.0.0 · macOS 14+ · Apple silicon</span
               >
             </div>
             <h1 class="hero-title reveal">
-              An AI workspace you <em>summon.</em>
+              An AI that lives in <em>your notch.</em>
             </h1>
             <p class="hero-lede reveal">
-              Local-first, native macOS, and yours in one keystroke. Ghost drops
-              from your <strong>notch</strong> or floats above your dock, routes
-              prompts to local and hosted models, searches your private files,
-              and runs <strong>verified Mac actions</strong>.
+              Press Option+Space in any app and Ghost drops out of the notch.
+              Ask it something and it answers on the model you choose. Ask it to
+              do something and it does: it writes the file, books the meeting,
+              texts your friend or checks on your coding agents.
             </p>
             <div class="hero-actions reveal">
               <span class="halo-wrap halo-wrap--lg">
@@ -190,8 +184,8 @@
                   Download for macOS
                 </a>
               </span>
-              <a class="btn btn-ghost" href="#summon" data-cursor="pointer">
-                Take the tour
+              <a class="btn btn-ghost" href="#ad" data-cursor="pointer">
+                Watch the demo
               </a>
             </div>
             </div>
@@ -213,1132 +207,85 @@
           </div>
         </section>
 
-        <!-- MANIFESTO -->
-        <section class="manifesto" id="manifesto">
-          <div class="manifesto-inner reveal">
-            <span class="eyebrow">What Ghost is</span>
-            <p class="manifesto-line">
-              Ghost is a <em>native SwiftUI app</em> for macOS that connects
-              local models, hosted APIs, optional agent CLIs, document
-              retrieval, timers, and verified Mac actions through one quiet
-              surface, placed as a top-center notch or a floating bar.
-            </p>
-            <p class="manifesto-line">
-              It runs as an <em>accessory</em>. It keeps clear of the Dock, leaves
-              the full screen to whatever you were doing, appears with a keystroke,
-              does the work, and steps back. Your Mac stays your Mac.
-            </p>
-            <p class="manifesto-line">
-              Every capability starts <em>off</em>. You opt into each one (web, files,
-              automation, messaging, screen, shell) in a
-              three-step first run. Everything Ghost can do, it does because you
-              switched it on and asked.
-            </p>
-          </div>
-        </section>
-
-        <!-- SHOWCASE -->
-        <section class="showcase" id="showcase">
+        <!-- AD -->
+        <section class="showcase" id="ad">
           <div class="showcase-inner reveal">
-            <span class="eyebrow">Watch it work</span>
-            <h2 class="showcase-title">
-              One sentence. A real file<br />on your <em>Desktop.</em>
-            </h2>
+            <span class="eyebrow">Ghost in 30 seconds</span>
+            <h2 class="showcase-title">Watch it <em>work.</em></h2>
             <p class="showcase-lede">
-              Ghost is asked for an interactive Milky Way. It writes
-              <code>milky-way.html</code>, saves it to the Desktop, and opens it
-              in Safari. The finished file is yours to keep, edit and send on.
+              One keystroke, then Ghost builds a web page, makes a PDF and takes
+              it back, books lunch, sets a reminder, answers from your own files
+              and runs your coding agents.
             </p>
             <figure class="showcase-figure">
               <video
                 class="showcase-video"
-                src="media/demo-milky-way.mp4"
-                poster="media/poster-demo-milky-way.jpg"
+                src="media/demo-ad-30s.mp4"
+                poster="media/poster-demo-ad-30s-open.jpg"
                 controls
-                muted
-                loop
                 playsinline
                 preload="none"
-                width="1280"
-                height="720"
-                aria-label="Ghost creating an interactive Milky Way visualisation from the floating bar, and the finished milky-way.html open in Safari"
+                width="1920"
+                height="1080"
+                aria-label="A 30-second overview of Ghost: summoning it with Option-Space, building a document, adding a calendar event and a reminder, answering from local files, running claude in the Terminal, and the Agents tab with a subagent"
               ></video>
               <figcaption class="showcase-caption">
-                Recorded on macOS, 26 seconds, no cuts.
+                30 seconds, with sound.
               </figcaption>
             </figure>
           </div>
         </section>
 
-        <!-- WHAT'S NEW -->
-        <section class="chapter" id="whats-new">
-          <div class="chapter-head reveal">
-            <span class="chapter-num">NEW</span>
-            <span class="eyebrow">What's new</span>
-            <h2>The latest <em>update.</em></h2>
-            <p class="chapter-lede">
-              DeepSeek can look at a picture now. Hand Ghost a screenshot, a chart
-              or a photo and ask about it, on DeepSeek the way you already could on
-              Claude and Gemini. And the theme picker has two new entries at the
-              quiet end: Minimal, where nothing moves unless Ghost is working, and
-              Glass, the sheerest surface Ghost has ever drawn.
-            </p>
-            <span class="release-stamp">
-              <span class="pulse-dot"></span>
-              <span class="mono-label">Version 3.2.0 · shipping now</span>
-            </span>
-          </div>
-
-          <div class="release-now" data-reveal-stagger>
-            <article class="release-card reveal">
-              <span class="eyebrow">Vision</span>
-              <h3>DeepSeek can read a picture</h3>
-              <p>
-                DeepSeek shipped a vision model, and it is wired in. Attach a
-                screenshot, a chart or a photo and ask about it: the picture travels
-                with your question rather than being described to the model
-                second-hand, which is how images have always worked on Claude and
-                Gemini. It is the one DeepSeek model that accepts them, so it sits in
-                the model picker as its own entry instead of quietly changing what
-                Flash means.
-              </p>
-            </article>
-
-            <article class="release-card reveal">
-              <span class="eyebrow">Minimal</span>
-              <h3>For when Ghost should hold still</h3>
-              <p>
-                Everything the standard theme draws, minus everything it draws for
-                effect: no halo around the rim, no sheen drifting behind the caret, a
-                plain grey hairline where the gold was. Nothing on the surface moves
-                unless Ghost is actually doing something, which is what makes the
-                working light mean something again. Your accent colour still applies.
-              </p>
-            </article>
-
-            <article class="release-card reveal">
-              <span class="eyebrow">Glass</span>
-              <h3>Rimmed in frost rather than gold</h3>
-              <p>
-                The sheerest surface the material will give, so Ghost sits lightly
-                over whatever is behind it. It is the one theme that sets the glass
-                level itself rather than leaving it to the slider, because the look
-                only holds together at the sheer end. Your accent colour still
-                applies here too.
-              </p>
-            </article>
-          </div>
-
-          <div class="release-history">
-            <div class="release-history-head reveal">
-              <span class="eyebrow">Before that</span>
-              <p class="release-history-note">
-                Nineteen releases, newest first. Open one to read what changed.
-              </p>
-            </div>
-
-            <div class="release-rail-wrap">
-              <span class="release-progress" aria-hidden="true"></span>
-              <ol class="release-rail" id="release-rail" data-reveal-stagger>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">3.1.1</span>
-                  <span class="release-headline">
-                    Open at Login works. It never did.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    If you ever went looking for Open at Login and found it greyed
-                    out, that was not your Mac. Ghost was reading a perfectly normal
-                    signal from macOS, "this app has never been set to open at
-                    login", as "this build cannot do it", and then telling you to
-                    move Ghost into your Applications folder, which is where it
-                    already was. Every install had it switched off with no way to
-                    switch it on. It works now, and because replacing the app is how
-                    an update works, Ghost also puts the registration back when
-                    macOS loses it.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">3.1.0</span>
-                  <span class="release-headline">
-                    Code in an answer looks like code now.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    Paste a snippet into Ghost and two things used to go wrong. The
-                    answer came back with the code set in small grey type that ran
-                    straight into the explanation, so the hardest part of reading it
-                    was working out which half was which. And the answer landed
-                    wherever Ghost decided, which was sometimes the Terminal and
-                    sometimes the chat. Code is now set in a proper block, coloured,
-                    at reading size, and Ghost asks you where the answer should go
-                    before it starts. The Terminal typesets its replies as prose
-                    rather than raw markdown, the chat bar grows to eight lines so a
-                    long paste is visible, and the countdown plate sits in the notch
-                    on every display.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">3.0.0</span>
-                  <span class="release-headline">
-                    Paste a screenshot into the box and ask about it.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    Ghost could always read text off your screen, and it could never
-                    look at a picture you handed it. Both of those changed. Press
-                    &#8984;V with a screenshot on the clipboard and it goes into the
-                    message like a file, whatever model you are on, including your
-                    Claude subscription, which used to be told to go and find an API
-                    key and a vision model instead. And the screen reader that used to
-                    sit there for the better part of a minute over two words now
-                    answers in about a tenth of a second: that was macOS loading its
-                    text recognizer, and Ghost wakes it quietly at launch.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.12.0</span>
-                  <span class="release-headline">
-                    Move your cursor away and Ghost goes away, on any display.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    Two things made Ghost overstay. Opening it with the shortcut quietly made
-                    it permanent, so the only way to close it was the shortcut again, and
-                    on a monitor with no notch the collapsed surface had no shape to sit
-                    in, so it either showed nothing at all or a black tab stranded in the
-                    middle of the menu bar. Ghost now leaves a second after your pointer
-                    does, unless leaving would cost you something, and it draws itself a
-                    notch wherever it lands.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.11.0</span>
-                  <span class="release-headline">
-                    The notch tells you what Ghost is doing, without you opening it.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    A timer running in Ghost was invisible unless you opened the Timer section,
-                    and so was everything else: a question you asked and walked away from,
-                    and any news Ghost had for you afterwards. The collapsed notch now
-                    says all three out loud, shaped to the cutout on your Mac. It also
-                    stops carrying yesterday's focus sessions into today.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.10.0</span>
-                  <span class="release-headline">
-                    Tell Ghost which file answers a question, and it reads that file every time you ask.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    Asking about your own documents used to mean attaching them again on every
-                    question, and forgetting to was worse than useless. You can now state
-                    the rule once, in your own words, and Ghost keeps it: a matching
-                    question finds that document, reads the part that answers it and
-                    brings it into the reply. Spreadsheets can be changed as well as read,
-                    one cell at a time, without the workbook losing anything you set up.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.9.0</span>
-                  <span class="release-headline">
-                    Tell Ghost what it may never do, and read back everything it
-                    tried.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    Ghost has always asked before it does anything risky, and an
-                    approval prompt can only ever answer one question at a time. It
-                    cannot hold a standing rule. So there was no way to say never
-                    touch that folder, or never message anybody, and no way
-                    afterwards to find out what Ghost had actually attempted: a
-                    refusal left no trace, and a read that worked left none either.
-                    Boundaries are those standing rules, checked before anything else
-                    runs, and the action log is the record. Both live on your Mac.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.8.0</span>
-                  <span class="release-headline">
-                    Ghost remembers what you tell it, and shows you what it is
-                    thinking.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    Ghost has had a knowledge base since 2.0, and on most Macs it was
-                    empty. Saving a fact needed a tool, and a plain sentence like
-                    remember that I am in the Tuesday section is answered on the fast
-                    route that carries no tools, so the one moment you told Ghost
-                    something worth keeping was the one moment it had no way to write
-                    it down. Asking what do you know about me then got the only
-                    honest answer available: nothing. Both halves are fixed, and the
-                    fact is saved on your Mac by Ghost itself rather than by a model
-                    deciding to.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.7.0</span>
-                  <span class="release-headline">
-                    Ghost stopped asking a model what two plus two is.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    Sums, conversions, the clock, dates and text tools are
-                    computation. There is nothing for a model to
-                    add to any of them, and waiting a few seconds and paying for
-                    the privilege was the wrong answer to 2+558. All of it now
-                    happens on your Mac, before any provider is contacted, with
-                    no API key and no permission needed. Contact lookups got the
-                    opposite fix: they used to reach a model that has no way to
-                    read Contacts, so it would invent a phone number and present it
-                    as fact.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.6.0</span>
-                  <span class="release-headline">
-                    Closing an app is now as quick as opening one.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    Open Safari has always happened the moment you asked, on
-                    your Mac, with no model involved. Close Safari went the other
-                    way entirely: it became a model turn, then a high-risk tool
-                    that stopped to ask for approval, and on a bad day an answer
-                    claiming it had closed something it never touched. Both
-                    halves are the same mechanical thing now, and neither needs
-                    a model or an API key.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.5.1</span>
-                  <span class="release-headline">
-                    The page that says how to use Ghost is about Ghost now.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    Settings has a row promising what Ghost can do, with examples
-                    to try. Opening it gave you four lines about installing an
-                    optional external runtime that almost nobody turns on. It now
-                    answers the question someone opening that row is actually
-                    asking, and the help text around it stopped naming three
-                    features that no longer exist: a command palette on
-                    &#8984;K that was never built, and screens inside a window
-                    Ghost stopped opening.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.5.0</span>
-                  <span class="release-headline">
-                    Ghost checks what is inside a selection, as well as where it
-                    came from.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    Ghost draws its privacy line by origin: anything out of
-                    Messages, Notes, Mail or Contacts is private and never goes
-                    to a cloud model. That rule is exact about where text came
-                    from and blind to what is in it. A card number pasted into a
-                    plain text file is, as far as the rule is concerned,
-                    ordinary text from an ordinary app. Ghost now reads the
-                    selection itself first and says what it found before you
-                    press anything. The same release adds a Diagnostics page for
-                    the opposite problem: the actions that quietly did not work,
-                    and had nowhere to say so.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.4.2</span>
-                  <span class="release-headline">
-                    Code happens in the Terminal now, and you can see the whole
-                    model picker.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    Two things you could not see. The model picker gained a
-                    second column for the model, and the window it lives in was
-                    still the width of the old single column, so the picker
-                    looked like it had been cut in half. Separately, asking
-                    Ghost to write code put the answer in the chat window, where
-                    a long diff is the wrong shape. Coding requests now open the
-                    Terminal and stay there, with the full diff, the file cards,
-                    and a line telling you what is happening while it happens.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.4.1</span>
-                  <span class="release-headline">
-                    Codex starts. Pictures show up.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    Two things a user reported, both broken since before anyone
-                    said so. A Ghost app launched from the Finder does not
-                    inherit the PATH your Terminal has, and Codex installed
-                    through npm is a small script that goes looking for Node on
-                    exactly that PATH. Separately, every image Ghost looked up on
-                    the web was being checked with a request the check itself
-                    could not read, so real pictures were judged unreachable and
-                    removed from the answer before you saw it.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.4.0</span>
-                  <span class="release-headline">
-                    The things Ghost suggests you say now actually work.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    A Ghost user pointed out that the "Try: …" line above the
-                    composer was suggesting phrases that did nothing, and the
-                    reason it stayed hidden is that a Ghost action which failed
-                    produced no card at all. So an action blocked on a missing
-                    permission looked identical to one that quietly did nothing.
-                    Every suggested phrase is now checked against the code that
-                    has to answer it, failures say so on screen, and there is a
-                    page in Settings listing everything you can say.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.3.0</span>
-                  <span class="release-headline">
-                    Codex answers with the model you picked in Ghost.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    Choosing Low, Medium, High or Max on the Codex route only
-                    ever added a sentence of advice to the prompt. The real
-                    model and reasoning effort came from whatever your own
-                    <code>~/.codex/config.toml</code> said, so a setting made
-                    inside Ghost changed nothing about how Codex actually ran.
-                    Ghost now chooses the model and the effort for each run,
-                    keeps that choice to itself, and tells you what Codex
-                    reported using.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.2.1</span>
-                  <span class="release-headline">
-                    Your own Claude and ChatGPT plans connect properly now.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    A Ghost user wrote in to say the Codex route was simply
-                    dead: choosing "your ChatGPT plan" produced nothing, with no
-                    error to explain it. They were right, and it had been broken
-                    for everyone who had not first pointed Ghost at a code
-                    repository. So is the larger problem behind it, which was
-                    that Ghost never checked whether your subscription was
-                    signed in before asking it to answer.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.2.0</span>
-                  <span class="release-headline">
-                    Ghost stops getting in its own way.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    This release came out of using Ghost for a day and writing
-                    down everything that went wrong. It was taking &#8984;/ away
-                    from every app on your Mac, telling you about keyboard
-                    shortcuts it had never implemented, hiding its own update
-                    window behind itself, and freezing for a quarter of a second
-                    every time you pressed Return. It has a menu bar icon again,
-                    so you can tell it is running.
-                  </p>
-                </div>
-              </li>
-
-              <li class="release-row reveal">
-                <span class="release-dot" aria-hidden="true"></span>
-                <button class="release-head" data-cursor="pointer" aria-expanded="false">
-                  <span class="release-version">2.1.0</span>
-                  <span class="release-headline">
-                    Ghost introduces itself now, and shows you what it can do.
-                  </span>
-                  <span class="release-icon" aria-hidden="true">+</span>
-                </button>
-                <div class="release-body">
-                  <p class="release-body-inner">
-                    Ghost had no first run at all: a new install opened an empty
-                    text field and left you to guess. It now walks you through
-                    where answers come from, offers you a first question, and
-                    stops taking your keyboard at every launch. Typing a slash
-                    lists everything it can do. Conversations can be searched
-                    and named. This release also closes a security hole in web
-                    fetching, and finishes the undo journal.
-                  </p>
-                </div>
-              </li>
-              </ol>
-            </div>
-
-            <p class="release-foot reveal">
-              Every release ships its own notes inside the app. Ghost shows
-              them once, on the first launch after it updates.
-            </p>
-          </div>
-        </section>
-
-        <!-- SUMMON -->
-        <section class="chapter" id="summon">
+        <!-- FEATURES -->
+        <section class="chapter" id="features">
           <div class="chapter-head reveal">
             <span class="chapter-num">01</span>
-            <span class="eyebrow">Summon</span>
-            <h2>Call it from <em>anywhere.</em></h2>
+            <span class="eyebrow">What it does</span>
+            <h2>Ask it.<br /><em>It does the work.</em></h2>
             <p class="chapter-lede">
-              Ghost lives in the background and comes forward on a keystroke. It
-              answers to global
-              shortcuts that work across every app on your Mac, and you decide
-              whether it drops from the top-center notch or floats like Siri
-              near the bottom of the screen. No Accessibility permission
-              required: the hotkeys are registered through Carbon, the same
-              system Spotlight uses.
+              All of this happens in the same bar under your notch, inside the
+              apps and files you already use.
             </p>
           </div>
 
-          <div class="summon-grid">
-            <article class="summon-card reveal" data-cursor="pointer">
-              <div class="summon-key"><kbd>⌥</kbd><kbd>Space</kbd></div>
-              <h3>Global shortcut</h3>
-              <p>
-                Press <code>Option+Space</code> from anywhere to open Ghost. The
-                same surface, wherever you are. Configurable to
-                <code>⌘⇧Space</code>, <code>⌃Space</code>, <code>⌃⌥Space</code>,
-                or <code>⌘⌥G</code>.
-              </p>
-            </article>
-
-            <article class="summon-card reveal" data-cursor="pointer">
-              <div class="summon-icon">
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 64 64"
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M16 49V28c0-11 7-18 16-18s16 7 16 18v21l-5-4-5 4-6-4-6 4-5-4-5 4Z"
-                    fill="currentColor"
-                  />
-                  <circle cx="26" cy="29" r="3" fill="var(--bg)" />
-                  <circle cx="38" cy="29" r="3" fill="var(--bg)" />
-                </svg>
-              </div>
-              <h3>Notch or floating bar</h3>
-              <p>
-                One surface, two homes. A toggle in Settings drops Ghost down
-                from the top-center <em>notch</em>, or floats it as a Siri-style
-                <em>bar</em> about an inch up from the bottom of your screen,
-                growing upward as it fills.
-              </p>
-            </article>
-
-            <article class="summon-card reveal" data-cursor="pointer">
-              <div class="summon-icon">
-                <svg
-                  width="26"
-                  height="26"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M12 19V5M5 12l7-7 7 7" />
-                  <path d="M4 21h16" />
-                </svg>
-              </div>
-              <h3>Hover to reveal</h3>
-              <p>
-                In notch placement, glide your pointer to the top center of the
-                screen and Ghost reveals itself. The pointer alone is enough. The
-                floating bar stays inert until you summon it, so a stray hover
-                passes it by.
-              </p>
-            </article>
-
-            <article class="summon-card reveal" data-cursor="pointer">
-              <div class="summon-key"><kbd>⌥⇧</kbd><kbd>Space</kbd></div>
-              <h3>Alternate shortcut</h3>
-              <p>
-                Enable a second global shortcut,
-                <code>⌥⇧Space</code> by default, that opens the very same surface. A muscle-memory
-                backup for when your hands are already on the keys.
-              </p>
-            </article>
-
-            <article class="summon-card reveal" data-cursor="pointer">
-              <div class="summon-icon">
-                <svg
-                  width="26"
-                  height="26"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
-                  />
-                  <path
-                    d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
-                  />
-                </svg>
-              </div>
-              <h3>Deep link</h3>
-              <p>
-                <code>ghost://toggle</code> opens Ghost from any app or script.
-                Opening is the whole of what it does: the link takes no
-                arguments, so there is nothing in it to name a file or carry
-                content outward.
-              </p>
-            </article>
-
-            <article class="summon-card reveal" data-cursor="pointer">
-              <div class="summon-icon">
-                <svg
-                  width="26"
-                  height="26"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M4 7V4h16v3M9 20h6M12 4v16" />
-                </svg>
-              </div>
-              <h3>macOS Services</h3>
-              <p>
-                Right-click any text in any app → Services → Ghost for
-                <em>Rewrite Professionally</em>, <em>Rewrite Casually</em>,
-                <em>Humanize</em>, <em>Check Grammar</em>, or
-                <em>Ask Ghost for Feedback</em>.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        <!-- ROUTE -->
-        <section class="chapter" id="route">
-          <div class="chapter-head reveal">
-            <span class="chapter-num">02</span>
-            <span class="eyebrow">Route</span>
-            <h2>
-              One prompt.<br /><em>Two engines.</em><br />Eight providers.
-            </h2>
-            <p class="chapter-lede">
-              You ask naturally. Ghost scores the prompt, picks the provider,
-              model, and engine, and decides whether a fast direct call is
-              enough or whether the work needs a connected agent loop.
-            </p>
-          </div>
-
-          <div class="route-flow reveal">
-            <div class="route-step">
-              <span class="route-step-num">i</span>
-              <h3>Direct API</h3>
-              <p>
-                The default path. Ghost calls the provider's HTTP API directly
-                with its native tool harness: streaming, tool loops, prompt
-                caching on Claude, retry with backoff on transient failures.
-              </p>
-            </div>
-            <div class="route-arrow" aria-hidden="true">
-              <span class="mono-label">or</span>
-            </div>
-            <div class="route-step">
-              <span class="route-step-num">ii</span>
-              <h3>Ghost Agent</h3>
-              <p>
-                For deeper work, Ghost shells out to a local CLI at
-                <code>~/.local/bin/ghost</code> or <code>hermes</code>, passing
-                provider, model, turn limits, approval mode, and toolsets.
-              </p>
-            </div>
-          </div>
-
-          <div class="provider-rail reveal">
-            <div class="provider-pill local">
-              <span class="prov-tag local">Local</span>
-              <h4>LM Studio</h4>
-              <p>localhost:1234</p>
-            </div>
-            <div class="provider-pill local">
-              <span class="prov-tag local">Local</span>
-              <h4>Ollama</h4>
-              <p>localhost:11434</p>
-            </div>
-            <div class="provider-pill cloud">
-              <span class="prov-tag cloud">Cloud</span>
-              <h4>Claude</h4>
-              <p>Anthropic</p>
-            </div>
-            <div class="provider-pill cloud">
-              <span class="prov-tag cloud">Cloud</span>
-              <h4>Gemini</h4>
-              <p>Google</p>
-            </div>
-            <div class="provider-pill cloud">
-              <span class="prov-tag cloud">Cloud</span>
-              <h4>DeepSeek v4</h4>
-              <p>reasoning</p>
-            </div>
-            <div class="provider-pill cloud">
-              <span class="prov-tag cloud">Cloud</span>
-              <h4>OpenCode Go</h4>
-              <p>zen/go/v1</p>
-            </div>
-            <div class="provider-pill cloud">
-              <span class="prov-tag cloud">Cloud</span>
-              <h4>OpenCode Zen</h4>
-              <p>free tier models</p>
-            </div>
-            <div class="provider-pill custom">
-              <span class="prov-tag custom">Custom</span>
-              <h4>OpenAI-compatible</h4>
-              <p>OpenAI · vLLM · any /v1</p>
-            </div>
-          </div>
-
-          <figure class="route-shot reveal">
-            <img
-              src="media/choose-provider-ghost.jpg"
-              alt="Ghost's provider picker open, showing eight providers and three subscription CLIs"
-              width="1600"
-              height="1034"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-
-          <div class="effort-row reveal">
-            <span class="eyebrow">Effort modes</span>
-            <div class="effort-track">
-              <div class="effort-node">
-                <span class="effort-label">Quick</span
-                ><span class="effort-meta">4 turns · 4K</span>
-              </div>
-              <div class="effort-node">
-                <span class="effort-label">Balanced</span
-                ><span class="effort-meta">12 turns · 8K</span>
-              </div>
-              <div class="effort-node">
-                <span class="effort-label">Deep</span
-                ><span class="effort-meta">40 turns · 16K</span>
-              </div>
-              <div class="effort-node">
-                <span class="effort-label">Max</span
-                ><span class="effort-meta">90 turns · 32K</span>
-              </div>
-            </div>
-            <p class="effort-note">
-              Four effort levels cap how many turns a run may take, from a
-              one-shot answer to a ninety-turn deep-work session, and how many
-              tool rounds the Direct API path may spend: 6, 10, 14, then 20.
-              Token budgets and mode names scale by provider. The figures above
-              are Claude's ceilings; a local model gets a far larger one, up to
-              its context window, because a reasoning model bills its whole
-              thinking phase against the same budget and a tight cap returns an
-              empty answer.
-            </p>
-          </div>
-
-          <div class="approval-row reveal">
-            <span class="eyebrow">Approval modes</span>
-            <div class="approval-track">
-              <div class="approval-node">
-                <h4>Ask</h4>
-                <p>Read-only tools auto-run; medium and high risk ask first.</p>
-              </div>
-              <div class="approval-node">
-                <h4>Safe</h4>
-                <p>Low and medium auto-run; high risk still asks.</p>
-              </div>
-              <div class="approval-node">
-                <h4>Auto-run</h4>
+          <div class="feature-rows">
+            <article class="feature-row feature-row--wide reveal">
+              <div class="feature-copy">
+                <span class="eyebrow">Any model</span>
+                <h3>Use any model, including the plan you already pay for</h3>
                 <p>
-                  Everything classified runs, but file path scope never
-                  expands.
+                  Run Ghost on your Claude Code, Codex or Antigravity plan, on an
+                  API key for Claude, Gemini, DeepSeek or any OpenAI-compatible
+                  server, or on a model in LM Studio or Ollama that never leaves
+                  your Mac. You switch between them from one menu.
                 </p>
               </div>
-            </div>
-          </div>
+              <figure class="feature-shot">
+                <img
+                  src="media/feature-any-model.jpg"
+                  alt="The Ghost mascot surrounded by the models it runs on: Claude, Claude Code, Codex, Gemini, DeepSeek, OpenCode, LM Studio, Ollama and any OpenAI-compatible server"
+                  width="2400"
+                  height="800"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </figure>
+            </article>
 
-          <figure class="route-shot reveal">
-            <img
-              src="media/effort-approval-picker.jpg"
-              alt="Ghost's run picker open on the subscription route, showing the four effort levels with Deep selected and the three approval modes with Ask selected"
-              width="1600"
-              height="1040"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-        </section>
-
-        <!-- REMEMBER -->
-        <section class="chapter" id="remember">
-          <div class="chapter-head reveal">
-            <span class="chapter-num">03</span>
-            <span class="eyebrow">Remember</span>
-            <h2>Your files,<br /><em>searchable memory.</em></h2>
-            <p class="chapter-lede">
-              Ghost indexes the folders you approve into a local SQLite database
-              with FTS5 full-text search. When a prompt needs context, it
-              retrieves source-backed chunks with citations you can open.
-            </p>
-          </div>
-
-          <div class="remember-body">
-            <div class="remember-feature reveal">
-              <span class="eyebrow">The index</span>
-              <h3>Local SQLite · FTS5 · WAL mode</h3>
-              <p>
-                Chunks live in
-                <code
-                  >~/Library/Application
-                  Support/Ghost/rag/ghost_rag.sqlite</code
-                >. Max chunk 3,500 chars, 500-char overlap, sentence-aware
-                splitting, page numbers preserved from PDFs, section titles from
-                markdown headings.
-              </p>
-            </div>
-
-            <div class="remember-feature reveal">
-              <span class="eyebrow">32 file formats</span>
-              <div class="format-cloud">
-                <span>txt</span><span>md</span><span>markdown</span
-                ><span>html</span><span>htm</span><span>pdf</span
-                ><span>docx</span><span>epub</span><span>xlsx</span
-                ><span>csv</span><span>tsv</span><span>json</span
-                ><span>rtf</span><span>swift</span><span>py</span
-                ><span>js</span><span>ts</span><span>tsx</span><span>jsx</span
-                ><span>java</span><span>cpp</span><span>hpp</span
-                ><span>c</span><span>h</span><span>m</span><span>mm</span
-                ><span>sql</span><span>xml</span><span>yaml</span
-                ><span>yml</span><span>toml</span><span>log</span>
+            <article class="feature-row reveal">
+              <div class="feature-copy">
+                <span class="eyebrow">Documents and files</span>
+                <h3>It makes the file, and it can take it back</h3>
+                <p>
+                  Ask for a PDF, a Word document, a slide deck, a spreadsheet or a
+                  web page and Ghost saves it where you ask, such as your
+                  Desktop. Every file Ghost makes,
+                  moves or edits gets an Undo button, and by default it asks
+                  before it changes anything.
+                </p>
               </div>
-            </div>
-
-            <div class="remember-feature reveal">
-              <span class="eyebrow">Desktop watcher</span>
-              <h3>FSEvents, always in sync</h3>
-              <p>
-                Watch a folder recursively. Startup sync, event-driven sync with
-                8-second debounce, periodic rescan every hour. Up to 20,000
-                files per pass. Manual folder ingest scales to 50,000. Skips
-                <code>node_modules</code>, <code>build</code>,
-                <code>__pycache__</code>, <code>venv</code>, and the rest.
-              </p>
-            </div>
-
-            <div class="remember-feature reveal">
-              <span class="eyebrow">Cited answers</span>
-              <h3>Open the source behind every claim</h3>
-              <p>
-                RAG queries return chunk metadata and source paths. Ghost can
-                open the cited file at the right spot, or reveal it in Finder.
-                Ten RAG tools: ingest a file, ingest a folder, sync, query,
-                search, open, status, remove, reindex, clear.
-              </p>
-              <figure class="feature-shot">
-                <img
-                  src="media/saturn.jpg"
-                  alt="Ghost answering a Saturn question with an inline image and a Wikipedia reference"
-                  width="1600"
-                  height="1034"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </figure>
-            </div>
-
-            <div class="remember-feature reveal">
-              <span class="eyebrow">Semantic recall</span>
-              <h3>Paraphrase and still match</h3>
-              <p>
-                Beyond literal keyword matching, Ghost uses on-device word
-              embeddings, Apple's <code>NaturalLanguage</code>, so a
-                paraphrased request still matches your saved facts and fast local
-                commands. All on-device.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <!-- ACT -->
-        <section class="chapter" id="act">
-          <div class="chapter-head reveal">
-            <span class="chapter-num">04</span>
-            <span class="eyebrow">Act</span>
-            <h2>Models request.<br /><em>Ghost verifies.</em></h2>
-            <p class="chapter-lede">
-              The capability harness is Ghost's action layer. The model never
-              touches the filesystem directly. It asks, Ghost normalizes the
-              path, checks permissions, runs app-owned code, and returns a
-              machine-readable receipt. You see what actually happened.
-            </p>
-          </div>
-
-          <div class="act-stats reveal">
-            <div class="act-stat">
-              <span class="act-num">78</span>
-              <span class="act-label">built-in capabilities</span>
-            </div>
-            <div class="act-stat">
-              <span class="act-num">18</span>
-              <span class="act-label">file operations</span>
-            </div>
-            <div class="act-stat">
-              <span class="act-num">9</span>
-              <span class="act-label">document formats</span>
-            </div>
-            <div class="act-stat">
-              <span class="act-num">4</span>
-              <span class="act-label">risk tiers</span>
-            </div>
-          </div>
-
-          <div class="act-body">
-            <div class="act-block reveal">
-              <span class="eyebrow">Files</span>
-              <h3>Read, write, move, convert</h3>
-              <p>
-                List, glob, grep, read, write, create, edit, patch, move, copy,
-                delete (trash by default), zip, reveal in Finder. Conversions
-                between PDF, DOCX, HTML, TXT, and Markdown. Desktop, Downloads,
-                Documents, Ghost Outputs, and the workspace are all safe output
-                targets.
-              </p>
-              <p>
-                A gated call shows you the tool name, its risk tier, and the
-                exact arguments before anything runs. Where a path is involved
-                you can also grant it for that folder for the rest of the
-                session, so one answer covers the whole run.
-              </p>
-              <figure class="feature-shot">
-                <img
-                  src="media/approval-create-pdf.jpg"
-                  alt="Ghost pausing on ghost_create_pdf with the destination path and document content shown, offering Deny, Allow Once, or Always for that folder"
-                  width="1600"
-                  height="1040"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </figure>
-              <figure class="feature-shot">
-                <img
-                  src="media/approval-reminder.jpg"
-                  alt="Ghost pausing on ghost_schedule_reminder, tagged MEDIUM, showing the title and due date it would use, with Deny and Allow Once"
-                  width="1600"
-                  height="1040"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </figure>
-            </div>
-
-            <div class="act-block reveal">
-              <span class="eyebrow">Documents</span>
-              <h3>Generate real artifacts</h3>
-              <p>
-                Create Markdown, HTML, TXT, CSV, JSON, PDF, DOCX, PPTX, and XLSX,
-                all through native macOS frameworks. If a local model answers
-                with a usable code block where it should have called a file tool,
-                Ghost saves the artifact itself and returns the real path.
-              </p>
-              <figure class="feature-shot">
-                <img
-                  src="media/creating-html.jpg"
-                  alt="Ghost writing solar-system.html to the Desktop with an Undo and Reveal receipt"
-                  width="1600"
-                  height="1034"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </figure>
               <figure class="feature-shot">
                 <video
-                  class="feature-video"
-                  src="media/demo-kinematic-equations.mp4"
-                  poster="media/poster-demo-kinematic-equations.jpg"
-                  controls
-                  muted
-                  loop
-                  playsinline
-                  preload="none"
-                  width="1920"
-                  height="1080"
-                  aria-label="Ghost working through the kinematic equations and saving the result as a document"
-                ></video>
-              </figure>
-            </div>
-
-            <div class="act-block reveal">
-              <span class="eyebrow">Risk classification</span>
-              <h3>Four tiers, fail closed</h3>
-              <div class="risk-tiers">
-                <div class="risk-tier low">
-                  <span class="risk-dot"></span>
-                  <h4>Low</h4>
-                  <p>
-                    Read-only: search, list, read, grep, weather, web search.
-                  </p>
-                </div>
-                <div class="risk-tier med">
-                  <span class="risk-dot"></span>
-                  <h4>Medium</h4>
-                  <p>
-                    Writes, creates, calendar, reminders, file copy, app launch.
-                  </p>
-                </div>
-                <div class="risk-tier high">
-                  <span class="risk-dot"></span>
-                  <h4>High</h4>
-                  <p>
-                    Patches, moves, deletes, app quit, Shortcuts, shell, send
-                    email, index clear.
-                  </p>
-                </div>
-                <div class="risk-tier block">
-                  <span class="risk-dot"></span>
-                  <h4>Blocked</h4>
-                  <p>Unknown future tools fail closed and say so.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="act-block reveal">
-              <span class="eyebrow">Undo</span>
-              <h3>Action journal</h3>
-              <p>
-                Every write, edit, move, and delete records before-and-after
-                state. Up to 100 journal entries. If a run goes sideways, you
-                can roll it back.
-              </p>
-              <figure class="feature-shot">
-                <video
-                  class="feature-video"
                   src="media/demo-undo.mp4"
                   poster="media/poster-demo-undo.jpg"
                   controls
@@ -1351,671 +298,244 @@
                   aria-label="Ghost creating a PDF on the Desktop and undoing it from the action card"
                 ></video>
               </figure>
-            </div>
+            </article>
 
-            <div class="act-block reveal">
-              <span class="eyebrow">Mac utilities</span>
-              <h3>One-word control of your Mac</h3>
-              <p>
-                Run a system report: CPU, RAM, disk, battery, even SMC
-                temperatures. Set display brightness and audio device or volume,
-                snap windows into layouts, run Homebrew, uninstall apps and clean
-                junk, compress video and images or make a GIF, run a network
-                speed test, keep the Mac awake, and pick a screen color.
-              </p>
+            <article class="feature-row feature-row--flip reveal">
+              <div class="feature-copy">
+                <span class="eyebrow">Your day</span>
+                <h3>Plans, reminders and texts in plain words</h3>
+                <p>
+                  Type &ldquo;lunch with Sam Friday at 1pm&rdquo; and the event
+                  goes into whichever calendar you name, Google calendars
+                  included. Reminders and notes work the same way with Undo, and
+                  &ldquo;text mom: running late&rdquo; finds the right contact and
+                  asks before it sends.
+                </p>
+              </div>
               <figure class="feature-shot">
                 <img
-                  src="media/battery-health-ghost.jpg"
-                  alt="Ghost answering &quot;What is my battery health at&quot; with a one-line battery report"
-                  width="1600"
-                  height="1034"
+                  src="media/feature-calendar-reminders.jpg"
+                  alt="Ghost under the notch after two requests, showing an Event Created card for lunch with Sam on Friday at 1:00 PM and a Reminder Set card to book a table, each with an Undo button"
+                  width="2400"
+                  height="1241"
                   loading="lazy"
                   decoding="async"
                 />
               </figure>
-            </div>
-          </div>
-        </section>
-
-        <!-- NATIVE -->
-        <section class="chapter" id="native">
-          <div class="chapter-head reveal">
-            <span class="chapter-num">05</span>
-            <span class="eyebrow">Native</span>
-            <h2>It speaks <em>macOS</em><br />fluently.</h2>
-            <p class="chapter-lede">
-              Ghost talks to Calendar, Reminders, Notes, Shortcuts, Vision OCR,
-              and Speech Recognition through the same native APIs your other
-              apps do, and reaches for a script only where macOS leaves it no
-              other way in.
-            </p>
-          </div>
-
-          <div class="native-list">
-            <div class="native-row reveal">
-              <div class="native-glyph">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <rect x="3" y="4" width="18" height="18" rx="2" />
-                  <path d="M16 2v4M8 2v4M3 10h18" />
-                </svg>
-              </div>
-              <div class="native-text">
-                <h3>Calendar</h3>
-                <p>
-                  Query events in a date range and create new ones after
-                  explicit intent. A deterministic parser turns natural language
-                  into real calendar entries.
-                </p>
-                <figure class="feature-shot">
-                  <img
-                    src="media/calendar-today.jpg"
-                    alt="Ghost answering &quot;What is on my calendar today&quot; with the day's agenda read from macOS Calendar"
-                    width="1600"
-                    height="1040"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </figure>
-              </div>
-            </div>
-            <div class="native-row reveal">
-              <div class="native-glyph">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                  <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                </svg>
-              </div>
-              <div class="native-text">
-                <h3>Reminders</h3>
-                <p>
-                  Turn "remind me to check the oven in 10 minutes" into a real
-                  macOS Reminder with a due date, parsed deterministically from
-                  your sentence.
-                </p>
-                <figure class="feature-shot">
-                  <img
-                    src="media/reminder-set.jpg"
-                    alt="Ghost answering &quot;Remind me tomorrow to go to the grocery store and get apples&quot; with a Reminder Set card that carries an Undo button"
-                    width="1600"
-                    height="1040"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </figure>
-              </div>
-            </div>
-            <div class="native-row reveal">
-              <div class="native-glyph">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M3 6h18M3 12h18M3 18h12" />
-                </svg>
-              </div>
-              <div class="native-text">
-                <h3>Apple Notes</h3>
-                <p>
-                  Create notes in specified folders, append to existing ones,
-                  and search by title and content, all through AppleScript.
-                </p>
-                <figure class="feature-shot">
-                  <img
-                    src="media/note-created.jpg"
-                    alt="Ghost creating an Apple Note called Vacation 2027 with Paris added, shown as a Note Created card with an Undo button"
-                    width="1600"
-                    height="1040"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </figure>
-              </div>
-            </div>
-            <div class="native-row reveal">
-              <div class="native-glyph">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"
-                  />
-                </svg>
-              </div>
-              <div class="native-text">
-                <h3>Messages &amp; FaceTime</h3>
-                <p>
-                  Ask Ghost to read recent iMessages, send an iMessage, or start
-                  a FaceTime call. It resolves a name like <em>"Mom"</em> to the
-                  right contact and asks before sending. Off by default. Enable
-                  <em>Messages &amp; FaceTime</em> in Privacy &amp; Access.
-                  Everything is read on-device and never sent to a cloud model.
-                </p>
-                <figure class="feature-shot">
-                  <img
-                    src="media/imessage-ghost.jpg"
-                    alt="Ghost reading a Messages thread on-device"
-                    width="1600"
-                    height="1034"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </figure>
-              </div>
-            </div>
-            <div class="native-row reveal">
-              <div class="native-glyph">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <rect x="3" y="4" width="18" height="15" rx="2" />
-                  <circle cx="8.5" cy="9.5" r="1.5" />
-                  <path d="M21 15l-5-5L5 19" />
-                </svg>
-              </div>
-              <div class="native-text">
-                <h3>Paste an image</h3>
-                <p>
-                  Take a screenshot, press <code>&#8984;V</code> in the notch or
-                  the floating bar, and ask your question. The picture rides
-                  along with the message on whatever model you are using,
-                  including a Claude or ChatGPT subscription.
-                </p>
-              </div>
-            </div>
-            <div class="native-row reveal">
-              <div class="native-glyph">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"
-                  />
-                  <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" />
-                </svg>
-              </div>
-              <div class="native-text">
-                <h3>Voice input</h3>
-                <p>
-                  On-device <code>SFSpeechRecognizer</code> with a live
-                  three-bar EQ waveform driven by RMS from the audio tap. Start,
-                  stop, send, or press Space to toggle.
-                </p>
-              </div>
-            </div>
-            <div class="native-row reveal">
-              <div class="native-glyph">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"
-                  />
-                  <rect x="7" y="7" width="10" height="10" rx="1" />
-                </svg>
-              </div>
-              <div class="native-text">
-                <h3>Screen capture &amp; OCR</h3>
-                <p>
-                  Drag over a region and the words are there in about a tenth of
-                  a second, read by Apple Vision on your Mac. Ghost wakes the
-                  recognizer at launch so the first read of the day is as fast as
-                  the hundredth, hides itself during the capture, and restores
-                  afterward. Asking flatly to read your screen runs the same
-                  instant capture the button does, with no model round trip.
-                </p>
-                <figure class="feature-shot">
-                  <img
-                    src="media/screen-ocr.jpg"
-                    alt="Ghost showing the text read out of a selected screen region in VS Code: seven OCR lines at 100% average confidence, with the temporary capture deleted"
-                    width="1600"
-                    height="1040"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </figure>
-              </div>
-            </div>
-            <div class="native-row reveal">
-              <div class="native-glyph">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                </svg>
-              </div>
-              <div class="native-text">
-                <h3>Shortcuts &amp; timers</h3>
-                <p>
-                  Run macOS Shortcuts through <code>/usr/bin/shortcuts</code>.
-                  Set pomodoro and countdown timers in natural language. Active
-                  timers take over the compact notch, and completed timers
-                  reopen with pause, resume, add-time, restart, and dismiss
-                  controls.
-                </p>
-                <figure class="feature-shot">
-                  <img
-                    src="media/pomodoro.png"
-                    alt="Ghost's Pomodoro timer with focus history, streaks, and top subjects"
-                    width="1199"
-                    height="774"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </figure>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- BUILD -->
-        <section class="chapter" id="build">
-          <div class="chapter-head reveal">
-            <span class="chapter-num">06</span>
-            <span class="eyebrow">Build</span>
-            <h2>A workspace<br />for <em>deeper work.</em></h2>
-            <p class="chapter-lede">
-              When a compact notch isn't enough, Ghost opens into deeper work
-              modes: agent workflows, an in-app terminal, and an intent router
-              that classifies prompts before they run.
-            </p>
-          </div>
-
-          <div class="build-grid">
-            <article class="build-card reveal">
-              <span class="eyebrow">Ghost Code</span>
-              <h3>Four agent modes</h3>
-              <div class="agent-modes">
-                <div>
-                  <span class="agent-mode">Plan</span>
-                  <p>Inspect &amp; propose</p>
-                </div>
-                <div>
-                  <span class="agent-mode">Build</span>
-                  <p>Edit files &amp; run commands</p>
-                </div>
-                <div>
-                  <span class="agent-mode">Explore</span>
-                  <p>Read &amp; map codebase</p>
-                </div>
-                <div>
-                  <span class="agent-mode">Review</span>
-                  <p>Inspect diffs &amp; catch bugs</p>
-                </div>
-              </div>
-              <p class="build-note">
-                Live progress in the notch, including creating-file and
-                using-tools states.
-              </p>
             </article>
 
-            <article class="build-card reveal">
-              <span class="eyebrow">Terminal</span>
-              <h3>A terminal that also codes</h3>
-              <p>
-                Press <code>⌘3</code> inside Ghost. Run shell commands, or hand a
-                coding turn to your model and watch the coloured diff arrive as a
-                card with its own Undo. Slash commands like <code>/new</code>,
-                <code>/model</code> and <code>/help</code> run before anything
-                else, so they work with no provider connected.
-              </p>
-              <figure class="card-shot">
-                <video
-                  class="feature-video"
-                  src="media/demo-java-for-loop-local.mp4"
-                  poster="media/poster-demo-java-for-loop-local.jpg"
-                  controls
-                  muted
-                  loop
-                  playsinline
-                  preload="none"
-                  width="1920"
-                  height="1080"
-                  aria-label="Ghost explaining a Java for loop on a local model"
-                ></video>
-              </figure>
-              <figure class="card-shot">
+            <article class="feature-row feature-row--wide reveal">
+              <div class="feature-copy">
+                <span class="eyebrow">Your documents</span>
+                <h3>Answers from your own files, with the page they came from</h3>
+                <p>
+                  Point Ghost at a folder and it builds a search index on your
+                  Mac. Each answer names the file and page it used, and one click
+                  opens it. Tell it &ldquo;when I ask about my classes, read
+                  timetable.xlsx&rdquo; and it reads that file every time.
+                </p>
+              </div>
+              <figure class="feature-shot">
                 <img
-                  src="media/using-terminal-ghost.jpg"
-                  alt="Ghost's Terminal answering &quot;What is the last file I added to desktop?&quot;"
-                  width="1600"
-                  height="1034"
+                  src="media/feature-files-answer.jpg"
+                  alt="A column of documents feeding a local index on the Mac, and Ghost answering &quot;What does my lease say about pets?&quot; with a reference to Lease-2026.pdf page 4 and an Open button"
+                  width="2400"
+                  height="795"
                   loading="lazy"
                   decoding="async"
                 />
               </figure>
             </article>
 
-            <article class="build-card reveal">
-              <span class="eyebrow">Intent Router</span>
-              <h3>14 intent kinds</h3>
-              <p>
-                Classifies prompts into Answer, Research, Files, Summarize,
-                Screenshot/OCR, Clipboard, Create, Organize, Automation,
-                Messaging, Code, Debug, Review, Terminal, then detects
-                filenames, save targets, and RAG references before routing.
-              </p>
+            <article class="feature-row reveal">
+              <div class="feature-copy">
+                <span class="eyebrow">Your screen</span>
+                <h3>Show it what you are looking at</h3>
+                <p>
+                  Paste a screenshot with <code>⌘V</code>, or capture the whole
+                  screen with one button, and ask about it. Drag over any part of
+                  the screen and Ghost reads the text off it in about a tenth of a
+                  second, on your Mac.
+                </p>
+              </div>
+              <figure class="feature-shot">
+                <img
+                  src="media/screen-ocr.jpg"
+                  alt="Ghost showing the text read out of a selected screen region in VS Code: seven OCR lines at 100% average confidence, with the temporary capture deleted"
+                  width="1600"
+                  height="1040"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </figure>
             </article>
 
-            <article class="build-card reveal">
-              <span class="eyebrow">Local &amp; private models</span>
-              <h3>Run fully on-device</h3>
-              <p>
-                Ghost talks to LM Studio and Ollama running on your Mac, and your
-                Messages, Mail, Notes, and Contacts are only ever read with one
-              of these local models. A cloud model is refused.
-              </p>
-              <figure class="card-shot">
-                <video
-                  class="feature-video"
-                  src="media/demo-golden-retriever-local.mp4"
-                  poster="media/poster-demo-golden-retriever-local.jpg"
-                  controls
-                  muted
-                  loop
-                  playsinline
-                  preload="none"
-                  width="1920"
-                  height="1080"
-                  aria-label="Ghost answering a question about golden retrievers on a local model, with a photograph in the answer"
-                ></video>
+            <article class="feature-row feature-row--flip reveal">
+              <div class="feature-copy">
+                <span class="eyebrow">Coding agents</span>
+                <h3>Every coding agent on your Mac, in one list</h3>
+                <p>
+                  Claude Code, Codex, opencode and DeepSeek Harness sessions from
+                  any terminal show up in the Agents tab, and when one needs
+                  permission it asks you from the notch. You can chat with Claude,
+                  Codex or opencode right there, give Claude a subagent on another
+                  model, and see what each task cost and which files it changed.
+                </p>
+              </div>
+              <figure class="feature-shot">
+                <img
+                  src="media/feature-agents.jpg"
+                  alt="Ghost's Agents tab listing a Claude Code session and a Codex session that are working and an opencode session that is done, above a Sonnet 5.5 subagent card that has handed its task back"
+                  width="2400"
+                  height="1427"
+                  loading="lazy"
+                  decoding="async"
+                />
               </figure>
             </article>
           </div>
-        </section>
 
-        <!-- PROTECT -->
-        <section class="chapter" id="protect">
-          <div class="chapter-head reveal">
-            <span class="chapter-num">07</span>
-            <span class="eyebrow">Protect</span>
-            <h2>Your data follows<br />a <em>route you choose.</em></h2>
-            <p class="chapter-lede">
-              Privacy is the architecture here, settled before anything runs. Ghost
-              separates local providers, local indexes, and hosted key paths, so
-              where your data goes follows from the route you pick.
-            </p>
+          <div class="more-head reveal">
+            <span class="eyebrow">And a lot more</span>
           </div>
-
-          <div class="protect-grid">
-            <article class="protect-card reveal">
-              <span class="eyebrow">Secrets</span>
-              <h3>Keychain first</h3>
+          <div class="summon-grid feature-extras" data-reveal-stagger>
+            <article class="summon-card reveal">
+              <div class="summon-key"><kbd>⌥</kbd><kbd>Space</kbd></div>
+              <h3>Opens over any app</h3>
               <p>
-                API keys live in macOS Keychain. A legacy
-                <code>~/.ghost/.env</code> file is migrated transparently and
-                deleted. Keys are only read when their provider is actually
-                called, with no Keychain prompts at launch.
+                Ghost hangs from the notch, or floats near the bottom of the
+                screen if you prefer. On a monitor without a notch, it draws one.
               </p>
             </article>
 
-            <article class="protect-card reveal">
-              <span class="eyebrow">Provider isolation</span>
-              <h3>Only the right keys are visible</h3>
+            <article class="summon-card reveal">
+              <div class="summon-key"><kbd>⌘</kbd><kbd>3</kbd></div>
+              <h3>A real terminal</h3>
               <p>
-                Environment scrubbing ensures the agent process only sees the
-                selected provider's keys. DeepSeek keys are blocked when any
-                other provider is selected. Local providers can't launch agent
-                mode at all.
+                claude, opencode, vim and ssh run inside Ghost as they would
+                anywhere else, and the notch shows when an agent is working and
+                when it is done.
               </p>
             </article>
 
-            <article class="protect-card reveal">
-              <span class="eyebrow">Web egress guard</span>
-              <h3>No private networks, ever</h3>
+            <article class="summon-card reveal">
+              <h3>Catch up</h3>
               <p>
-                Web fetches block localhost, private IPv4/IPv6, link-local,
-                multicast, and reserved addresses. DNS resolution checks every
-                address. Redirects to private destinations are blocked.
-                Cookie-free, cache-free, 5MB max.
+                What came due, what arrived unread and what is coming in the next
+                two days, gathered from Calendar, Reminders, Mail and Messages on
+                your Mac. Add a short news briefing on up to three topics.
               </p>
             </article>
 
-            <article class="protect-card reveal">
-              <span class="eyebrow">Sensitive access gate</span>
-              <h3>Credentials ask twice</h3>
+            <article class="summon-card reveal">
+              <h3>Countdowns</h3>
               <p>
-                Even with Full Disk Access, paths like <code>.ssh</code>,
-                <code>.gnupg</code>, <code>.aws</code>,
-                <code>login.keychain</code>, <code>.kube/config</code>, and
-                <code>.env</code> require explicit consent: Allow Once, Always
-                This Session, or Deny.
+                Days until the trip, the exam or the launch, taken from Calendar
+                and Reminders, plus any you add yourself.
               </p>
             </article>
 
-            <article class="protect-card reveal">
-              <span class="eyebrow">Tool access policy</span>
-              <h3>Six independent switches</h3>
+            <article class="summon-card reveal">
+              <h3>Focus timer</h3>
               <p>
-                Web, local files, Mac automation, Messages and FaceTime, screen
-                capture, and terminal inspection are each toggled
-                independently. Disabled capabilities
-                are removed from model tool schemas <em>and</em> checked again
-                before execution. Revoking cancels active work mid-flight.
+                A pomodoro that runs in the notch and keeps a log of what you
+                studied and for how long.
               </p>
             </article>
 
-            <article class="protect-card reveal">
-              <span class="eyebrow">On-device only</span>
-              <h3>Messages, Notes, Mail, Contacts</h3>
+            <article class="summon-card reveal">
+              <h3>It remembers</h3>
               <p>
-                Anything read out of those four stays on your Mac at every step
-                of a run: the answer, any summary of it, and the tool results
-                folded back into the next turn. A local model or a deterministic
-                reader does the work, and where Ghost cannot do it that way it
-                declines the request and says why.
+                Say &ldquo;remember that my flight is Tuesday&rdquo; and Ghost
+                keeps it in mind for every question after that.
               </p>
             </article>
 
-            <article class="protect-card reveal">
-              <span class="eyebrow">Content scan</span>
-              <h3>Ghost reads the selection itself</h3>
+            <article class="summon-card reveal">
+              <h3>Instant answers</h3>
               <p>
-                The origin rule is exact about which app text came from and blind
-                to what it says, so a card number in a plain text file is just
-                ordinary text. Ghost reads the selection itself before anything
-                leaves, tells you what it found, and lets you decide with that in
-                front of you.
+                Maths, unit conversions, dates and time zones come back at once,
+                offline, without asking a model.
               </p>
             </article>
 
-            <article class="protect-card reveal">
-              <span class="eyebrow">Boundaries</span>
-              <h3>Rules that hold across every run</h3>
+            <article class="summon-card reveal">
+              <h3>Your Mac, by asking</h3>
               <p>
-                An approval prompt answers one question at a time and expires with
-                it. Write a boundary once, in your own words, and Ghost checks it
-                before anything else runs: a rule can put a folder off limits, or
-                keep Ghost out of Messages entirely. The action log is the other
-                half, recording what Ghost attempted, including the refusals and
-                the reads that worked. Both live on your Mac.
+                Check battery health, quit an app, change the brightness, run a
+                Shortcut or get a full system report.
               </p>
             </article>
 
-            <article class="protect-card reveal">
-              <span class="eyebrow">Deep link security</span>
-              <h3>Only <code>ghost://toggle</code></h3>
+            <article class="summon-card reveal">
+              <h3>From your phone</h3>
               <p>
-                The only deep link Ghost accepts is one that opens Ghost. It
-                takes no arguments at all, so there is nothing in it that could
-                name a file or carry your content outward. Older deep link
-                patterns are blocked.
+                Turn on the web console and use Ghost's chat and terminal from
+                your phone's browser. It only answers on your own network.
               </p>
             </article>
           </div>
         </section>
 
-        <!-- FEEL -->
-        <section class="chapter" id="feel">
+        <!-- PRIVACY -->
+        <section class="chapter" id="privacy">
           <div class="chapter-head reveal">
-            <span class="chapter-num">08</span>
-            <span class="eyebrow">Feel</span>
-            <h2>Cosmic glass,<br /><em>one accent.</em></h2>
+            <span class="chapter-num">02</span>
+            <span class="eyebrow">Privacy</span>
+            <h2>Private<br /><em>by default.</em></h2>
             <p class="chapter-lede">
-              Ghost's interface is built on a "Cosmic Glass" design system:
-              <code>NSVisualEffectView</code> blur with a subtle noise layer,
-              and a single azure accent that every token resolves to, so the
-              hue is retuned in one place.
+              Ghost can reach a lot of your Mac, so you decide how much. Your API
+              keys stay in the macOS Keychain, and every release is notarized by
+              Apple.
             </p>
           </div>
 
-          <div class="feel-auroras reveal">
-            <div class="aura-swatch code">
-              <span class="aura-label">Accent</span
-              ><span class="aura-hex">azure</span>
-            </div>
-            <div class="aura-swatch neutral">
-              <span class="aura-label">Surface</span
-              ><span class="aura-hex">cosmic glass</span>
-            </div>
-            <div class="aura-swatch emotional">
-              <span class="aura-label">Sheen</span
-              ><span class="aura-hex">gold</span>
-            </div>
-            <div class="aura-swatch creative">
-              <span class="aura-label">Edge</span
-              ><span class="aura-hex">gilded ring</span>
-            </div>
-          </div>
+          <div class="summon-grid" data-reveal-stagger>
+            <article class="summon-card reveal">
+              <h3>Everything starts off</h3>
+              <p>
+                Web, files, Mac automation, Messages, screen capture and the
+                terminal are six separate switches, and each stays off until you
+                turn it on.
+              </p>
+            </article>
 
-          <div class="feel-list">
-            <div class="feel-row reveal">
-              <h3>Signature animations</h3>
+            <article class="summon-card reveal">
+              <h3>Personal data stays on your Mac</h3>
               <p>
-                The surface condenses into view with scale, blur, and a soft
-                bloom, plus a trackpad haptic. A gentle haptic marks answer
-                completion. A single welcome-back bloom swells from the logo
-                the first time you open Ghost each day.
+                Messages, Notes, Mail and Contacts are only ever read by a model
+                running on your Mac. Ghost refuses to pass them to a cloud one.
               </p>
-            </div>
-            <div class="feel-row reveal">
-              <h3>Liquid glass &amp; iridescence</h3>
+            </article>
+
+            <article class="summon-card reveal">
+              <h3>Rules it cannot talk its way past</h3>
               <p>
-                Ghost's pill is rendered in a "liquid glass" material that
-                samples the desktop behind it, with a slow iridescent streak
-                that drifts near the caret while you type: deep amber, gold,
-                pale champagne, and rose-gold across the composer.
+                Write a boundary once, such as a folder Ghost must never touch,
+                and it is checked before every action. The action log shows what
+                Ghost tried, what you allowed and what it refused.
               </p>
-            </div>
-            <div class="feel-row reveal">
-              <h3>State-reactive send button</h3>
-              <p>
-                Hollow when the composer is empty, primary accent when ready,
-                red stop button while a run is in flight. Answer blocks ease in
-                from a soft blur.
-              </p>
-            </div>
-            <div class="feel-row reveal">
-              <h3>Premium HUD</h3>
-              <p>
-                Tabular numerals, a latency sparkline, a token counter with
-                rolling number animation, and skeleton loaders while content
-                arrives.
-              </p>
-            </div>
-            <div class="feel-row reveal">
-              <h3>Usage &amp; cost</h3>
-              <p>
-                Open with <code>⌘⇧U</code>. Today, 7-day, and 30-day spend, a
-                30-day sparkline, per-model breakdown, and a recent activity log,
-                with cost approximated from a per-model rate table.
-              </p>
-            </div>
-            <div class="feel-row reveal">
-              <h3>Section bar</h3>
-              <p>
-                Chat, Timer, Terminal and Settings sit on one bar inside the
-                surface, and <code>⌘1</code> through <code>⌘4</code> jump
-                between them. Every shortcut on the sheet is dispatched from
-                the same list the sheet renders, so a row can only exist if
-                something handles it.
-              </p>
-            </div>
-            <div class="feel-row reveal">
-              <h3>Flexible surfaces</h3>
-              <p>
-                Whether it lives in the notch or the floating bar, the compact
-                surface stays small for quick asks, expands for transcripts and
-                settings, and hands deeper work to larger app surfaces when a
-                task needs more room.
-              </p>
-            </div>
-            <div class="feel-row reveal">
-              <h3>Accessibility</h3>
-              <p>
-                All motion respects <code>prefers-reduced-motion</code>.
-                VoiceOver support through native menus that back every custom
-                control, and full keyboard navigation. Reduce Motion is honored
-                throughout.
-              </p>
-            </div>
+            </article>
           </div>
+        </section>
+
+        <!-- WHAT'S NEW -->
+        <section class="whats-new-strip" id="whats-new">
+          <a
+            class="whats-new-link reveal"
+            href="https://github.com/ryuhemingway/Ghost-App/releases"
+            target="_blank"
+            rel="noopener"
+            data-cursor="pointer"
+          >
+            <span class="pulse-dot"></span>
+            <span class="mono-label">New in 4.0.0</span>
+            <span class="whats-new-text">
+              Subagents now reply as they work, and every task they run shows what
+              it cost and which files it changed.
+            </span>
+            <span class="whats-new-more">Read the release notes</span>
+          </a>
         </section>
 
         <!-- FAQ -->
@@ -2029,14 +549,11 @@
 
         <!-- CTA -->
         <section class="cta-band reveal">
-          <span class="eyebrow">finale</span>
-          <h2>
-            Bring your models, your files,<br /><em>and your Mac together.</em>
-          </h2>
+          <span class="eyebrow">Get Ghost</span>
+          <h2>Press Option+Space.<br /><em>Ghost does the rest.</em></h2>
           <p>
-            Ghost is native macOS, notarized by Apple, and runs as a quiet
-            accessory you summon with a keystroke, as a notch or a floating
-            bar.
+            A native Mac app, notarized by Apple. It stays out of the Dock and
+            out of your way until you call it.
           </p>
           <div class="hero-actions">
             <span class="halo-wrap halo-wrap--lg">
@@ -2112,6 +629,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="script.js?v=3.2.0"></script>
+    <script src="script.js?v=4.0.2"></script>
   </body>
 </html>

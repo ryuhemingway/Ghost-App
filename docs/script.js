@@ -25,40 +25,24 @@ const animate = hasGSAP && !reduceMotion;
 /* ---------------- FAQ DATA ---------------- */
 const faqs = [
   {
-    q: "What is Ghost?",
-    a: "Ghost is a local-first macOS AI workspace you summon with a keystroke. It routes prompts to local and hosted models, searches your private knowledge base with RAG, starts timers, and runs verified Mac actions, all from one native SwiftUI surface that appears as a top-center notch or a floating bar and vanishes when you dismiss it.",
-  },
-  {
     q: "What do I need to run Ghost?",
-    a: "A Mac with Apple silicon (M1 or later) running macOS 14 Sonoma or newer. Ghost is a native SwiftUI app notarized by Apple, and it ships as an Apple silicon build only, so it does not run on an Intel Mac. Nothing else is required to start: a provider key, a local model server, and every individual capability are all optional and all switched off until you turn them on.",
+    a: "A Mac with Apple silicon (M1 or later) running macOS 14 Sonoma or newer. There is no Intel version. You also need a model: a Claude Code, Codex or Antigravity plan, an API key from a provider, or LM Studio or Ollama running on your Mac.",
   },
   {
-    q: "How do I open Ghost?",
-    a: "Press Option+Space from anywhere on your Mac. In Settings you choose where Ghost appears: dropping down from the top-center notch, where gliding your pointer to the top of the screen also reveals it, or floating as a Siri-style bar about an inch up from the bottom, growing upward as it fills. A second shortcut (Option+Shift+Space by default) opens the very same surface, and the ghost://toggle deep link works from any app or script. It keeps your draft and collapses when you dismiss it.",
+    q: "Which models does it work with?",
+    a: "With an API key: Claude, Gemini, DeepSeek, OpenCode Go, OpenCode Zen and any OpenAI-compatible server. On your own Mac: anything you run in LM Studio or Ollama. Ghost can also run on the Claude Code, Codex and Antigravity command line tools, which use the plan you already pay for.",
   },
   {
-    q: "Which model providers does Ghost support?",
-    a: "Eight providers: LM Studio and Ollama for local inference; Claude (Anthropic), Gemini (Google), DeepSeek v4, OpenCode Go, and OpenCode Zen for hosted models; plus any OpenAI-compatible endpoint: OpenAI, vLLM, or any server speaking the /v1 chat-completions schema. Just set a base URL and model name; the API key is optional for local or keyless servers. You switch providers from the model picker without changing apps.",
+    q: "Does my data leave my Mac?",
+    a: "Only on the route you pick. With a local model, no cloud AI sees your prompts. Messages, Notes, Mail and Contacts are only ever read by a local model, whichever route you use, and every capability starts switched off.",
   },
   {
-    q: "How does routing work?",
-    a: "Ghost scores your prompt and picks the provider, model, and engine. Deterministic timers are handled locally first. The Direct API path calls the provider's HTTP API with Ghost's native tool harness for fast answers and verified actions. The Ghost Agent path shells out to a local CLI for deeper multi-step work.",
-  },
-  {
-    q: "What is RAG memory?",
-    a: "Ghost indexes the folders you approve into a local SQLite database with FTS5 full-text search. It supports 32 file formats, including PDF, DOCX, XLSX, EPUB, Markdown, and source code. When a prompt needs context, Ghost retrieves cited, source-backed chunks you can open at the right spot.",
-  },
-  {
-    q: "What is the capability harness?",
-    a: "The capability harness is Ghost's action layer. The model never touches the filesystem directly. It asks, Ghost normalizes paths, checks permissions, runs app-owned code, and returns a machine-readable receipt. File-generation prompts can save to safe destinations such as Desktop, Downloads, Documents, Ghost Outputs, or the workspace.",
-  },
-  {
-    q: "How does Ghost protect my privacy?",
-    a: "Every capability starts off. You opt into each one in a three-step first run. API keys live in macOS Keychain and are only read when their provider is actually called. A web egress guard blocks private networks. Sensitive paths like .ssh, .gnupg, and login.keychain require explicit consent even with Full Disk Access.",
+    q: "Can I undo what Ghost does?",
+    a: "Yes, for anything that can be reversed. Files, documents, notes, reminders and calendar events come with an Undo button, and by default Ghost asks before it changes anything. A sent message cannot be unsent, so Ghost asks before sending one.",
   },
   {
     q: "Is Ghost open source?",
-    a: "No. Ghost is a one-time purchase and its source is not public. The GitHub repository holds the documentation, the changelog, and the security policy. What you can check for yourself: Ghost is notarized by Apple, every capability ships switched off, and Messages, Notes, Mail, and Contacts are processed on device and refused to cloud models.",
+    a: "No. Ghost is a one-time purchase and its source code is private. The GitHub repository has the documentation, the release notes and the security policy.",
   },
 ];
 

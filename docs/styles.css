@@ -1207,6 +1207,9 @@ section[id] {
   max-width: var(--maxw);
   margin: 0 auto;
 }
+.build-card--wide {
+  grid-column: 1 / -1;
+}
 .build-card {
   padding: 32px 30px;
   border-radius: var(--radius);
@@ -2075,5 +2078,113 @@ section[id] {
   .card-shot,
   .feature-shot {
     margin-top: 18px;
+  }
+}
+
+/* ============================================
+   FEATURE ROWS: the headline features. A split
+   row puts copy beside one shot (--flip moves the
+   shot left); a --wide row stacks copy over a
+   full-width banner. The small cards follow.
+   ============================================ */
+.feature-rows {
+  display: grid;
+  gap: clamp(64px, 8vw, 112px);
+  max-width: var(--maxw-wide);
+  margin: 0 auto clamp(80px, 10vw, 128px);
+}
+.feature-row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  column-gap: clamp(28px, 5vw, 80px);
+  align-items: center;
+}
+/* The shot keeps the wide column when it swaps sides. */
+.feature-row--flip {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+}
+.feature-row--flip .feature-copy {
+  order: 2;
+}
+.feature-row--wide {
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: clamp(24px, 3vw, 36px);
+}
+.feature-row--wide .feature-copy p {
+  max-width: 64ch;
+}
+.feature-copy .eyebrow {
+  display: block;
+  margin-bottom: 14px;
+}
+.feature-copy h3 {
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+.feature-copy p {
+  color: var(--text-muted);
+  font-size: clamp(1rem, 1.2vw, 1.08rem);
+  line-height: 1.7;
+  max-width: 46ch;
+}
+.feature-row .feature-shot {
+  margin: 0;
+}
+.feature-row .feature-shot img,
+.feature-row .feature-shot video {
+  border-radius: var(--radius);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow);
+}
+.more-head {
+  max-width: var(--maxw-wide);
+  margin: 0 auto 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* WHAT'S NEW: one line, pointing at the full notes on GitHub. It sits
+   under Privacy's cards, so it takes no top padding of its own. */
+.whats-new-strip {
+  padding: 0 clamp(16px, 4vw, 40px) clamp(80px, 12vh, 130px);
+  margin-top: calc(-1 * clamp(40px, 8vh, 90px));
+}
+.whats-new-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  max-width: var(--maxw-wide);
+  margin: 0 auto;
+  padding: 20px 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.3s var(--ease);
+}
+.whats-new-link:hover {
+  border-color: var(--line-strong);
+}
+.whats-new-text {
+  flex: 1 1 320px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.whats-new-more {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .feature-row,
+  .feature-row--flip {
+    grid-template-columns: 1fr;
+    row-gap: 24px;
+  }
+  .feature-row--flip .feature-copy {
+    order: 0;
   }
 }
