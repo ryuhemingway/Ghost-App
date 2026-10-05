@@ -23,15 +23,6 @@ settings-themes.jpg     General settings with the five themes (2026-10-04)
 theme-classic.jpg       an answer in the Classic theme (2026-10-04)
 theme-tron.jpg          an answer in the Tron theme (2026-10-04)
 privacy-access.jpg      the Privacy & Access switches, cropped above the phone link (2026-10-04)
-model-routing.jpg       the AI settings page: model, provider, routing
-files-folder-listing.jpg  a folder listing read from disk
-calendar-agenda.png     today's agenda read from Calendar
-timer-bar.jpg           the countdown plate in the notch
-pomodoro-study-record.jpg  the study log and heatmap
-rewrite-actions.jpg     the selection action bar
-rewrite-anywhere.jpg    a rewrite applied in another app
-imessage-thread.jpg     an iMessage thread read on-device
-battery-health.jpg      a battery reading from the on-device system report
 ```
 
 The 2026-10-04 set was shot with demo prompts only. Masters are in

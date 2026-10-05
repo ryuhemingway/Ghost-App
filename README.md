@@ -12,13 +12,13 @@ https://github.com/user-attachments/assets/ef881143-3b65-491d-b78b-1be007a04c9b
 
 <br/>
 
-[![Download Ghost v4.0.0](https://img.shields.io/badge/Download_Ghost-v4.0.0-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
+[![Download Ghost v4.1.0](https://img.shields.io/badge/Download_Ghost-v4.1.0-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
 
 <br/>
 
 <a href="https://integratedagentics.com/ghost"><img src="docs/readme/hero-notch-answer.jpg" alt="Ghost answering &quot;What does a snow leopard look like?&quot; in the notch, in the Noir theme, with the photograph inline in the answer" width="820" /></a>
 
-<samp>v4.0.0 · notarized · one-time purchase · macOS 14+</samp>
+<samp>v4.1.0 · notarized · one-time purchase · macOS 14+</samp>
 
 </div>
 
@@ -36,6 +36,7 @@ By default, everything is off: web access, file tools, automation, messaging, sc
 
 Your coding agents moved into the notch, and the subagents they hand work to now show their receipts.
 
+- **New in 4.1: ask your files, paste images to agents.** A RAG search only switch that answers from your indexed files and nothing else, pasted images in the Agents chat, a Terminal that looks like a terminal, a line from the Stoics under the pomodoro, and hints that show when you hover.
 - **The Agents tab.** Every Claude Code, Codex, opencode and DeepSeek Harness session on this Mac, from any terminal, in one list: what each is doing, its checklist and its last reply. When one needs permission or asks a question, the card comes to the notch, and the collapsed notch says when an agent is working. Monitors can watch a command, a page or a feed and hand an alert to Claude. Press **⌘4** in Ghost, and turn on watching at **Settings ▸ Agents**.
 - **Chat with Claude, Codex and opencode.** Start a chat with any of the three from the Agents tab. Each works in your working folder with its own tools and your own permission settings, on the model and effort you pick, including any model you have connected to opencode. Chats are kept between launches: minimize one while it keeps working, and delete it when you are done.
 - **Subagents that show their work.** A Claude chat can have a subagent on another model, such as Sonnet 5.5 or DeepSeek through opencode. Every task the lead hands it becomes a card with the lead's reason, how long it ran, its tokens and cost, and the files it changed with lines added and removed, counting only edits that actually landed. Subagents also reply as they work now, instead of arriving minutes late.
@@ -98,9 +99,7 @@ It isn't a black box: your knowledge base is plain Markdown at `~/Ghost Outputs/
 
 Ghost indexes folders you approve into a local SQLite database with FTS5 full-text search — 3,500-character chunks with 500-character overlap, sentence-aware splitting, page numbers from PDFs, section titles from Markdown. A desktop watcher keeps everything in sync with an 8-second debounce. Queries return source-backed chunks with file paths; Ghost opens the exact file at the right line.
 
-30+ formats: txt, md, html, pdf, docx, epub, csv, json, rtf, and every major programming language. Everything stays on your machine.
-
-![Ghost listing a repository's markdown files as rendered tables of file names and sizes, with the folders it read shown as references](docs/readme/files-folder-listing.jpg)
+30+ formats: txt, md, html, pdf, docx, epub, csv, rtf, and every major programming language. JSON, XML, YAML, TOML and log files are indexed when you add one by name, not swept up from a watched folder. Everything stays on your machine.
 
 <br/>
 
@@ -136,8 +135,6 @@ Ask Ghost to actually _do_ things on your Mac. A live **system report** covers C
 
 And for anything no built-in tool covers, **computer-use** kicks in: Ghost writes an AppleScript for the task and runs it _only_ after you review and approve the exact script — nothing executes until you say yes.
 
-![Ghost answering "What is my battery health?" with a live battery reading from the on-device system report](docs/readme/battery-health.jpg)
-
 <br/>
 
 ## Your day, handled.
@@ -145,8 +142,6 @@ And for anything no built-in tool covers, **computer-use** kicks in: Ghost write
 <sub><samp>DAILY BRIEF · REMINDERS · CALENDAR · NOTES</samp></sub>
 
 Ask "what's on my plate?" and Ghost returns a ranked daily brief — overdue and upcoming Reminders plus imminent Calendar events, in one glance. Create reminders and events in plain language ("remind me to call the dentist Thursday at 10"), make and append to Apple Notes, and search your notes on-device. Ghost can also quietly prepare proactive suggestions from what's due — but it never fires them on its own.
-
-![Ghost answering "What's on my plate for today?" with a dated agenda of the day's to-dos and their due times](docs/readme/calendar-agenda.png)
 
 <br/>
 
@@ -156,8 +151,6 @@ Ask "what's on my plate?" and Ghost returns a ranked daily brief — overdue and
 
 Ghost reads recent iMessages, sends texts, and starts FaceTime calls — after you confirm the recipient and message. It searches your Apple Notes and can read your Contacts to match "Mom" to the right number. This is the most personal data on your Mac, so Ghost draws a hard line: **Messages, Notes, Mail, and Contacts are processed on-device only and are never sent to any cloud model** — not for answers, not for memory, not for tools. To use them with AI at all, pick a local model (LM Studio or Ollama). Messaging is off by default and reading iMessages requires Full Disk Access.
 
-![Ghost reading a recent iMessage thread on-device, showing the conversation inline with a reply field](docs/readme/imessage-thread.jpg)
-
 <br/>
 
 ## A pomodoro that keeps the receipts.
@@ -166,11 +159,7 @@ Ghost reads recent iMessages, sends texts, and starts FaceTime calls — after y
 
 Ask for "a 25 minute focus timer" or "remind me to check the oven in 10 minutes" and Ghost starts a countdown right there — deterministic, local, no model inference. Anything that counts as focus time runs as a pomodoro phase: name the subject, and Ghost runs the cycle for you, starting the break itself and reaching for the long break every fourth session. Controls are pause, +5m, skip and stop; active timers take over the compact surface and finished ones reopen with a trackpad haptic.
 
-![A focus phase counting down on the subject "Algorithms", with cycle dots and pause, +5m, skip and stop controls](docs/readme/timer-bar.jpg)
-
 Every completed phase is written to a study log on disk, and the right half of the section is the record built from it — time studied today and this week, sessions completed, current streak, progress against a daily goal, a fifteen-week heatmap, and where the hours actually went by subject. The log never leaves the machine, and it is deliberately never handed to a model as context.
-
-![The Timer section showing the pomodoro card beside a study record with stat tiles, a daily goal bar, a fifteen-week heatmap, and per-subject totals](docs/readme/pomodoro-study-record.jpg)
 
 <br/>
 
@@ -183,10 +172,6 @@ Drag to highlight text in any app and a small bar appears beside it: Copy, Searc
 The result opens in the bar itself. **Replace** writes it back into the field you selected in through the Accessibility API rather than the clipboard, so that app's own ⌘Z still undoes it. Replace only appears when the field is editable and the action actually produces replacement text — a summary is never pasteable over the paragraph it summarized. Press ⌃⌥Space to bring the bar back, Escape to dismiss it.
 
 Right-click → Services → Ghost still works everywhere too.
-
-![Text selected in TextEdit with Ghost's action bar beside it, expanded to show Rewrite Professionally, Rewrite Casually, Humanize, Explain This and Translate](docs/readme/rewrite-actions.jpg)
-
-![Ghost's Professional rewrite card over the selected draft, showing the rewritten text, a What changed note, and Copy and Replace buttons](docs/readme/rewrite-anywhere.jpg)
 
 <br/>
 
@@ -240,8 +225,6 @@ Ghost is local-first by design. Here's the machinery:
 6. **Sensitive paths require explicit consent.** Before touching `.ssh`, `.gnupg`, `.aws`, `login.keychain`, `.kube/config`, or `.env`, Ghost prompts: Allow Once, Always This Session, or Deny.
 7. **Actions ask first, and can be undone.** High-risk and irreversible actions always confirm, and file changes are journaled and reversible.
 8. **Everything starts off.** Web, files, automation, messaging, screen, and shell are all disabled on first launch. You opt in one switch at a time.
-
-![The AI settings page showing the selected model, the provider picker, and Auto / Always Agent / Always Direct routing with the route Ghost chose](docs/readme/model-routing.jpg)
 
 <br/>
 
@@ -299,18 +282,18 @@ Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (e
 
 ## Fixed: builds 2.0.1 – 2.0.5 stopped telling you about updates.
 
-<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 4.0.0</samp></sub>
+<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 4.1.0</samp></sub>
 
-**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 4.0.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
+**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 4.1.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
 
-If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 4.0.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
+If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 4.1.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
 
 What happened: the "Check for Updates" button and the "update available" notice both lived in an older window that was removed in July when it stopped being part of the app. The updater underneath kept working the whole time — it checks on schedule and it does find new versions — but it had been told that Ghost would display what it found, and after the removal Ghost had nowhere to display it. So an affected build checks, finds an update, and says nothing.
 
 What to do, if you are on 2.0.1 – 2.0.5:
 
-- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 4.0.0 will arrive on its own.
-- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 4.0.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
+- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 4.1.0 will arrive on its own.
+- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 4.1.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
 
 <br/>
 
