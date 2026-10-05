@@ -38,7 +38,6 @@ http://127.0.0.1:4173
 
 - Edit FAQ content and page interactions in `docs/script.js`.
 - Tune the dark/glass visual system in `docs/styles.css` (CSS custom properties at the top).
-- Replace `docs/assets/ghost-hero.png` with a real Open Graph preview when available.
 - Replace `docs/media/ghost-demo.mp4` and `docs/media/ghost-demo-poster.png` when the product demo is re-recorded.
 
 ## Project Structure
@@ -48,8 +47,6 @@ docs/
   index.html        Static shell and content sections
   styles.css        Dark/minimal/premium visual system
   script.js         FAQ data, theme toggle, navigation, scroll reveal
-  assets/
-    ghost-hero.png  Open Graph preview image
   media/
     ghost-demo.mp4
     ghost-demo-poster.png

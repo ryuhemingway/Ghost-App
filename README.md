@@ -16,7 +16,7 @@ https://github.com/user-attachments/assets/ef881143-3b65-491d-b78b-1be007a04c9b
 
 <br/>
 
-<a href="https://integratedagentics.com/ghost"><img src="docs/readme/hero-notch-answer.jpg" alt="Ghost answering a question about the Mohs hardness scale in the notch surface, with provider, model and timing chips above the answer" width="820" /></a>
+<a href="https://integratedagentics.com/ghost"><img src="docs/readme/hero-notch-answer.jpg" alt="Ghost answering &quot;What does a snow leopard look like?&quot; in the notch, in the Noir theme, with the photograph inline in the answer" width="820" /></a>
 
 <samp>v4.0.0 · notarized · one-time purchase · macOS 14+</samp>
 
@@ -43,23 +43,25 @@ Your coding agents moved into the notch, and the subagents they hand work to now
 - **Ghost on your phone.** Switch on the browser console and Ghost serves a page your phone can open on the same Wi-Fi. Scan the code in **Settings ▸ Privacy & Access** and you have Chat and the Terminal in your hand, with Allow and Deny buttons when something needs permission. It is off until you turn it on.
 - **Also since 3.2.0:** Catch up and Countdowns (both below), a screenshot of your screen you can ask about, events that land on the calendar you named, including a Google one, and a notch that grows out of the camera like a bubble.
 
+<p align="center"><img src="docs/readme/agents-overview.jpg" width="49%" alt="The Agents tab: Claude plan and token usage across the top, new-chat buttons for Claude, Codex and opencode, a Claude chat and a live Claude Code session" /> <img src="docs/readme/approval-card.jpg" width="49%" alt="A Claude Code session asking permission from the notch: the command it wants to run, what Ghost sees it doing, and Deny, Allow once and Auto-run buttons" /></p>
+
 <br/>
 
 ## One surface, eight providers, zero context switching.
 
 <sub><samp>⌥SPACE · ANYWHERE ON MACOS</samp></sub>
 
-![The Ghost composer at rest, hanging from the camera notch as a single input pill with the section bar above it](docs/readme/quick-ask.jpg)
+![The Ghost composer hanging from the camera notch under the seven-section bar, showing the hover hint for RAG search only](docs/readme/quick-ask.jpg)
 
 Press ⌥Space anywhere on your Mac and a frosted-glass surface appears — dropping from the camera notch, or floating up as a text bar near the bottom of the screen, your choice. Chat, file creation, document search, memory, timers, Calendar, Reminders, Notes, screen OCR, whole-screen screenshots you can then ask about, countdowns, and agent coding sessions all live in one place. On a notch Mac you can also reveal it by gliding your pointer to the top-center of the screen. Escape dismisses it, and typing a single `/` lists every command Ghost understands.
 
-![Ghost answering "Show me what the planet Saturn looks like" in the notch, with an embedded Cassini photograph and its source](docs/readme/answer-saturn.jpg)
+![Ghost answering "what time is it in Tokyo" on the Mac itself, in the Minimal theme, noting that nothing was sent to any AI model](docs/readme/instant-answer.jpg)
 
 Ghost routes every prompt through an intent classifier that detects what you're actually trying to do — Answer, Research, Files, Summarize, Screenshot, Clipboard, Create, Organize, Automation, Messages, Code, Debug, Review, Shell — then picks the right provider and model. Choose from eight providers — **LM Studio** and **Ollama** (fully local), **Claude**, **Gemini**, **DeepSeek**, **OpenCode Go**, **OpenCode Zen**, and any **OpenAI-compatible** server — or run chat on your own **Claude Code**, **Codex**, or **Antigravity** subscription. Local models get probed on first launch for tool-calling capability and assigned the safest calling convention they can handle, so even models that can't do native function calls still get the harness.
 
-![Ghost answering a question about the James Webb Space Telescope with inline citation markers and a four-entry linked reference list](docs/readme/answer-sourced-cost.jpg)
+![Ghost answering how much a SpaceX Falcon 9 launch costs, with inline citation markers and a five-entry linked reference list](docs/readme/answer-cited.jpg)
 
-![The Ghost provider picker open beneath the notch composer, listing Claude, Gemini, DeepSeek v4, OpenCode Go, OpenCode Zen and OpenAI Compatible, above a subscription section offering Claude Code, Codex and Antigravity](docs/readme/providers-picker.jpg)
+![The Ghost model menu open beneath the notch composer: LM Studio, Ollama, Claude, Gemini, DeepSeek v4, OpenCode Go, OpenCode Zen and OpenAI Compatible, the Claude Code, Codex and Antigravity subscriptions, and the Claude models on your plan](docs/readme/providers-picker.jpg)
 
 Both of these ran on **gemma-4-e2b through LM Studio** — no API key, no network, the full tool harness:
 
@@ -122,7 +124,7 @@ The capability harness is Ghost's action layer. The model requests an action; Gh
 
 Every tool is classified into four risk tiers — Low (read-only), Medium (writes/creates), High (patches/deletes/shell), and Blocked (unknown tools fail closed). An action journal records before-and-after state so you can roll back what Ghost changed. A created or edited file, a folder, any generated document, an Apple Note, a reminder, a calendar event, and an app Ghost opened or quit are each one tap of **Undo** away, right on the action card in the transcript. Two actions are outside the journal on purpose: uninstalling an app and clearing junk both move things to the Trash rather than deleting them, so recovery is Finder's **Put Back**, and the card says so instead of offering an Undo it cannot honour. Six independent permission switches (web, files, automation, messaging, screen, terminal) are all off by default and toggle independently, with three approval modes — Ask, Safe, and Auto-run.
 
-![The Privacy and Access page with an independent switch for web, files, Mac automation, Messages, screen capture, and Terminal](docs/readme/privacy-access.jpg)
+![The Privacy and Access page with an independent switch for web, files, Mac automation, Messages and FaceTime, screen capture, and Terminal](docs/readme/privacy-access.jpg)
 
 <br/>
 
@@ -194,15 +196,19 @@ Right-click → Services → Ghost still works everywhere too.
 
 A bar across the top of the Ghost window switches between sections in one click, and stays put as you move between them. Approval prompts deliberately get no tab — they're decisions to make, not places to go.
 
-![The Terminal section answering "What is the last file I added to desktop?" in plain English, with the working directory, a Build chip and the Claude Code · Sonnet 5 route shown above the answer](docs/readme/terminal.jpg)
+![Claude Code running in a live terminal inside the Terminal section: it adds a --days flag to forecast.py, shows the diff and runs it, under Done and Auto-run chips](docs/readme/terminal-claude-code.jpg)
 
 **Terminal** takes both halves of the job. Type a command and it runs: arrow keys walk history, `clear` empties the scrollback, and `cd` carries to the next command. Type what you want changed instead — in plain English — and it goes to Ghost's coding agent, rooted at whatever directory you last `cd`'d to and running on the provider or subscription you already configured. Progress streams as it works, and the agent's own commands (`/plan`, `/build`, `/init`, `/files`) work at the same prompt.
 
 Which of the two you get is decided deterministically, without asking a model, so it can't quietly guess wrong — and you can force either one: prefix a line with `!` to run it as a command, or `>` (or `?`) to send it to the agent. Interactive programs get a real terminal: `claude`, `opencode`, vim, ssh and top open in a live session inside the section, and exiting one leaves you back at the prompt. It sits behind the same Terminal switch as Ghost's shell tool, off until you turn it on.
 
-![The General settings page inside the Ghost surface](docs/readme/settings.jpg)
+![The General settings page with the five themes, Classic, Minimal, Noir, Glass and Tron, and the accent colours](docs/readme/settings-themes.jpg)
+
+<p align="center"><img src="docs/readme/theme-classic.jpg" width="49%" alt="An answer about Olympus Mons in the Classic theme, with its gilded rim" /> <img src="docs/readme/theme-tron.jpg" width="49%" alt="A Python answer in the Tron theme, with its cyan rim" /></p>
 
 **Agents** lists every coding agent running on this Mac and holds your chats with Claude Code, Codex and opencode, subagents included. See [New in 4.0](#new-in-40) above.
+
+![A Claude chat in the Agents tab, working in a project folder: it explains forecast.py and suggests a one-line fix, with tokens and cost beside the title](docs/readme/agents-chat.jpg)
 
 **Timer** is a full pomodoro: start a focus phase, name the subject, and Ghost runs the cycle and keeps the study record beside it. Plain countdowns live there too.
 

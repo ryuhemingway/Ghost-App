@@ -10,16 +10,20 @@ the top of the README, so opening the front page pulled 25 MB of images. The
 same three encode to 1.1 MB and look identical at display size.
 
 ```text
-hero-notch-answer.jpg   the banner: an answer in the notch, provider/model chips
-notch-hero.jpg          an answer in the notch, with timing chips
-quick-ask.jpg           the resting composer hanging from the notch
+hero-notch-answer.jpg   the banner: a snow leopard answer in the Noir notch (2026-10-04)
+quick-ask.jpg           the composer under the seven-section bar, RAG hover hint (2026-10-04)
+instant-answer.jpg      "what time is it in Tokyo", answered on the Mac, Minimal theme (2026-10-04)
+answer-cited.jpg        a cited web answer with a five-entry reference list (2026-10-04)
+providers-picker.jpg    the model menu: providers, subscriptions, Claude models (2026-10-04)
+agents-overview.jpg     the Agents tab: usage, chats, a live session (2026-10-04)
+approval-card.jpg       a live agent asking permission from the notch (2026-10-04)
+agents-chat.jpg         a Claude chat in the Agents tab (2026-10-04)
+terminal-claude-code.jpg  Claude Code running inside the Terminal section (2026-10-04)
+settings-themes.jpg     General settings with the five themes (2026-10-04)
+theme-classic.jpg       an answer in the Classic theme (2026-10-04)
+theme-tron.jpg          an answer in the Tron theme (2026-10-04)
+privacy-access.jpg      the Privacy & Access switches, cropped above the phone link (2026-10-04)
 model-routing.jpg       the AI settings page: model, provider, routing
-privacy-access.jpg      the Privacy & Access page, one switch per capability
-settings.jpg            the General settings page
-terminal.jpg            the Terminal section
-providers-picker.jpg    the provider picker beneath the composer
-answer-saturn.jpg       an answer with an inline image and its source
-answer-sourced-cost.jpg a cited answer with a linked reference list
 files-folder-listing.jpg  a folder listing read from disk
 calendar-agenda.png     today's agenda read from Calendar
 timer-bar.jpg           the countdown plate in the notch
@@ -29,6 +33,11 @@ rewrite-anywhere.jpg    a rewrite applied in another app
 imessage-thread.jpg     an iMessage thread read on-device
 battery-health.jpg      a battery reading from the on-device system report
 ```
+
+The 2026-10-04 set was shot with demo prompts only. Masters are in
+`Ghost Media Masters/2026-10-04`. Never capture Countdowns, Catch up, the
+Timer or the Privacy page's phone link as they stand: they show real calendar,
+mail, messages and an access key.
 
 ## The masters are not in this repository
 
