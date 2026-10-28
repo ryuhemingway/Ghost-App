@@ -1,6 +1,6 @@
 /* ============================================
    GHOST — Editorial monochrome
-   Pure ground · Instrument Serif + Geist · one
+   Pure ground · SF Pro Display + Geist · one
    spectral halo, reserved for the two CTAs
    ============================================ */
 
@@ -8,7 +8,9 @@
   --font-sans:
     "Geist", ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui,
     sans-serif;
-  --font-serif: "Instrument Serif", "New York", Georgia, serif;
+  /* SF Pro on Apple devices, Geist everywhere else. */
+  --font-display:
+    -apple-system, BlinkMacSystemFont, "Geist", system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
   --radius: 14px;
   --radius-sm: 10px;
@@ -56,8 +58,8 @@
   --text: #ffffff;
   --text-muted: rgba(255, 255, 255, 0.6);
   --text-quiet: rgba(255, 255, 255, 0.35);
-  /* "accent" is now the ink itself — emphasis comes from italics and
-     weight, not from hue. The old neon is gone. */
+  /* "accent" is now the ink itself — emphasis comes from a muted
+     second tone, not from hue. The old neon is gone. */
   --accent: #ffffff;
   --accent-2: rgba(255, 255, 255, 0.7);
   --accent-soft: rgba(255, 255, 255, 0.08);
@@ -144,33 +146,31 @@ code {
   border-radius: 4px;
 }
 
-/* Display type is the serif. Headings are set at 400 — the face carries
-   the authority, so weight is not the lever. */
+/* Display type is SF Pro Display in its light weights: slim strokes, the
+   size does the work. */
 h1,
 h2 {
-  font-family: var(--font-serif);
-  font-weight: 400;
-  letter-spacing: -0.025em;
-  line-height: 1.05;
+  font-family: var(--font-display);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.07;
   font-size: clamp(2.4rem, 5.5vw, 4rem);
   text-wrap: balance;
 }
 h3,
 h4 {
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 400;
   letter-spacing: -0.015em;
   line-height: 1.2;
 }
-/* The italic alone is the emphasis. No colour change — that is what
-   separates an editorial page from a marketing one. */
+/* Two-tone headline: the emphasised half drops to the muted ink. */
 h1 em,
 h2 em,
 h3 em,
 h4 em {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 400;
-  color: inherit;
+  font-style: normal;
+  color: var(--text-muted);
 }
 
 ::selection {
@@ -511,10 +511,10 @@ body::before {
   }
 }
 .hero-title {
-  font-family: var(--font-serif);
-  font-weight: 400;
+  font-family: var(--font-display);
+  font-weight: 200;
   font-size: clamp(2.8rem, 6.4vw, 5rem);
-  line-height: 1.05;
+  line-height: 1.07;
   letter-spacing: -0.025em;
   margin-bottom: 0;
   text-wrap: balance;
@@ -554,10 +554,13 @@ body::before {
   gap: 14px;
 }
 
-/* MacBook-style frame for the product shot. Pure CSS: a rounded lid,
-   a hairline bezel, and a tapered base slab under it. */
+/* MacBook Pro frame for the product shot, pure CSS. Hardware colours are
+   fixed, not theme tokens: a real laptop does not change colour with the
+   page. Everything is sized in cqi (1cqi = 1% of the frame's width) so the
+   bezel and notch keep MacBook Pro proportions at every width. */
 .device {
   position: relative;
+  container-type: inline-size;
   width: min(100%, 740px);
   margin: clamp(40px, 6vh, 64px) auto 0;
 }
@@ -569,28 +572,41 @@ body::before {
   margin: 0;
   justify-self: start;
 }
+/* Black glass bezel inside a thin space-black aluminium rim. The chin is a
+   little deeper than the other three sides, as on the real lid. */
 .device-lid {
   position: relative;
-  border-radius: 14px;
-  padding: 10px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--text) 14%, transparent),
-    color-mix(in srgb, var(--text) 6%, transparent)
-  );
-  box-shadow: var(--shadow);
+  padding: 1.5cqi 1.5cqi 2.1cqi;
+  border: max(1px, 0.22cqi) solid transparent;
+  border-radius: 2.4cqi 2.4cqi 1.3cqi 1.3cqi;
+  background:
+    linear-gradient(#060607, #060607) padding-box,
+    linear-gradient(180deg, #b4b5b9, #6a6b70 22%, #3b3c40 70%, #57585c)
+      border-box;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    var(--shadow);
 }
+/* The notch, at this Mac's own ratio: 10.7% of the panel's width and the
+   menu bar's height (2.84% of its height), with the camera in the middle. */
 .device-lid::after {
-  /* the notch */
   content: "";
   position: absolute;
-  top: 10px;
+  top: 1.45cqi;
   left: 50%;
   transform: translateX(-50%);
-  width: 96px;
-  height: 14px;
-  border-radius: 0 0 8px 8px;
-  background: #000;
+  width: 10.3cqi;
+  height: 1.8cqi;
+  border-radius: 0 0 0.8cqi 0.8cqi;
+  background:
+    radial-gradient(
+      circle at 50% 46%,
+      #2a3a52 0,
+      #121a26 0.16cqi,
+      #08090b 0.32cqi,
+      transparent 0.36cqi
+    ),
+    #060607;
   z-index: 2;
 }
 /* height:auto is load-bearing — the img carries width/height attributes
@@ -599,28 +615,55 @@ body::before {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 6px;
+  border-radius: 0.7cqi 0.7cqi 0.25cqi 0.25cqi;
   background: #000;
 }
+/* The base seen edge-on: wider than the lid, a dark hinge band where the
+   lid meets it, a lit top edge falling off to shadow, and the thumb scoop. */
 .device-base {
-  height: 12px;
-  width: 106%;
-  margin-left: -3%;
-  border-radius: 0 0 12px 12px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--text) 16%, transparent),
-    color-mix(in srgb, var(--text) 5%, transparent)
-  );
+  position: relative;
+  height: 2.3cqi;
+  width: 112%;
+  margin-left: -6%;
+  border-radius: 0.3cqi 0.3cqi 2.2cqi 2.2cqi / 0.3cqi 0.3cqi 1.6cqi 1.6cqi;
+  background:
+    linear-gradient(180deg, #0c0c0d, #2a2a2d) top center / 89.3% 0.55cqi
+      no-repeat,
+    linear-gradient(
+      180deg,
+      #d9dadd 0,
+      #a9aaae 30%,
+      #7b7c80 70%,
+      #4a4b4f 100%
+    );
+  box-shadow: inset 0 -0.2cqi 0.35cqi rgba(0, 0, 0, 0.45);
 }
 .device-base::after {
   content: "";
-  display: block;
+  position: absolute;
+  top: 0.55cqi;
+  left: 50%;
+  transform: translateX(-50%);
   width: 14%;
-  height: 4px;
-  margin: 0 auto;
-  border-radius: 0 0 6px 6px;
-  background: color-mix(in srgb, var(--bg) 60%, transparent);
+  height: 0.8cqi;
+  border-radius: 0 0 1.2cqi 1.2cqi / 0 0 0.8cqi 0.8cqi;
+  background: linear-gradient(180deg, #5e5f63, #9d9ea2);
+  box-shadow: inset 0 0.12cqi 0.25cqi rgba(0, 0, 0, 0.5);
+}
+/* Contact shadow on the desk. */
+.device-base::before {
+  content: "";
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 70%;
+  height: 2.6cqi;
+  background: radial-gradient(
+    ellipse at 50% 0,
+    rgba(0, 0, 0, 0.55),
+    transparent 70%
+  );
+  z-index: -1;
 }
 
 /* MANIFESTO — the thesis. Serif heading, then quiet prose set narrow
@@ -648,8 +691,7 @@ body::before {
   text-wrap: pretty;
 }
 .manifesto-line em {
-  font-family: var(--font-serif);
-  font-style: italic;
+  font-family: var(--font-display);
   font-size: 1.15em;
   color: var(--text);
 }
@@ -693,8 +735,7 @@ section[id] {
   grid-row: 1;
   align-self: end;
   display: block;
-  font-family: var(--font-serif);
-  font-style: italic;
+  font-family: var(--font-display);
   font-weight: 400;
   font-size: 1rem;
   color: var(--text-quiet);
@@ -813,8 +854,7 @@ section[id] {
   background: linear-gradient(90deg, transparent, var(--accent));
 }
 .route-step-num {
-  font-family: var(--font-serif);
-  font-style: italic;
+  font-family: var(--font-display);
   font-weight: 400;
   font-size: 1.6rem;
   color: var(--accent);
@@ -945,8 +985,7 @@ section[id] {
 }
 .effort-label {
   display: block;
-  font-family: var(--font-serif);
-  font-style: italic;
+  font-family: var(--font-display);
   font-size: 1.15rem;
   color: var(--text);
   margin-bottom: 4px;
@@ -1061,8 +1100,7 @@ section[id] {
 }
 .act-num {
   display: block;
-  font-family: var(--font-serif);
-  font-style: italic;
+  font-family: var(--font-display);
   font-weight: 400;
   font-size: 2.6rem;
   color: var(--accent);
@@ -1251,8 +1289,7 @@ section[id] {
 }
 .agent-mode {
   display: block;
-  font-family: var(--font-serif);
-  font-style: italic;
+  font-family: var(--font-display);
   font-size: 1.05rem;
   color: var(--purple);
   margin-bottom: 4px;
@@ -1265,7 +1302,6 @@ section[id] {
   margin-top: 14px;
   font-size: 0.86rem;
   color: var(--text-quiet);
-  font-style: italic;
 }
 
 /* PROTECT */
@@ -1360,8 +1396,7 @@ section[id] {
     var(--bg-2);
 }
 .aura-label {
-  font-family: var(--font-serif);
-  font-style: italic;
+  font-family: var(--font-display);
   font-size: 1.2rem;
   color: var(--text);
 }
@@ -1432,9 +1467,9 @@ section[id] {
   gap: 24px;
   width: 100%;
   padding: 26px 0;
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 1.3rem;
-  font-weight: 400;
+  font-weight: 300;
   letter-spacing: -0.01em;
   color: var(--text-muted);
   text-align: left;
@@ -1549,8 +1584,7 @@ section[id] {
   color: var(--text);
 }
 .footer-note {
-  font-family: var(--font-serif);
-  font-style: italic;
+  font-family: var(--font-display);
   font-size: 1.05rem;
   color: var(--text-muted);
 }
@@ -1725,7 +1759,7 @@ section[id] {
   margin-bottom: 14px;
 }
 .showcase-title {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-weight: 300;
   font-size: clamp(1.8rem, 4vw, 3rem);
   line-height: 1.15;
@@ -1733,8 +1767,8 @@ section[id] {
   margin-bottom: 18px;
 }
 .showcase-title em {
-  font-style: italic;
-  color: var(--accent);
+  font-style: normal;
+  color: var(--text-muted);
 }
 .showcase-lede {
   color: var(--text-muted);
@@ -1935,7 +1969,7 @@ section[id] {
   color: var(--text);
 }
 .release-headline {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 1.16rem;
   line-height: 1.35;
   letter-spacing: -0.01em;
