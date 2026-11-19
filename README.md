@@ -12,13 +12,13 @@ https://github.com/user-attachments/assets/ef881143-3b65-491d-b78b-1be007a04c9b
 
 <br/>
 
-[![Download Ghost v4.6.0](https://img.shields.io/badge/Download_Ghost-v4.6.0-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
+[![Download Ghost v4.6.1](https://img.shields.io/badge/Download_Ghost-v4.6.1-3B82F6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ryuhemingway/Ghost-App/releases/latest)
 
 <br/>
 
 <a href="https://integratedagentics.com/ghost"><img src="docs/readme/hero-notch-answer.jpg" alt="Ghost answering &quot;What does a snow leopard look like?&quot; in the notch, in the Noir theme, with the photograph inline in the answer" width="820" /></a>
 
-<samp>v4.6.0 · notarized · free for a day, then a one-time purchase · macOS 14+</samp>
+<samp>v4.6.1 · notarized · free for a day, then a one-time purchase · macOS 14+</samp>
 
 </div>
 
@@ -36,6 +36,7 @@ By default, everything is off: web access, file tools, automation, messaging, sc
 
 Your coding agents moved into the notch, and the subagents they hand work to now show their receipts.
 
+- **New in 4.6.1: local models see more, show their work and answer sooner.** Screenshots reach local vision models like Qwen 3.6, every local answer shows its speed and how much context it used, and follow up questions reuse what the model already read. The model picker says what each local model can do, Ollama models that run on ollama.com are treated as cloud models, the Agents tab adds Antigravity, and Settings opens fast.
 - **New in 4.6: try it free for a day.** A new Mac gets a full day of Ghost with everything unlocked, and Settings shows how long is left. If you already own Ghost, nothing changes.
 - **New in 4.1: ask your files, paste images to agents.** A RAG search only switch that answers from your indexed files and nothing else, pasted images in the Agents chat, a Terminal that looks like a terminal, a line from the Stoics under the pomodoro, and hints that show when you hover.
 - **The Agents tab.** Every Claude Code, Codex, opencode and DeepSeek Harness session on this Mac, from any terminal, in one list: what each is doing, its checklist and its last reply. When one needs permission or asks a question, the card comes to the notch, and the collapsed notch says when an agent is working. Monitors can watch a command, a page or a feed and hand an alert to Claude. Press **⌘4** in Ghost, and turn on watching at **Settings ▸ Agents**.
@@ -283,18 +284,18 @@ Yes — Ghost Code offers four agent modes: Plan (inspect and propose), Build (e
 
 ## Fixed: builds 2.0.1 – 2.0.5 stopped telling you about updates.
 
-<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 4.6.0</samp></sub>
+<sub><samp>AFFECTS 2.0.1 – 2.0.5 · FIXED IN 2.0.6 · CURRENT RELEASE 4.6.1</samp></sub>
 
-**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 4.6.0, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
+**2.0.6 restored both surfaces: updates are presented again when one is found, and Settings carries a Check for Updates button beside the version number.** The current release, 4.6.1, includes that fix. Nothing about this was ever a risk to your Mac; Ghost simply went quiet about its own updates.
 
-If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 4.6.0 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
+If you are running Ghost 2.0.1 through 2.0.5, **your copy will not tell you that 4.6.1 exists, and it has no button to ask with.** The fix cannot reach you through the thing it fixes — you have to install it once by hand, and it works normally from then on.
 
 What happened: the "Check for Updates" button and the "update available" notice both lived in an older window that was removed in July when it stopped being part of the app. The updater underneath kept working the whole time — it checks on schedule and it does find new versions — but it had been told that Ghost would display what it found, and after the removal Ghost had nowhere to display it. So an affected build checks, finds an update, and says nothing.
 
 What to do, if you are on 2.0.1 – 2.0.5:
 
-- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 4.6.0 will arrive on its own.
-- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 4.6.0 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
+- **If you turned on automatic downloading and installing**, you are already fine — Sparkle installs new versions without needing anything from Ghost's interface, so 4.6.1 will arrive on its own.
+- **Otherwise you will never be prompted, including if you only enabled automatic _checking_.** Checking is what most people turned on, and a check is exactly what these builds swallow. Download 4.6.1 by hand from **[integratedagentics.com/ghost](https://integratedagentics.com/ghost)** or the [releases page](https://github.com/ryuhemingway/Ghost-App/releases/latest), both of which serve the newest release.
 
 <br/>
 
